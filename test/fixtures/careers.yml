@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  name: First Career
+  current_date: 2026-05-22
+  status: 1
+
+two:
+  user: two
+  name: Second Career
+  current_date: 2026-05-22
+  status: 1

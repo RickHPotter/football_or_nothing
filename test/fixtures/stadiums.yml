@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  country: one
+  club: one
+  name: Aurora Park
+  city: Capital
+  capacity: 1
+  pitch_quality: 1
+  ownership: 1
+
+two:
+  country: two
+  club: two
+  name: Estrela Ground
+  city: Porto Novo
+  capacity: 1
+  pitch_quality: 1
+  ownership: 1

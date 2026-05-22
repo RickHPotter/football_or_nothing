@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  club: one
+  cash_balance: 9.99
+  wage_budget: 9.99
+  transfer_budget: 9.99
+  debt: 9.99
+  sponsorship_income: 9.99
+  stadium_income: 9.99
+  prize_money: 9.99
+  expenses: 9.99
+
+two:
+  club: two
+  cash_balance: 9.99
+  wage_budget: 9.99
+  transfer_budget: 9.99
+  debt: 9.99
+  sponsorship_income: 9.99
+  stadium_income: 9.99
+  prize_money: 9.99
+  expenses: 9.99

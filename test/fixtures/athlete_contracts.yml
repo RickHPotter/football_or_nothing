@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  athlete: one
+  club: one
+  start_date: 2026-05-22
+  end_date: 2026-05-22
+  wage: 9.99
+  release_clause: 9.99
+  squad_number: 1
+  status: 1
+  current: false
+  loan: false
+
+two:
+  athlete: two
+  club: two
+  start_date: 2026-05-22
+  end_date: 2026-05-22
+  wage: 9.99
+  release_clause: 9.99
+  squad_number: 1
+  status: 1
+  current: false
+  loan: false

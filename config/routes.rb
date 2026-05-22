@@ -1,7 +1,11 @@
 Rails.application.routes.draw do
   resource :registration, only: %i[ new create ]
   resource :session
-  resources :careers, only: %i[ new create show ]
+  resources :careers, only: %i[new create show] do
+    resource :club, only: :show
+    resources :athletes, only: :show
+    resources :manager_contracts, only: :create
+  end
   resources :passwords, param: :token
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

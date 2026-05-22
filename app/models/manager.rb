@@ -6,6 +6,8 @@ class Manager < ApplicationRecord
   belongs_to :country
   has_many :manager_contracts, dependent: :destroy
   has_many :clubs, through: :manager_contracts
+  has_one :current_manager_contract, -> { where(current: true) }, class_name: "ManagerContract", inverse_of: :manager
+  has_one :current_club, through: :current_manager_contract, source: :club
 
   validates :first_name, :last_name, presence: true
   validates :career_id, uniqueness: true

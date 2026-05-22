@@ -5,6 +5,7 @@ class Country < ApplicationRecord
   has_many :stadiums, dependent: :restrict_with_exception
   has_many :athletes, dependent: :restrict_with_exception
   has_many :managers, dependent: :restrict_with_exception
+  has_many :tournaments, dependent: :restrict_with_exception
 
   validates :name, presence: true, uniqueness: true
   validates :code, presence: true, uniqueness: true

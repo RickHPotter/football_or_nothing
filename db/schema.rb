@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_22_171019) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_22_180912) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -123,6 +123,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_171019) do
     t.index ["name"], name: "index_countries_on_name", unique: true
   end
 
+  create_table "fixtures", force: :cascade do |t|
+    t.bigint "away_club_id", null: false
+    t.integer "away_goals"
+    t.datetime "created_at", null: false
+    t.bigint "home_club_id", null: false
+    t.integer "home_goals"
+    t.integer "kickoff_minute", default: 900, null: false
+    t.integer "round", null: false
+    t.date "scheduled_on", null: false
+    t.bigint "stadium_id", null: false
+    t.integer "status", default: 0, null: false
+    t.bigint "tournament_edition_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["away_club_id"], name: "index_fixtures_on_away_club_id"
+    t.index ["home_club_id"], name: "index_fixtures_on_home_club_id"
+    t.index ["stadium_id"], name: "index_fixtures_on_stadium_id"
+    t.index ["tournament_edition_id", "home_club_id", "away_club_id"], name: "index_fixtures_on_edition_home_away", unique: true
+    t.index ["tournament_edition_id"], name: "index_fixtures_on_tournament_edition_id"
+  end
+
   create_table "manager_contracts", force: :cascade do |t|
     t.bigint "club_id", null: false
     t.datetime "created_at", null: false
@@ -181,6 +201,54 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_171019) do
     t.index ["country_id"], name: "index_stadiums_on_country_id"
   end
 
+  create_table "tournament_editions", force: :cascade do |t|
+    t.bigint "champion_id"
+    t.datetime "created_at", null: false
+    t.date "ends_on", null: false
+    t.string "name", null: false
+    t.integer "season_year", null: false
+    t.date "starts_on", null: false
+    t.integer "status", default: 0, null: false
+    t.bigint "tournament_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["champion_id"], name: "index_tournament_editions_on_champion_id"
+    t.index ["tournament_id", "season_year"], name: "index_tournament_editions_on_tournament_id_and_season_year", unique: true
+    t.index ["tournament_id"], name: "index_tournament_editions_on_tournament_id"
+  end
+
+  create_table "tournament_participations", force: :cascade do |t|
+    t.bigint "club_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "draws", default: 0, null: false
+    t.integer "goals_against", default: 0, null: false
+    t.integer "goals_for", default: 0, null: false
+    t.integer "losses", default: 0, null: false
+    t.integer "played", default: 0, null: false
+    t.integer "points", default: 0, null: false
+    t.integer "position"
+    t.decimal "prize_money", precision: 15, scale: 2, default: "0.0", null: false
+    t.integer "status", default: 0, null: false
+    t.bigint "tournament_edition_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "wins", default: 0, null: false
+    t.index ["club_id"], name: "index_tournament_participations_on_club_id"
+    t.index ["tournament_edition_id", "club_id"], name: "idx_on_tournament_edition_id_club_id_27e3f58eda", unique: true
+    t.index ["tournament_edition_id"], name: "index_tournament_participations_on_tournament_edition_id"
+  end
+
+  create_table "tournaments", force: :cascade do |t|
+    t.bigint "country_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "format", default: 0, null: false
+    t.string "name", null: false
+    t.integer "scope", default: 0, null: false
+    t.string "short_name", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["country_id", "name"], name: "index_tournaments_on_country_id_and_name", unique: true
+    t.index ["country_id"], name: "index_tournaments_on_country_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email_address", null: false
@@ -195,6 +263,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_171019) do
   add_foreign_key "careers", "users"
   add_foreign_key "club_finances", "clubs"
   add_foreign_key "clubs", "countries"
+  add_foreign_key "fixtures", "clubs", column: "away_club_id"
+  add_foreign_key "fixtures", "clubs", column: "home_club_id"
+  add_foreign_key "fixtures", "stadiums"
+  add_foreign_key "fixtures", "tournament_editions"
   add_foreign_key "manager_contracts", "clubs"
   add_foreign_key "manager_contracts", "managers"
   add_foreign_key "managers", "careers"
@@ -203,4 +275,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_171019) do
   add_foreign_key "sessions", "users"
   add_foreign_key "stadiums", "clubs"
   add_foreign_key "stadiums", "countries"
+  add_foreign_key "tournament_editions", "clubs", column: "champion_id"
+  add_foreign_key "tournament_editions", "tournaments"
+  add_foreign_key "tournament_participations", "clubs"
+  add_foreign_key "tournament_participations", "tournament_editions"
+  add_foreign_key "tournaments", "countries"
 end

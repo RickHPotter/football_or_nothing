@@ -3,6 +3,7 @@ class Stadium < ApplicationRecord
 
   belongs_to :country
   belongs_to :club
+  has_many :fixtures, dependent: :restrict_with_exception
 
   validates :name, :city, presence: true
   validates :name, uniqueness: { scope: :country_id }

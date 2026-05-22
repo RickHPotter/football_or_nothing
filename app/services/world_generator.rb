@@ -43,10 +43,30 @@ class WorldGenerator
       create_club(country, club_data, index)
     end
 
+    create_league(country)
+
     country
   end
 
   private
+    def create_league(country)
+      tournament = country.tournaments.find_or_create_by!(name: "Brasilia Premier League") do |record|
+        record.short_name = "BPL"
+        record.scope = :domestic
+        record.format = :league
+        record.status = :active
+      end
+
+      edition = tournament.tournament_editions.find_or_create_by!(season_year: 2026) do |record|
+        record.name = "Brasilia Premier League 2026"
+        record.starts_on = Date.new(2026, 2, 1)
+        record.ends_on = Date.new(2026, 5, 3)
+        record.status = :scheduled
+      end
+
+      LeagueScheduler.call(edition, country.clubs.active.order(:name))
+    end
+
     def create_club(country, club_data, index)
       name, short_name, stadium_name, city = club_data
       club = country.clubs.find_or_create_by!(name:) do |record|

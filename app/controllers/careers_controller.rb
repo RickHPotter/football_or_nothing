@@ -2,6 +2,9 @@ class CareersController < ApplicationController
   before_action :set_career, only: :show
 
   def show
+    @manager = @career.manager
+    @current_contract = @manager&.current_manager_contract
+    @available_clubs = available_clubs_for(@manager) if @manager&.unemployed?
   end
 
   def new
@@ -13,7 +16,7 @@ class CareersController < ApplicationController
   def create
     @career = Current.user.careers.build(career_params)
     @career.current_date ||= Date.new(2026, 1, 1)
-    @manager = @career.build_manager(manager_params.merge(user: Current.user, reputation: 1))
+    @manager = @career.build_manager(manager_params.merge(user: Current.user, reputation: 1, status: :unemployed))
 
     if @career.save
       redirect_to @career, notice: "Manager career created."
@@ -25,7 +28,7 @@ class CareersController < ApplicationController
 
   private
     def set_career
-      @career = Current.user.careers.includes(manager: :country).find(params[:id])
+      @career = Current.user.careers.includes(manager: [ :country, { current_manager_contract: { club: :club_finance } } ]).find(params[:id])
     end
 
     def default_career_attributes
@@ -38,5 +41,16 @@ class CareersController < ApplicationController
 
     def manager_params
       params.expect(manager: %i[first_name last_name birthdate country_id])
+    end
+
+    def available_clubs_for(manager)
+      return Club.none unless manager
+
+      Club.active
+        .includes(:country, :club_finance)
+        .left_outer_joins(:current_manager_contract)
+        .where(manager_contracts: { id: nil })
+        .where(reputation: ..manager.reputation + 5)
+        .order(:reputation, :name)
     end
 end

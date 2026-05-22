@@ -1,0 +1,34 @@
+<h1><%= [ @athlete.first_name, @athlete.last_name ].join(" ") %></h1>
+
+<p>Nationality: <%= @athlete.country.name %></p>
+<p>Position: <%= @athlete.position.humanize %></p>
+<p>Preferred foot: <%= @athlete.preferred_foot.humanize %></p>
+<p>Current ability: <%= @athlete.current_ability %></p>
+<p>Potential ability: <%= @athlete.potential_ability %></p>
+<p>Morale: <%= @athlete.morale %></p>
+<p>Condition: <%= @athlete.condition %></p>
+
+<% if @contract %>
+  <h2>Contract</h2>
+
+  <p>Club: <%= @contract.club.name %></p>
+  <p>Wage: <%= number_to_currency(@contract.wage) %></p>
+  <p>Start date: <%= @contract.start_date %></p>
+  <p>End date: <%= @contract.end_date || "Open" %></p>
+  <p>Squad number: <%= @contract.squad_number || "-" %></p>
+<% end %>
+
+<h2>Attributes</h2>
+
+<table>
+  <tbody>
+    <% Athlete::ATTRIBUTES.each do |attribute| %>
+      <tr>
+        <th><%= attribute.to_s.humanize %></th>
+        <td><%= @athlete.public_send(attribute) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to "Back to club", career_club_path(@career) %>

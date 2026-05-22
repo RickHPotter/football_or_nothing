@@ -2,11 +2,53 @@
 
 <p>Current date: <%= @career.current_date %></p>
 
-<% if @career.manager %>
+<% if @manager %>
   <h2>Manager</h2>
 
-  <p>Name: <%= [ @career.manager.first_name, @career.manager.last_name ].join(" ") %></p>
-  <p>Nationality: <%= @career.manager.country.name %></p>
-  <p>Reputation: <%= @career.manager.reputation %></p>
-  <p>Status: <%= @career.manager.status.humanize %></p>
+  <p>Name: <%= [ @manager.first_name, @manager.last_name ].join(" ") %></p>
+  <p>Nationality: <%= @manager.country.name %></p>
+  <p>Reputation: <%= @manager.reputation %></p>
+  <p>Status: <%= @manager.status.humanize %></p>
+
+  <% if @current_contract %>
+    <h2>Current club</h2>
+
+    <p>Club: <%= @current_contract.club.name %></p>
+    <p>Country: <%= @current_contract.club.country.name %></p>
+    <p>Wage: <%= number_to_currency(@current_contract.wage) %></p>
+    <p>Expectations: <%= @current_contract.expectations %></p>
+
+    <%= link_to "Open club dashboard", career_club_path(@career) %>
+  <% else %>
+    <h2>Available jobs</h2>
+
+    <% if @available_clubs.any? %>
+      <table>
+        <thead>
+          <tr>
+            <th>Club</th>
+            <th>Country</th>
+            <th>Reputation</th>
+            <th>Transfer budget</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @available_clubs.each do |club| %>
+            <tr>
+              <td><%= club.name %></td>
+              <td><%= club.country.name %></td>
+              <td><%= club.reputation %></td>
+              <td><%= number_to_currency(club.club_finance&.transfer_budget || 0) %></td>
+              <td>
+                <%= button_to "Take job", career_manager_contracts_path(@career), params: { club_id: club.id } %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p>No clubs are willing to hire this manager yet.</p>
+    <% end %>
+  <% end %>
 <% end %>

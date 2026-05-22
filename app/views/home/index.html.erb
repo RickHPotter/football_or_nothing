@@ -8,6 +8,12 @@
 
   <p>Career date: <%= @career.current_date %></p>
 
+  <% if @career.manager.current_club %>
+    <p>Club: <%= @career.manager.current_club.name %></p>
+  <% else %>
+    <p>Status: Unemployed</p>
+  <% end %>
+
   <%= link_to "Open career", career_path(@career) %>
 <% else %>
   <p>You do not have a manager career yet.</p>

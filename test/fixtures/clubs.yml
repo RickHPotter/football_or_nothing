@@ -7,7 +7,7 @@ one:
   reputation: 1
   founded_year: 1
   international: false
-  status: 1
+  status: 0
 
 two:
   country: two
@@ -16,4 +16,4 @@ two:
   reputation: 1
   founded_year: 1
   international: false
-  status: 1
+  status: 0

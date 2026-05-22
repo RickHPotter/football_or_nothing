@@ -33,6 +33,7 @@ class CareersControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to career_path(Career.order(:created_at).last)
+    assert Career.order(:created_at).last.manager.unemployed?
   end
 
   test "create with invalid attributes" do
@@ -51,5 +52,27 @@ class CareersControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_content
+  end
+
+  test "show offers jobs to unemployed manager" do
+    sign_out
+    sign_in_as(users(:one))
+
+    get career_path(careers(:one))
+
+    assert_response :success
+    assert_select "h2", "Available jobs"
+    assert_select "button", "Take job"
+  end
+
+  test "show links current club when manager has job" do
+    sign_out
+    sign_in_as(users(:one))
+    manager_contracts(:one).update!(current: true, status: :active, role: :head_coach, end_date: nil)
+
+    get career_path(careers(:one))
+
+    assert_response :success
+    assert_select "a", "Open club dashboard"
   end
 end

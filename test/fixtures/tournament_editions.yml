@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  tournament: one
+  season_year: 2026
+  name: Brasilia League 2026
+  starts_on: 2026-02-01
+  ends_on: 2026-05-03
+  status: 0
+
+two:
+  tournament: two
+  season_year: 2026
+  name: Lusonia League 2026
+  starts_on: 2026-02-01
+  ends_on: 2026-05-03
+  status: 0

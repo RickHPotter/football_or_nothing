@@ -1,0 +1,94 @@
+<h1><%= @club.name %></h1>
+
+<p>Country: <%= @club.country.name %></p>
+<p>Reputation: <%= @club.reputation %></p>
+<p>Founded: <%= @club.founded_year || "Unknown" %></p>
+
+<h2>Finances</h2>
+
+<% if @finance %>
+  <p>Cash balance: <%= number_to_currency(@finance.cash_balance) %></p>
+  <p>Transfer budget: <%= number_to_currency(@finance.transfer_budget) %></p>
+  <p>Wage budget: <%= number_to_currency(@finance.wage_budget) %></p>
+  <p>Debt: <%= number_to_currency(@finance.debt) %></p>
+<% else %>
+  <p>No financial profile exists for this club.</p>
+<% end %>
+
+<h2>Stadium</h2>
+
+<% if @stadium %>
+  <p>Name: <%= @stadium.name %></p>
+  <p>City: <%= @stadium.city %></p>
+  <p>Capacity: <%= number_with_delimiter(@stadium.capacity) %></p>
+  <p>Pitch quality: <%= @stadium.pitch_quality %></p>
+<% else %>
+  <p>No stadium exists for this club.</p>
+<% end %>
+
+<h2>Fixtures</h2>
+
+<% if @fixtures.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Competition</th>
+        <th>Round</th>
+        <th>Home</th>
+        <th>Away</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @fixtures.each do |fixture| %>
+        <tr>
+          <td><%= fixture.scheduled_on %></td>
+          <td><%= fixture.tournament_edition.name %></td>
+          <td><%= fixture.round %></td>
+          <td><%= fixture.home_club.name %></td>
+          <td><%= fixture.away_club.name %></td>
+          <td><%= fixture.status.humanize %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>No fixtures have been scheduled for this club.</p>
+<% end %>
+
+<h2>Squad</h2>
+
+<% if @contracts.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Name</th>
+        <th>Position</th>
+        <th>Ability</th>
+        <th>Potential</th>
+        <th>Condition</th>
+        <th>Wage</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @contracts.each do |contract| %>
+        <% athlete = contract.athlete %>
+        <tr>
+          <td><%= contract.squad_number || "-" %></td>
+          <td><%= link_to [ athlete.first_name, athlete.last_name ].join(" "), career_athlete_path(@career, athlete) %></td>
+          <td><%= athlete.position.humanize %></td>
+          <td><%= athlete.current_ability %></td>
+          <td><%= athlete.potential_ability %></td>
+          <td><%= athlete.condition %></td>
+          <td><%= number_to_currency(contract.wage) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>No current squad contracts exist for this club.</p>
+<% end %>
+
+<%= link_to "Back to career", career_path(@career) %>

@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  tournament_edition: one
+  home_club: one
+  away_club: two
+  stadium: one
+  scheduled_on: 2026-02-01
+  kickoff_minute: 900
+  status: 0
+  round: 1
+
+two:
+  tournament_edition: two
+  home_club: two
+  away_club: one
+  stadium: two
+  scheduled_on: 2026-02-08
+  kickoff_minute: 900
+  status: 0
+  round: 1

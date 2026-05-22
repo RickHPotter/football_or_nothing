@@ -7,6 +7,9 @@ class TournamentEdition < ApplicationRecord
   has_many :clubs, through: :tournament_participations
   has_many :fixtures, dependent: :destroy
   has_many :athlete_season_stats, dependent: :destroy
+  has_many :trophies, dependent: :destroy
+  has_many :club_season_stats, dependent: :destroy
+  has_many :manager_season_stats, dependent: :destroy
 
   validates :season_year, :name, :starts_on, :ends_on, presence: true
   validates :season_year, uniqueness: { scope: :tournament_id }
@@ -15,5 +18,13 @@ class TournamentEdition < ApplicationRecord
     tournament_participations
       .includes(:club)
       .sort_by { |participation| [ -participation.points, -participation.goal_difference, -participation.goals_for, participation.club.name ] }
+  end
+
+  def ready_to_complete?
+    fixtures.exists? && fixtures.where.not(status: :completed).none?
+  end
+
+  def leading_participation
+    standings.first
   end
 end

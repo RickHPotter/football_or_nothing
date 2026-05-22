@@ -8,6 +8,8 @@ class Manager < ApplicationRecord
   has_many :clubs, through: :manager_contracts
   has_one :current_manager_contract, -> { where(current: true) }, class_name: "ManagerContract", inverse_of: :manager
   has_one :current_club, through: :current_manager_contract, source: :club
+  has_many :trophies, dependent: :nullify
+  has_many :manager_season_stats, dependent: :destroy
 
   validates :first_name, :last_name, presence: true
   validates :career_id, uniqueness: true

@@ -24,6 +24,7 @@ class MatchSimulator
       update_athlete_stats(fixture.away_club)
       update_standings(home_goals, away_goals)
       fixture.tournament_edition.in_progress! if fixture.tournament_edition.scheduled?
+      TournamentFinalizer.call(fixture.tournament_edition)
     end
 
     fixture

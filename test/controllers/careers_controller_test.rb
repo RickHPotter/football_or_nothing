@@ -74,6 +74,9 @@ class CareersControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "a", "Open club dashboard"
+    assert_select "h2", "Trophies"
+    assert_select "h2", "Manager seasons"
+    assert_select "p", /Total:/
   end
 
   test "show displays next fixture when manager has job" do

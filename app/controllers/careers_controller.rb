@@ -5,6 +5,9 @@ class CareersController < ApplicationController
     @manager = @career.manager
     @current_contract = @manager&.current_manager_contract
     @next_fixture = @career.next_fixture
+    @trophies = @manager&.trophies&.includes(:club, :tournament_edition)&.order(won_on: :desc) || []
+    @manager_season_stats = @manager&.manager_season_stats&.includes(:club, :tournament_edition)&.order(created_at: :desc) || []
+    @manager_totals = manager_totals(@manager_season_stats)
     @available_clubs = available_clubs_for(@manager) if @manager&.unemployed?
   end
 
@@ -64,5 +67,15 @@ class CareersController < ApplicationController
         .where(manager_contracts: { id: nil })
         .where(reputation: ..manager.reputation + 5)
         .order(:reputation, :name)
+    end
+
+    def manager_totals(stats)
+      {
+        matches: stats.sum(&:matches),
+        wins: stats.sum(&:wins),
+        draws: stats.sum(&:draws),
+        losses: stats.sum(&:losses),
+        trophies: stats.sum(&:trophies)
+      }
     end
 end

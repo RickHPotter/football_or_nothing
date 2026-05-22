@@ -18,6 +18,9 @@ class Club < ApplicationRecord
   has_many :away_fixtures, class_name: "Fixture", foreign_key: :away_club_id, dependent: :restrict_with_exception, inverse_of: :away_club
   has_many :match_events, dependent: :restrict_with_exception
   has_many :athlete_season_stats, dependent: :destroy
+  has_many :trophies, dependent: :destroy
+  has_many :club_season_stats, dependent: :destroy
+  has_many :manager_season_stats, dependent: :destroy
 
   validates :name, :short_name, presence: true
   validates :name, uniqueness: { scope: :country_id }

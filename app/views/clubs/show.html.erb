@@ -90,6 +90,86 @@
   <p>No standings are available for this club.</p>
 <% end %>
 
+<h2>Top scorers</h2>
+
+<% if @top_scorers.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th>Player</th>
+        <th>Goals</th>
+        <th>Apps</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @top_scorers.each do |stat| %>
+        <tr>
+          <td><%= link_to [ stat.athlete.first_name, stat.athlete.last_name ].join(" "), career_athlete_path(@career, stat.athlete) %></td>
+          <td><%= stat.goals %></td>
+          <td><%= stat.appearances %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>No scorers recorded yet.</p>
+<% end %>
+
+<h2>Trophies</h2>
+
+<% if @trophies.any? %>
+  <ul>
+    <% @trophies.each do |trophy| %>
+      <li>
+        <%= trophy.won_on %>:
+        <%= trophy.name %>
+        <% if trophy.manager %>
+          under <%= [ trophy.manager.first_name, trophy.manager.last_name ].join(" ") %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No trophies won yet.</p>
+<% end %>
+
+<h2>Club seasons</h2>
+
+<% if @club_season_stats.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th>Competition</th>
+        <th>Position</th>
+        <th>Pts</th>
+        <th>P</th>
+        <th>W</th>
+        <th>D</th>
+        <th>L</th>
+        <th>GD</th>
+        <th>Champion</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @club_season_stats.each do |stat| %>
+        <tr>
+          <td><%= stat.tournament_edition.name %></td>
+          <td><%= stat.position || "-" %></td>
+          <td><%= stat.points %></td>
+          <td><%= stat.played %></td>
+          <td><%= stat.wins %></td>
+          <td><%= stat.draws %></td>
+          <td><%= stat.losses %></td>
+          <td><%= stat.goal_difference %></td>
+          <td><%= stat.champion? ? "Yes" : "No" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>No completed club seasons yet.</p>
+<% end %>
+
 <h2>Squad</h2>
 
 <% if @contracts.any? %>

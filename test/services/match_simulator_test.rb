@@ -64,6 +64,18 @@ class MatchSimulatorTest < ActiveSupport::TestCase
     assert_equal home_played, participation_for(@fixture.home_club).played
   end
 
+  test "finalizes tournament after last fixture" do
+    @fixture.tournament_edition.trophies.destroy_all
+    @fixture.tournament_edition.fixtures.where.not(id: @fixture.id).update_all(status: Fixture.statuses[:completed])
+
+    assert_difference "Trophy.count", 1 do
+      MatchSimulator.call(@fixture)
+    end
+
+    assert @fixture.tournament_edition.reload.completed?
+    assert_equal @fixture.tournament_edition.leading_participation.club, @fixture.tournament_edition.champion
+  end
+
   private
     def participation_for(club)
       @fixture.tournament_edition.tournament_participations.find_by!(club:)

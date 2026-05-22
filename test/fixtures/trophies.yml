@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  tournament_edition: one
+  club: one
+  manager: one
+  name: Brasilia League 2026
+  won_on: 2026-05-03
+
+two:
+  tournament_edition: two
+  club: two
+  manager: two
+  name: Lusonia League 2026
+  won_on: 2026-05-03

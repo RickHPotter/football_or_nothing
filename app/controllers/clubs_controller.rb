@@ -13,6 +13,9 @@ class ClubsController < ApplicationController
       .limit(10)
     @current_participation = @club.tournament_participations.includes(:tournament_edition).order(created_at: :desc).first
     @standings = @current_participation&.tournament_edition&.standings || []
+    @trophies = @club.trophies.includes(:tournament_edition, :manager).order(won_on: :desc)
+    @club_season_stats = @club.club_season_stats.includes(:tournament_edition).order(created_at: :desc)
+    @top_scorers = top_scorers_for(@current_participation&.tournament_edition)
   end
 
   private
@@ -23,5 +26,16 @@ class ClubsController < ApplicationController
     def set_club
       @club = @career.manager&.current_club
       redirect_to @career, alert: "Take a job before opening a club dashboard." unless @club
+    end
+
+    def top_scorers_for(tournament_edition)
+      return [] unless tournament_edition
+
+      @club.athlete_season_stats
+        .includes(:athlete)
+        .where(tournament_edition:)
+        .where("goals > 0")
+        .order(goals: :desc, appearances: :asc)
+        .limit(5)
     end
 end

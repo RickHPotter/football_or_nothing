@@ -1,1 +1,16 @@
 <h1>Football or Nothing</h1>
+
+<% if @career&.manager %>
+  <p>
+    Manager:
+    <%= [ @career.manager.first_name, @career.manager.last_name ].join(" ") %>
+  </p>
+
+  <p>Career date: <%= @career.current_date %></p>
+
+  <%= link_to "Open career", career_path(@career) %>
+<% else %>
+  <p>You do not have a manager career yet.</p>
+
+  <%= link_to "Create manager", new_career_path %>
+<% end %>

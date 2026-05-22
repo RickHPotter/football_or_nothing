@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   resource :registration, only: %i[ new create ]
   resource :session
+  resources :careers, only: %i[ new create show ]
   resources :passwords, param: :token
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

@@ -1,0 +1,40 @@
+<h1>Create manager</h1>
+
+<% if @countries.empty? %>
+  <p>No countries exist yet. Run the seed task before creating a manager.</p>
+<% end %>
+
+<% if @career.errors.any? || @manager.errors.any? %>
+  <div style="color:red">
+    <p>Could not create this manager career:</p>
+    <ul>
+      <% (@career.errors.full_messages + @manager.errors.full_messages).each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with url: careers_path do |form| %>
+  <fieldset>
+    <legend>Career</legend>
+
+    <%= fields_for :career, @career do |career_fields| %>
+      <%= career_fields.text_field :name, required: true, placeholder: "Career name" %><br>
+      <%= career_fields.date_field :current_date, required: true %>
+    <% end %>
+  </fieldset>
+
+  <fieldset>
+    <legend>Manager</legend>
+
+    <%= fields_for :manager, @manager do |manager_fields| %>
+      <%= manager_fields.text_field :first_name, required: true, autofocus: true, placeholder: "First name" %><br>
+      <%= manager_fields.text_field :last_name, required: true, placeholder: "Last name" %><br>
+      <%= manager_fields.date_field :birthdate %><br>
+      <%= manager_fields.collection_select :country_id, @countries, :id, :name, prompt: "Nationality" %>
+    <% end %>
+  </fieldset>
+
+  <%= form.submit "Start career", disabled: @countries.empty? %>
+<% end %>

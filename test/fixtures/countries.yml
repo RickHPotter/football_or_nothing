@@ -4,10 +4,10 @@ one:
   name: Brasilia
   code: BRA
   reputation: 1
-  status: 1
+  status: 0
 
 two:
   name: Lusonia
   code: LUS
   reputation: 1
-  status: 1
+  status: 0

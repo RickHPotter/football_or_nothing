@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_22_180912) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_22_222946) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -31,6 +31,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_180912) do
     t.index ["athlete_id"], name: "index_athlete_contracts_on_athlete_id"
     t.index ["club_id", "squad_number", "current"], name: "idx_on_club_id_squad_number_current_5d43105888", unique: true, where: "(current AND (squad_number IS NOT NULL))"
     t.index ["club_id"], name: "index_athlete_contracts_on_club_id"
+  end
+
+  create_table "athlete_season_stats", force: :cascade do |t|
+    t.integer "appearances", default: 0, null: false
+    t.integer "assists", default: 0, null: false
+    t.bigint "athlete_id", null: false
+    t.decimal "average_rating", precision: 4, scale: 2
+    t.bigint "club_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "goals", default: 0, null: false
+    t.integer "minutes_played", default: 0, null: false
+    t.bigint "tournament_edition_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["athlete_id", "club_id", "tournament_edition_id"], name: "index_athlete_stats_on_athlete_club_edition", unique: true
+    t.index ["athlete_id"], name: "index_athlete_season_stats_on_athlete_id"
+    t.index ["club_id"], name: "index_athlete_season_stats_on_club_id"
+    t.index ["tournament_edition_id"], name: "index_athlete_season_stats_on_tournament_edition_id"
   end
 
   create_table "athletes", force: :cascade do |t|
@@ -177,6 +194,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_180912) do
     t.index ["user_id"], name: "index_managers_on_user_id"
   end
 
+  create_table "match_events", force: :cascade do |t|
+    t.bigint "athlete_id", null: false
+    t.bigint "club_id", null: false
+    t.datetime "created_at", null: false
+    t.string "description", null: false
+    t.integer "event_type", default: 0, null: false
+    t.bigint "fixture_id", null: false
+    t.integer "minute", null: false
+    t.datetime "updated_at", null: false
+    t.index ["athlete_id"], name: "index_match_events_on_athlete_id"
+    t.index ["club_id"], name: "index_match_events_on_club_id"
+    t.index ["fixture_id", "minute", "id"], name: "index_match_events_on_fixture_id_and_minute_and_id"
+    t.index ["fixture_id"], name: "index_match_events_on_fixture_id"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
@@ -259,6 +291,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_180912) do
 
   add_foreign_key "athlete_contracts", "athletes"
   add_foreign_key "athlete_contracts", "clubs"
+  add_foreign_key "athlete_season_stats", "athletes"
+  add_foreign_key "athlete_season_stats", "clubs"
+  add_foreign_key "athlete_season_stats", "tournament_editions"
   add_foreign_key "athletes", "countries"
   add_foreign_key "careers", "users"
   add_foreign_key "club_finances", "clubs"
@@ -272,6 +307,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_180912) do
   add_foreign_key "managers", "careers"
   add_foreign_key "managers", "countries"
   add_foreign_key "managers", "users"
+  add_foreign_key "match_events", "athletes"
+  add_foreign_key "match_events", "clubs"
+  add_foreign_key "match_events", "fixtures"
   add_foreign_key "sessions", "users"
   add_foreign_key "stadiums", "clubs"
   add_foreign_key "stadiums", "countries"

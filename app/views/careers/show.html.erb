@@ -19,6 +19,21 @@
     <p>Expectations: <%= @current_contract.expectations %></p>
 
     <%= link_to "Open club dashboard", career_club_path(@career) %>
+
+    <h2>Next fixture</h2>
+
+    <% if @next_fixture %>
+      <p>
+        <%= @next_fixture.scheduled_on %>:
+        <%= @next_fixture.home_club.name %>
+        vs
+        <%= @next_fixture.away_club.name %>
+      </p>
+
+      <%= button_to "Advance to match day", advance_career_path(@career) %>
+    <% else %>
+      <p>No upcoming fixtures are scheduled.</p>
+    <% end %>
   <% else %>
     <h2>Available jobs</h2>
 

@@ -5,6 +5,7 @@ class AthletesController < ApplicationController
 
   def show
     @contract = @athlete.current_athlete_contract
+    @stats = @athlete.athlete_season_stats.includes(:tournament_edition, :club).order(created_at: :desc)
   end
 
   private

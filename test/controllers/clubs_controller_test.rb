@@ -17,8 +17,11 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", "Finances"
     assert_select "h2", "Stadium"
     assert_select "h2", "Fixtures"
+    assert_select "h2", "Standings"
     assert_select "h2", "Squad"
     assert_select "td", fixtures(:one).tournament_edition.name
+    assert_select "td", tournament_participations(:one).points.to_s
+    assert_select "a", fixtures(:one).home_club.name
     assert_select "a", "#{athletes(:one).first_name} #{athletes(:one).last_name}"
   end
 

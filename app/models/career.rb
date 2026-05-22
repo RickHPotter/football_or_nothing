@@ -6,4 +6,16 @@ class Career < ApplicationRecord
 
   validates :name, presence: true
   validates :current_date, presence: true
+
+  def next_fixture
+    club = manager&.current_club
+    return unless club
+
+    Fixture
+      .scheduled
+      .where("scheduled_on >= :current_date", current_date:)
+      .where("home_club_id = :club_id OR away_club_id = :club_id", club_id: club.id)
+      .order(:scheduled_on, :kickoff_minute, :round)
+      .first
+  end
 end

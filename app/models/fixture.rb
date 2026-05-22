@@ -5,11 +5,22 @@ class Fixture < ApplicationRecord
   belongs_to :home_club, class_name: "Club"
   belongs_to :away_club, class_name: "Club"
   belongs_to :stadium
+  has_many :match_events, dependent: :destroy
 
   validates :scheduled_on, :round, presence: true
   validates :kickoff_minute, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than: 1440 }
   validates :home_club_id, uniqueness: { scope: %i[tournament_edition_id away_club_id] }
   validate :clubs_must_differ
+
+  def involves?(club)
+    home_club_id == club&.id || away_club_id == club&.id
+  end
+
+  def scoreline
+    return "vs" unless completed?
+
+    "#{home_goals}-#{away_goals}"
+  end
 
   private
     def clubs_must_differ

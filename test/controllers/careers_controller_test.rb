@@ -75,4 +75,41 @@ class CareersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "a", "Open club dashboard"
   end
+
+  test "show displays next fixture when manager has job" do
+    sign_out
+    sign_in_as(users(:one))
+    manager_contracts(:one).update!(current: true, status: :active, role: :head_coach, end_date: nil)
+    careers(:one).update!(current_date: "2026-01-01")
+
+    get career_path(careers(:one))
+
+    assert_response :success
+    assert_select "h2", "Next fixture"
+    assert_select "button", "Advance to match day"
+  end
+
+  test "advance moves current date to next fixture" do
+    sign_out
+    sign_in_as(users(:one))
+    manager_contracts(:one).update!(current: true, status: :active, role: :head_coach, end_date: nil)
+    careers(:one).update!(current_date: "2026-01-01")
+
+    post advance_career_path(careers(:one))
+
+    assert_redirected_to career_fixture_path(careers(:one), fixtures(:one))
+    assert_equal fixtures(:one).scheduled_on, careers(:one).reload.current_date
+  end
+
+  test "advance handles no upcoming fixture" do
+    sign_out
+    sign_in_as(users(:one))
+    manager_contracts(:one).update!(current: true, status: :active, role: :head_coach, end_date: nil)
+    careers(:one).update!(current_date: "2027-01-01")
+
+    post advance_career_path(careers(:one))
+
+    assert_redirected_to career_path(careers(:one))
+    assert_equal Date.new(2027, 1, 1), careers(:one).reload.current_date
+  end
 end

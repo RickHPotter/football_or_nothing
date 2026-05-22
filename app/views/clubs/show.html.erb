@@ -46,15 +46,48 @@
           <td><%= fixture.scheduled_on %></td>
           <td><%= fixture.tournament_edition.name %></td>
           <td><%= fixture.round %></td>
-          <td><%= fixture.home_club.name %></td>
-          <td><%= fixture.away_club.name %></td>
-          <td><%= fixture.status.humanize %></td>
+          <td><%= link_to fixture.home_club.name, career_fixture_path(@career, fixture) %></td>
+          <td><%= link_to fixture.away_club.name, career_fixture_path(@career, fixture) %></td>
+          <td><%= fixture.completed? ? fixture.scoreline : fixture.status.humanize %></td>
         </tr>
       <% end %>
     </tbody>
   </table>
 <% else %>
   <p>No fixtures have been scheduled for this club.</p>
+<% end %>
+
+<h2>Standings</h2>
+
+<% if @standings.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th>Club</th>
+        <th>Pts</th>
+        <th>P</th>
+        <th>W</th>
+        <th>D</th>
+        <th>L</th>
+        <th>GD</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @standings.each do |participation| %>
+        <tr>
+          <td><%= participation.club.name %></td>
+          <td><%= participation.points %></td>
+          <td><%= participation.played %></td>
+          <td><%= participation.wins %></td>
+          <td><%= participation.draws %></td>
+          <td><%= participation.losses %></td>
+          <td><%= participation.goal_difference %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>No standings are available for this club.</p>
 <% end %>
 
 <h2>Squad</h2>

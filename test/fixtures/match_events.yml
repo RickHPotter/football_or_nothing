@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  fixture: one
+  club: one
+  athlete: one
+  minute: 1
+  event_type: 0
+  description: Joao Pereira scored for Aurora FC.
+
+two:
+  fixture: two
+  club: two
+  athlete: two
+  minute: 1
+  event_type: 0
+  description: Miguel Ramos scored for Estrela SC.

@@ -1,0 +1,77 @@
+<h1><%= @fixture.home_club.name %> <%= @fixture.scoreline %> <%= @fixture.away_club.name %></h1>
+
+<p>Competition: <%= @fixture.tournament_edition.name %></p>
+<p>Round: <%= @fixture.round %></p>
+<p>Date: <%= @fixture.scheduled_on %></p>
+<p>Stadium: <%= @fixture.stadium.name %></p>
+<p>Status: <%= @fixture.status.humanize %></p>
+
+<% if @fixture.completed? %>
+  <p>Result: <%= @fixture.home_club.name %> <%= @fixture.home_goals %>, <%= @fixture.away_club.name %> <%= @fixture.away_goals %></p>
+
+  <% if @next_fixture %>
+    <p>
+      Next fixture:
+      <%= @next_fixture.scheduled_on %>,
+      <%= @next_fixture.home_club.name %>
+      vs
+      <%= @next_fixture.away_club.name %>
+    </p>
+
+    <%= button_to "Advance to next match", advance_career_path(@career) %>
+  <% else %>
+    <p>No upcoming fixtures are scheduled.</p>
+  <% end %>
+<% else %>
+  <%= button_to "Simulate match", simulate_career_fixture_path(@career, @fixture) %>
+<% end %>
+
+<h2>Timeline</h2>
+
+<% if @events.any? %>
+  <ol>
+    <% @events.each do |event| %>
+      <li>
+        <%= event.minute %>':
+        <%= event.description %>
+      </li>
+    <% end %>
+  </ol>
+<% else %>
+  <p>No match events yet.</p>
+<% end %>
+
+<h2>Standings</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Club</th>
+      <th>Pts</th>
+      <th>P</th>
+      <th>W</th>
+      <th>D</th>
+      <th>L</th>
+      <th>GF</th>
+      <th>GA</th>
+      <th>GD</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @standings.each do |participation| %>
+      <tr>
+        <td><%= participation.club.name %></td>
+        <td><%= participation.points %></td>
+        <td><%= participation.played %></td>
+        <td><%= participation.wins %></td>
+        <td><%= participation.draws %></td>
+        <td><%= participation.losses %></td>
+        <td><%= participation.goals_for %></td>
+        <td><%= participation.goals_against %></td>
+        <td><%= participation.goal_difference %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to "Back to club", career_club_path(@career) %>

@@ -1,10 +1,22 @@
 class CareersController < ApplicationController
-  before_action :set_career, only: :show
+  before_action :set_career, only: %i[show advance]
 
   def show
     @manager = @career.manager
     @current_contract = @manager&.current_manager_contract
+    @next_fixture = @career.next_fixture
     @available_clubs = available_clubs_for(@manager) if @manager&.unemployed?
+  end
+
+  def advance
+    fixture = @career.next_fixture
+
+    if fixture
+      @career.update!(current_date: fixture.scheduled_on)
+      redirect_to career_fixture_path(@career, fixture), notice: "Advanced to match day."
+    else
+      redirect_to @career, alert: "No upcoming fixtures are scheduled."
+    end
   end
 
   def new

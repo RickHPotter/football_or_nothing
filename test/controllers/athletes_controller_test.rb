@@ -14,6 +14,7 @@ class AthletesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h1", "#{athletes(:one).first_name} #{athletes(:one).last_name}"
     assert_select "h2", "Contract"
+    assert_select "h2", "Stats"
     assert_select "h2", "Attributes"
   end
 

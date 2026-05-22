@@ -18,6 +18,37 @@
   <p>Squad number: <%= @contract.squad_number || "-" %></p>
 <% end %>
 
+<h2>Stats</h2>
+
+<% if @stats.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th>Competition</th>
+        <th>Club</th>
+        <th>Apps</th>
+        <th>Goals</th>
+        <th>Assists</th>
+        <th>Minutes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @stats.each do |stat| %>
+        <tr>
+          <td><%= stat.tournament_edition.name %></td>
+          <td><%= stat.club.name %></td>
+          <td><%= stat.appearances %></td>
+          <td><%= stat.goals %></td>
+          <td><%= stat.assists %></td>
+          <td><%= stat.minutes_played %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>No stats recorded yet.</p>
+<% end %>
+
 <h2>Attributes</h2>
 
 <table>

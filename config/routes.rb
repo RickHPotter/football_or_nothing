@@ -2,8 +2,12 @@ Rails.application.routes.draw do
   resource :registration, only: %i[ new create ]
   resource :session
   resources :careers, only: %i[new create show] do
+    post :advance, on: :member
     resource :club, only: :show
     resources :athletes, only: :show
+    resources :fixtures, only: :show do
+      post :simulate, on: :member
+    end
     resources :manager_contracts, only: :create
   end
   resources :passwords, param: :token

@@ -23,6 +23,8 @@ class Athlete < ApplicationRecord
   has_many :clubs, through: :athlete_contracts
   has_one :current_athlete_contract, -> { where(current: true) }, class_name: "AthleteContract", inverse_of: :athlete
   has_one :current_club, through: :current_athlete_contract, source: :club
+  has_many :match_events, dependent: :restrict_with_exception
+  has_many :athlete_season_stats, dependent: :destroy
 
   validates :first_name, :last_name, presence: true
   validates :current_ability, :potential_ability, :reputation,

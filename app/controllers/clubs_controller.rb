@@ -11,6 +11,8 @@ class ClubsController < ApplicationController
       .where("home_club_id = :club_id OR away_club_id = :club_id", club_id: @club.id)
       .order(:scheduled_on, :kickoff_minute, :round)
       .limit(10)
+    @current_participation = @club.tournament_participations.includes(:tournament_edition).order(created_at: :desc).first
+    @standings = @current_participation&.tournament_edition&.standings || []
   end
 
   private

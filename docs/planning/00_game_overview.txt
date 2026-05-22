@@ -1,0 +1,95 @@
+Football or Nothing - Game Planning Overview
+============================================
+
+Vision
+------
+Build a football management RPG inspired by Brasfoot, Football Manager, and
+similar club-management games.
+
+The player should feel like they are guiding a football career inside a living
+football world: managing squads, careers, clubs, tournaments, transfers,
+finances, stadiums, trophies, and historical records.
+
+
+Initial Product Shape
+---------------------
+The first version should focus on a small but playable management loop:
+
+1. A user signs in.
+2. The user creates or takes control of a manager.
+3. The manager takes a job at a club.
+4. The club has athletes, staff, finances, stadium data, and tournament entries.
+5. The game advances through football time and can pause during matches for
+   manager decisions such as substitutions.
+6. The world stores history: transfers, trophies, participations, statistics,
+   contracts, and career movement.
+
+
+Core Themes
+-----------
+Persistent world:
+The game should remember historical outcomes, not only current state.
+
+Career identity:
+The user is not the club. The user controls a manager profile that can move
+between clubs over time. The player cannot own or administrate a club outside
+the manager role.
+
+Football geography:
+Countries, domestic clubs, international clubs, national teams, and tournament
+scope matter.
+
+RPG progression:
+Managers, athletes, clubs, and possibly staff should improve, decline, age,
+gain reputation, and be affected by decisions.
+
+Readable simulation:
+The engine can start simple, but the data model should allow richer simulation
+later. The intended match feel is closer to Brasfoot: football time advances,
+and the manager can stop or pause the flow to intervene.
+
+Financial pressure:
+Club finances are part of the game from the start. Wages, transfer budgets,
+cash balance, revenue, and prize money should affect decisions early.
+
+Generated world first:
+The first data set should be fictional and generated. Later versions can import
+or seed real-world data.
+
+
+Early Boundaries
+----------------
+The first planning phase is not about perfecting every football detail.
+
+The goal is to identify the minimum stable domain concepts so migrations,
+models, and relationships are not constantly rewritten during the first playable
+prototype.
+
+
+Decisions
+---------
+Player role:
+The player is always a manager. They cannot own a club.
+
+Club data:
+Clubs should be generated for the first versions. Real data can be imported or
+seeded later.
+
+Competition scope:
+The game world can support mixed domestic and international structures, but the
+first playable manager career should probably start domestically because the
+initial manager reputation is too low for major international jobs.
+
+Match flow:
+Match simulation should advance through football time. The manager can stop or
+pause time to make substitutions and other decisions.
+
+Finance:
+Financial management is core from the start.
+
+Athlete detail:
+Athletes should have full attributes and tactical roles, not only positions.
+Target around 20 core attributes for early design.
+
+Data policy:
+Start fictional. Later, support feeding real data into the game.

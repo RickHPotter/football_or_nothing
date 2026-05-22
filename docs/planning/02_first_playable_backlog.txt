@@ -1,0 +1,109 @@
+Football or Nothing - First Playable Backlog
+============================================
+
+Goal
+----
+Reach a minimal playable football-management loop before expanding the world.
+
+
+Phase 1 - Foundation
+--------------------
+1. Add default Rails authentication.
+2. Create the user-to-manager career concept.
+3. Create countries.
+4. Create clubs.
+5. Create initial club finances.
+6. Create stadiums.
+7. Create athletes.
+8. Create athlete attributes.
+9. Create athlete contracts.
+10. Generate a tiny fictional world:
+   - 1 country
+   - 8 clubs
+   - 8 stadiums
+   - 18 to 25 athletes per club
+   - Basic financial profiles for each club
+   - 1 manager controlled by the user
+
+
+Phase 2 - Club Management Skeleton
+----------------------------------
+1. Show manager dashboard.
+2. Show current club dashboard.
+3. Show squad list.
+4. Show athlete profile.
+5. Show contracts and wages.
+6. Allow manager to choose or be assigned to a club.
+7. Show club financial summary.
+8. Prevent the player from acting as club owner.
+
+
+Phase 3 - Tournament Skeleton
+-----------------------------
+1. Create tournament.
+2. Create tournament edition.
+3. Register clubs through tournament participations.
+4. Generate fixtures for a simple league format.
+5. Store standings.
+6. Mark champion at season end.
+
+
+Phase 4 - Match Simulation v1
+-----------------------------
+1. Create lineups and bench selections.
+2. Simulate fixture time from minute 0 to full time.
+3. Allow the match flow to pause for manager decisions.
+4. Support substitutions.
+5. Store goals and match status.
+6. Update standings.
+7. Update basic athlete stats.
+8. Add deterministic seeds or logs for easier debugging.
+
+
+Phase 5 - History
+-----------------
+1. Store trophies.
+2. Store tournament participation outcomes.
+3. Store manager season stats.
+4. Store club season stats.
+5. Store athlete season stats.
+
+
+Phase 6 - Transfer Skeleton
+---------------------------
+1. Create transfers as historical records.
+2. Support free transfer.
+3. Support permanent transfer.
+4. Update athlete contracts through transfer flow.
+5. Keep old contracts/history intact.
+6. Enforce basic transfer budget and wage budget rules.
+
+
+Phase 7 - RPG Progression
+-------------------------
+1. Add manager reputation.
+2. Add athlete attributes and potential.
+3. Add aging.
+4. Add morale and condition.
+5. Add club reputation.
+6. Use manager reputation to limit available jobs.
+
+
+Important Deferrals
+-------------------
+These are important, but not required for the first playable loop:
+
+- Complex tactics.
+- Detailed match events.
+- Full staff model.
+- Youth academy.
+- Scouting.
+- Sponsorships.
+- Stadium construction and upgrades.
+- International tournaments.
+- National teams.
+- Multi-country calendar.
+- Advanced financial rules.
+- Press/news system.
+- Save import/export.
+- Real data import.

@@ -1,0 +1,278 @@
+Football or Nothing - Domain Model Draft
+========================================
+
+Status
+------
+Draft. This is a planning document, not a migration contract yet.
+
+
+Authentication and Player Identity
+----------------------------------
+User
+- Rails authentication identity.
+- Use the default Rails authentication generator introduced in recent Rails.
+- Owns one or more manager careers.
+- Should not directly represent an in-game football professional.
+- Should never represent a club owner in the core gameplay loop.
+
+Manager
+- In-game character controlled by a user.
+- Belongs to a user.
+- Can have contracts with clubs over time.
+- Should have reputation, nationality, age/birthdate, career status, and
+  possibly RPG-style attributes.
+- Should not be permanently tied to one club.
+- Starts with low reputation and should not naturally qualify for elite
+  international jobs at the beginning of a career.
+
+
+Football Geography
+------------------
+Country
+- Represents a football nation.
+- Used by athletes, managers, clubs, stadiums, and tournaments.
+- Can later hold federation settings, calendar style, coefficients, or ranking.
+
+Club
+- Represents a football club or possibly a national team later.
+- Belongs to a country.
+- Has a name, short name, reputation, founding year, finances, and status.
+- Has a flag/boolean for international scope if needed, but this needs naming
+  care. "international" could mean global club, national team, or tournament
+  scope.
+- Has many athletes through contracts or squad memberships.
+- Has many stadium relationships over time if stadiums can change.
+- Should be generated for the first versions, with real data import treated as
+  a later input path.
+
+ClubFinance
+- Financial state for a club.
+- Can start as fields on Club if simple, but will likely deserve its own model
+  once history, budgets, or accounting periods matter.
+- Tracks cash balance, wage budget, transfer budget, debt, revenue, expenses,
+  prize money, sponsorship income, and stadium income.
+
+Stadium
+- Represents a venue.
+- Belongs to a country and optionally a city.
+- Can belong to a club as current home stadium.
+- Holds capacity, pitch quality, rent/ownership data, and expansion potential.
+
+
+People and Squads
+-----------------
+Athlete
+- Represents a player.
+- Belongs to a country as nationality.
+- Has identity data: name, birthdate/age, preferred foot, height, weight.
+- Has football data: position, attributes, potential, reputation, morale,
+  condition, injury status, and retirement status.
+- Should be connected to clubs through contracts, not only club_id, so history
+  is preserved.
+
+AthleteAttributeSet
+- Attribute container for an athlete.
+- Can start as columns on Athlete if that is simpler, but separate modeling may
+  help with historical snapshots, training, scouting uncertainty, and generated
+  data.
+- Target around 20 core attributes.
+- Candidate attributes:
+  finishing, long_shots, passing, crossing, dribbling, technique, first_touch,
+  tackling, marking, positioning, heading, pace, acceleration, stamina,
+  strength, jumping, decisions, composure, teamwork, work_rate.
+
+Position
+- Represents broad football positions such as goalkeeper, center back, full
+  back, defensive midfielder, central midfielder, attacking midfielder, winger,
+  striker.
+- Can be enum-backed at first if the list is stable enough.
+
+TacticalRole
+- Role available within one or more positions.
+- Examples: poacher, target forward, advanced playmaker, ball-winning
+  midfielder, inverted winger, wing back, ball-playing defender, sweeper keeper.
+- Roles should derive from positions, but should not be identical to positions.
+
+AthleteContract
+- Join/history model between athlete and club.
+- Tracks start date, end date, wage, release clause, squad number, status, and
+  whether it is current.
+- Allows loans, free agents, renewals, and contract history later.
+
+ManagerContract
+- Join/history model between manager and club.
+- Tracks start date, end date, wage, role, expectations, status, and whether it
+  is current.
+- Allows manager career history.
+
+
+Competitions
+------------
+Tournament
+- Represents a competition.
+- Belongs to a country when domestic.
+- May be international/global when not tied to one country.
+- Has format data: league, cup, group stage, knockout, mixed.
+- Has season/calendar configuration.
+
+TournamentEdition
+- One specific season/edition of a tournament.
+- Example: National League 2026, Continental Cup 2027.
+- Stores status, start date, end date, rules snapshot, and champion.
+
+TournamentParticipation
+- Join model between club and tournament edition.
+- Tracks club entry, final position, points, record, prize money, and status.
+- This is the right place for standings/history data.
+
+Fixture
+- A scheduled match.
+- Belongs to a tournament edition when competitive.
+- Has home club, away club, stadium, scheduled date, status, and result.
+- Should support live simulation state once match time is modeled.
+
+MatchResult
+- Match outcome and aggregate stats.
+- Can be part of Fixture or separate if simulation details become large.
+- Stores goals, possession, cards, injuries, attendance, and rating summaries.
+
+MatchState
+- Runtime or persisted state for a match in progress.
+- Tracks match minute, clock status, score, current lineups, substitutions,
+  tactical choices, incidents, and whether the manager has paused time.
+- Important for the Brasfoot-like match flow where time advances and the manager
+  can stop play to make changes.
+
+Lineup
+- Club selection for a fixture.
+- Tracks formation, starters, bench, captain, and tactical setup.
+
+LineupAthlete
+- Join model between lineup and athlete.
+- Tracks selected position, tactical role, starter/bench status, and
+  substitution timing.
+
+
+Transfers and Market
+--------------------
+Transfer
+- Historical movement of an athlete between clubs.
+- Tracks from club, to club, athlete, transfer date, fee, type, and status.
+- Types may include permanent, loan, free transfer, release, youth promotion.
+
+Loan
+- Optional separate model if loans need enough behavior.
+- Could also start as Transfer with type = loan and fields for loan dates.
+
+TransferOffer
+- Future model for negotiations.
+- Tracks bidding club, selling club, athlete, fee, wage proposal, status, and
+  expiration.
+
+
+Achievements and History
+------------------------
+Trophy
+- Represents a title won by a club or manager.
+- Usually belongs to tournament edition.
+- Links winner club, manager, and possibly captain/top scorer later.
+
+ClubTrophy
+- Optional join/history model if Trophy represents trophy type instead of event.
+
+ManagerAchievement
+- Future RPG/career record.
+- Examples: promotion, avoided relegation, won derby, unbeaten run.
+
+
+Game Time and World State
+-------------------------
+GameSave or Career
+- Top-level saved game/career world.
+- Belongs to user.
+- Owns the generated universe if multiple saves are allowed.
+- Important if users can have multiple parallel worlds.
+- Owns generated fictional data until real-data import exists.
+
+Season
+- Represents one year/cycle in a career world.
+- Used by tournaments, contracts, stats, and aging.
+
+CalendarEvent
+- Optional future model for scheduled simulation events.
+- Examples: match day, transfer window opening, contract expiration, youth
+  intake, season rollover.
+- Useful for a time-advancing simulation where the world moves through dates
+  rather than only instant screens.
+
+
+Data Generation and Import
+--------------------------
+WorldGenerator
+- Service concept, not necessarily an Active Record model.
+- Generates countries, clubs, stadiums, athletes, contracts, tournaments, and
+  starting finances.
+- First versions should use fictional data.
+
+DataImport
+- Future model or service for importing real football data.
+- Should map external records into the same domain models instead of creating a
+  parallel real-data schema.
+
+
+Statistics
+----------
+AthleteSeasonStat
+- Per-athlete, per-club, per-season statistics.
+- Goals, assists, appearances, cards, injuries, minutes, average rating.
+
+ClubSeasonStat
+- Per-club, per-season aggregate statistics.
+- Wins, draws, losses, goals for/against, finances, reputation change.
+
+ManagerSeasonStat
+- Per-manager, per-season statistics.
+- Matches, wins, trophies, reputation change, job changes.
+
+
+Likely First Migrations
+-----------------------
+1. Rails authentication tables from the default generator.
+2. countries
+3. careers or game_saves
+4. managers
+5. clubs
+6. club_finances or initial finance fields on clubs
+7. stadiums
+8. athletes
+9. athlete attribute fields or athlete_attribute_sets
+10. athlete_contracts
+11. manager_contracts
+12. tournaments
+13. tournament_editions
+14. tournament_participations
+15. fixtures
+16. lineups
+17. lineup_athletes
+18. transfers
+19. trophies
+
+
+Modeling Notes
+--------------
+Avoid putting current-only foreign keys everywhere too early.
+
+For example, Athlete could have current_club_id later for convenience, but the
+source of truth for club history should be AthleteContract or a similar
+historical relationship.
+
+Likewise, Manager should not simply have club_id if the career can move between
+clubs.
+
+Use explicit history/join models for anything the game needs to remember:
+contracts, transfers, tournament entries, trophies, jobs, squad membership, and
+statistics.
+
+Do not defer money entirely. If finances are core from the start, the first club
+model needs at least enough financial data to make wages and transfer decisions
+meaningful.

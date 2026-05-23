@@ -75,6 +75,8 @@ Athlete
   is preserved.
 - Current implementation applies simple age-based ability progression/decline
   and morale/condition updates when a tournament edition is finalized.
+- Current implementation also tracks injury and suspension dates for squad
+  availability.
 
 AthleteAttributeSet
 - Attribute container for an athlete.

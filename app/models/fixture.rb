@@ -63,7 +63,8 @@ class Fixture < ApplicationRecord
     def athletes_for_lineup(club)
       athletes = club.current_athletes.order(position: :asc, current_ability: :desc, id: :asc).to_a
       athletes = club.athletes.order(position: :asc, current_ability: :desc, id: :asc).to_a if athletes.empty?
-      athletes.first(18)
+      available_athletes = athletes.select { |athlete| athlete.available_on?(scheduled_on) }
+      (available_athletes.presence || athletes).first(18)
     end
 
     def clubs_must_differ

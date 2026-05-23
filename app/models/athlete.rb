@@ -34,4 +34,13 @@ class Athlete < ApplicationRecord
   validates :morale, numericality: { only_integer: true, in: 0..100 }
   validates :condition, numericality: { only_integer: true, in: 0..100 }
   validates(*ATTRIBUTES, numericality: { only_integer: true, in: 1..20 })
+
+  def available_on?(date)
+    active? && availability_date_clear?(injury_until, date) && availability_date_clear?(suspended_until, date)
+  end
+
+  private
+    def availability_date_clear?(blocked_until, date)
+      blocked_until.nil? || blocked_until < date
+    end
 end

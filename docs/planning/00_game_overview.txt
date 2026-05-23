@@ -126,6 +126,8 @@ Implemented:
   movement, with pending offers and finalization.
 - Basic transfer-window policy and season-rollover contract expiry for athlete
   contracts.
+- Squad availability rules that make injuries and suspensions affect future
+  lineup generation.
 
 Next major phase:
-Loans and squad availability rules.
+Loans and AI squad movement.

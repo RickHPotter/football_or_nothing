@@ -19,6 +19,9 @@
         <div class="stat-tile"><div class="stat-label">Potential</div><div class="stat-value"><%= @athlete.potential_ability %></div></div>
         <div class="stat-tile"><div class="stat-label">Morale</div><div class="stat-value"><%= @athlete.morale %></div></div>
         <div class="stat-tile"><div class="stat-label">Condition</div><div class="stat-value"><%= @athlete.condition %></div></div>
+        <div class="stat-tile"><div class="stat-label">Status</div><div class="stat-value"><%= @athlete.status.humanize %></div></div>
+        <div class="stat-tile"><div class="stat-label">Injury until</div><div class="stat-value"><%= @athlete.injury_until || "-" %></div></div>
+        <div class="stat-tile"><div class="stat-label">Suspended until</div><div class="stat-value"><%= @athlete.suspended_until || "-" %></div></div>
       </div>
     </section>
 

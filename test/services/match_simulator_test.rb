@@ -62,6 +62,21 @@ class MatchSimulatorTest < ActiveSupport::TestCase
     end
   end
 
+  test "applies injuries and suspensions from events" do
+    MatchSimulator.call(@fixture)
+
+    assert_operator @fixture.match_events.where(event_type: %i[injury red_card]).count, :>=, 0
+
+    @fixture.match_events.injury.includes(:athlete).find_each do |event|
+      assert event.athlete.reload.injured?
+      assert_equal @fixture.scheduled_on + 14.days, event.athlete.injury_until
+    end
+
+    @fixture.match_events.red_card.includes(:athlete).find_each do |event|
+      assert_equal @fixture.scheduled_on + 7.days, event.athlete.reload.suspended_until
+    end
+  end
+
   test "does not simulate completed fixture twice" do
     MatchSimulator.call(@fixture)
     home_points = participation_for(@fixture.home_club).points

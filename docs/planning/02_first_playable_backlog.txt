@@ -208,8 +208,6 @@ Implemented:
 Deferred:
 - True possession-by-possession simulation.
 - Tactical settings influencing event probabilities.
-- Player condition impact during the match.
-- Suspensions and injury availability rules.
 - Assists and ratings generated from events.
 
 
@@ -253,6 +251,26 @@ Deferred:
 - Contract renewal negotiations.
 - Free-agent consequences for expired contracts.
 - Squad registration rules.
+
+
+Phase 13 - Squad Availability
+-----------------------------
+Status: implemented.
+
+Implemented:
+- Track athlete injury and suspension dates.
+- Mark injured athletes from match injury events.
+- Mark suspended athletes from red-card events.
+- Reduce condition when an injury event is applied.
+- Exclude unavailable athletes from generated fixture lineups when possible.
+- Show athlete availability dates on the athlete profile.
+
+Deferred:
+- Injury severity and medical recovery model.
+- Suspensions by competition.
+- Automatic return-to-active status after injury dates pass.
+- Squad registration limits.
+- Player condition impact on event probabilities.
 
 
 Important Deferrals

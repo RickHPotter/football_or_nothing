@@ -102,6 +102,7 @@ class MatchSimulator
       create_injury_event(fixture.away_club, 227)
       create_substitution_event(fixture.home_club, 241)
       create_substitution_event(fixture.away_club, 257)
+      apply_availability_events
     end
 
     def create_major_chance_events(club, salt)
@@ -177,6 +178,20 @@ class MatchSimulator
         event_type: :substitution,
         description: "#{bench_player.first_name} #{bench_player.last_name} came on for #{club.name}."
       )
+    end
+
+    def apply_availability_events
+      fixture.match_events.injury.includes(:athlete).find_each do |event|
+        event.athlete.update!(
+          status: :injured,
+          injury_until: fixture.scheduled_on + 14.days,
+          condition: [ event.athlete.condition - 20, 0 ].max
+        )
+      end
+
+      fixture.match_events.red_card.includes(:athlete).find_each do |event|
+        event.athlete.update!(suspended_until: fixture.scheduled_on + 7.days)
+      end
     end
 
     def update_athlete_stats(club)

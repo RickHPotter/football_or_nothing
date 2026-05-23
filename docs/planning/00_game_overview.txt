@@ -120,6 +120,8 @@ Implemented:
   the next season.
 - Tailwind-powered playable UI pass with compact management-game screens for
   career, club, match, transfers, athletes, and authentication.
+- Richer deterministic match timelines with chances, cards, injuries,
+  substitutions, and event-linked athlete season stats.
 
 Next major phase:
-Richer match simulation and event variety.
+Transfer negotiations and market depth.

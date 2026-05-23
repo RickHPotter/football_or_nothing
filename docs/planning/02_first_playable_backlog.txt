@@ -74,7 +74,7 @@ Implemented:
 
 Deferred:
 - True minute-by-minute simulation events.
-- Detailed events beyond goals.
+- Tactical changes influencing simulation outcomes.
 
 
 Phase 5 - History
@@ -191,6 +191,27 @@ Deferred:
 - Icons and richer interaction affordances.
 - Dedicated history/news screen.
 - Advanced match visualizations.
+
+
+Phase 10 - Match Event Depth
+----------------------------
+Status: implemented.
+
+Implemented:
+- Add detailed event types for major chances, yellow cards, red cards,
+  injuries, and substitutions.
+- Generate deterministic non-goal timeline events during match simulation.
+- Keep goal events and score storage deterministic.
+- Store card and injury totals on athlete season stats.
+- Show detailed event labels in the match timeline.
+- Show cards and injuries on athlete stat tables.
+
+Deferred:
+- True possession-by-possession simulation.
+- Tactical settings influencing event probabilities.
+- Player condition impact during the match.
+- Suspensions and injury availability rules.
+- Assists and ratings generated from events.
 
 
 Important Deferrals

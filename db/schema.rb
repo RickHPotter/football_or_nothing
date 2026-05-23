@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_22_232000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_22_233000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -41,9 +41,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_232000) do
     t.bigint "club_id", null: false
     t.datetime "created_at", null: false
     t.integer "goals", default: 0, null: false
+    t.integer "injuries", default: 0, null: false
     t.integer "minutes_played", default: 0, null: false
+    t.integer "red_cards", default: 0, null: false
     t.bigint "tournament_edition_id", null: false
     t.datetime "updated_at", null: false
+    t.integer "yellow_cards", default: 0, null: false
     t.index ["athlete_id", "club_id", "tournament_edition_id"], name: "index_athlete_stats_on_athlete_club_edition", unique: true
     t.index ["athlete_id"], name: "index_athlete_season_stats_on_athlete_id"
     t.index ["club_id"], name: "index_athlete_season_stats_on_club_id"

@@ -35,7 +35,8 @@ class MatchSimulatorTest < ActiveSupport::TestCase
     assert @fixture.reload.completed?
     assert_not_nil @fixture.home_goals
     assert_not_nil @fixture.away_goals
-    assert_equal @fixture.home_goals + @fixture.away_goals, @fixture.match_events.count
+    assert_equal @fixture.home_goals + @fixture.away_goals, @fixture.match_events.goal.count
+    assert @fixture.match_events.where.not(event_type: :goal).any?
     assert_equal 1, participation_for(@fixture.home_club).played
     assert_equal 1, participation_for(@fixture.away_club).played
     assert @fixture.home_club.current_athletes.all? { |athlete| athlete.athlete_season_stats.exists?(club: @fixture.home_club, tournament_edition: @fixture.tournament_edition, appearances: 1) }
@@ -48,6 +49,16 @@ class MatchSimulatorTest < ActiveSupport::TestCase
       stat = event.athlete.athlete_season_stats.find_by!(club: event.club, tournament_edition: @fixture.tournament_edition)
 
       assert_operator stat.goals, :>=, 1
+    end
+  end
+
+  test "records detailed match event stats" do
+    MatchSimulator.call(@fixture)
+
+    @fixture.match_events.where(event_type: %i[yellow_card red_card injury]).find_each do |event|
+      stat = event.athlete.athlete_season_stats.find_by!(club: event.club, tournament_edition: @fixture.tournament_edition)
+
+      assert_operator stat.yellow_cards + stat.red_cards + stat.injuries, :>=, 1
     end
   end
 

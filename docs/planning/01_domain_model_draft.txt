@@ -139,8 +139,8 @@ Fixture
 
 MatchEvent
 - Historical timeline event for a fixture.
-- Current implementation stores goal events with minute, club, athlete, and
-  description.
+- Current implementation stores goals, major chances, yellow cards, red cards,
+  injuries, and substitutions with minute, club, athlete, and description.
 - Future event types should include cards, injuries, substitutions, tactical
   changes, and major chances.
 
@@ -261,8 +261,8 @@ Statistics
 AthleteSeasonStat
 - Per-athlete, per-club, per-season statistics.
 - Goals, assists, appearances, cards, injuries, minutes, average rating.
-- Current implementation tracks appearances, goals, assists, minutes, and an
-  average rating placeholder.
+- Current implementation tracks appearances, goals, assists, minutes, yellow
+  cards, red cards, injuries, and an average rating placeholder.
 
 ClubSeasonStat
 - Per-club, per-season aggregate statistics.

@@ -37,6 +37,9 @@
                   <th>Apps</th>
                   <th>Goals</th>
                   <th>Assists</th>
+                  <th>YC</th>
+                  <th>RC</th>
+                  <th>Inj</th>
                   <th>Minutes</th>
                 </tr>
               </thead>
@@ -48,6 +51,9 @@
                     <td><%= stat.appearances %></td>
                     <td><strong><%= stat.goals %></strong></td>
                     <td><%= stat.assists %></td>
+                    <td><%= stat.yellow_cards %></td>
+                    <td><%= stat.red_cards %></td>
+                    <td><%= stat.injuries %></td>
                     <td><%= stat.minutes_played %></td>
                   </tr>
                 <% end %>

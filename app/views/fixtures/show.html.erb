@@ -187,7 +187,16 @@
         <% if @events.any? %>
           <ol class="grid gap-2">
             <% @events.each do |event| %>
-              <li><span class="badge badge-good"><%= event.minute %>'</span> <%= event.description %></li>
+              <% event_badge_class = case event.event_type
+                 when "goal" then "badge-good"
+                 when "yellow_card", "red_card", "injury" then "badge-warn"
+                 else ""
+                 end %>
+              <li>
+                <span class="badge <%= event_badge_class %>"><%= event.minute %>'</span>
+                <span class="badge"><%= event.event_type.humanize %></span>
+                <%= event.description %>
+              </li>
             <% end %>
           </ol>
         <% else %>

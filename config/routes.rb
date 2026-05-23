@@ -6,7 +6,9 @@ Rails.application.routes.draw do
     post :rollover, on: :member
     resource :club, only: :show
     resources :athletes, only: :show
-    resources :transfers, only: %i[index create]
+    resources :transfers, only: %i[index create] do
+      post :complete_offer, on: :member
+    end
     resources :fixtures, only: :show do
       post :simulate, on: :member
       post :start, on: :member

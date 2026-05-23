@@ -26,30 +26,59 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
     assert_select "td", /#{@target.last_name}/
   end
 
-  test "creates transfer from market" do
-    assert_difference "Transfer.count", 1 do
+  test "creates transfer offer from market" do
+    assert_difference "TransferOffer.count", 1 do
       post career_transfers_path(@career), params: {
         athlete_id: @target.id,
         fee: 1_000,
         wage: 100
       }
+    end
+
+    assert_redirected_to career_transfers_path(@career)
+    assert_equal @club, TransferOffer.last.to_club
+    assert TransferOffer.last.pending?
+  end
+
+  test "completes pending transfer offer" do
+    offer = TransferOffer.create!(
+      athlete: @target,
+      from_club: clubs(:two),
+      to_club: @club,
+      offered_fee: 1_000,
+      offered_wage: 100,
+      offered_on: @career.current_date,
+      expires_on: @career.current_date + 14.days,
+      status: :pending
+    )
+
+    assert_difference "Transfer.count", 1 do
+      post complete_offer_career_transfer_path(@career, offer)
     end
 
     assert_redirected_to career_transfers_path(@career)
     assert_equal @club, @target.reload.current_club
+    assert offer.reload.completed?
   end
 
-  test "rejects transfer when budget is too low" do
+  test "does not complete offer when budget is too low" do
     @club.club_finance.update!(transfer_budget: 500)
+    offer = TransferOffer.create!(
+      athlete: @target,
+      from_club: clubs(:two),
+      to_club: @club,
+      offered_fee: 1_000,
+      offered_wage: 100,
+      offered_on: @career.current_date,
+      expires_on: @career.current_date + 14.days,
+      status: :pending
+    )
 
     assert_no_difference "Transfer.count" do
-      post career_transfers_path(@career), params: {
-        athlete_id: @target.id,
-        fee: 1_000,
-        wage: 100
-      }
+      post complete_offer_career_transfer_path(@career, offer)
     end
 
     assert_redirected_to career_transfers_path(@career)
+    assert offer.reload.pending?
   end
 end

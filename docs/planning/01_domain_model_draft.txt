@@ -186,6 +186,8 @@ TransferOffer
 - Future model for negotiations.
 - Tracks bidding club, selling club, athlete, fee, wage proposal, status, and
   expiration.
+- Current implementation stores pending offers and can finalize acceptable
+  offers into completed transfers.
 
 
 Achievements and History

@@ -26,6 +26,7 @@ class Athlete < ApplicationRecord
   has_many :match_events, dependent: :restrict_with_exception
   has_many :athlete_season_stats, dependent: :destroy
   has_many :transfers, dependent: :restrict_with_exception
+  has_many :transfer_offers, dependent: :restrict_with_exception
 
   validates :first_name, :last_name, presence: true
   validates :current_ability, :potential_ability, :reputation,

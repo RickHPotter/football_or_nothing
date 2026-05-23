@@ -42,7 +42,7 @@
                     <td><%= number_to_currency(suggested_fee) %></td>
                     <td><%= number_to_currency(suggested_wage) %></td>
                     <td>
-                      <%= button_to "Sign", career_transfers_path(@career), params: {
+                      <%= button_to "Offer", career_transfers_path(@career), params: {
                         athlete_id: athlete.id,
                         fee: suggested_fee,
                         wage: suggested_wage
@@ -73,6 +73,50 @@
           </div>
         <% else %>
           <p class="empty-state">No financial profile exists for this club.</p>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Open Offers</h2>
+      </div>
+      <div class="panel-body">
+        <% if @offers.any? %>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th>From</th>
+                  <th>Fee</th>
+                  <th>Wage</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @offers.each do |offer| %>
+                  <tr>
+                    <td><%= offer.athlete.first_name %> <%= offer.athlete.last_name %></td>
+                    <td><%= offer.from_club&.name || "Free agent" %></td>
+                    <td><%= number_to_currency(offer.offered_fee) %></td>
+                    <td><%= number_to_currency(offer.offered_wage) %></td>
+                    <td><span class="badge <%= offer.completed? ? "badge-good" : "" %>"><%= offer.status.humanize %></span></td>
+                    <td>
+                      <% if offer.pending? %>
+                        <%= button_to "Finalize", complete_offer_career_transfer_path(@career, offer) %>
+                      <% else %>
+                        -
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="empty-state">No offers submitted yet.</p>
         <% end %>
       </div>
     </section>

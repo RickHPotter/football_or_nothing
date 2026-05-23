@@ -122,6 +122,8 @@ Implemented:
   career, club, match, transfers, athletes, and authentication.
 - Richer deterministic match timelines with chances, cards, injuries,
   substitutions, and event-linked athlete season stats.
+- Transfer offers that separate negotiation intent from completed player
+  movement, with pending offers and finalization.
 
 Next major phase:
-Transfer negotiations and market depth.
+Contract expiration and transfer-window rules.

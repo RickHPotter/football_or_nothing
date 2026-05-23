@@ -117,7 +117,6 @@ Implemented:
 - Show a transfer-market screen for the current club.
 
 Deferred:
-- Transfer negotiations and offers.
 - Loans.
 - Release clauses as enforced selling rules.
 - Transfer windows.
@@ -212,6 +211,28 @@ Deferred:
 - Player condition impact during the match.
 - Suspensions and injury availability rules.
 - Assists and ratings generated from events.
+
+
+Phase 11 - Transfer Offers
+--------------------------
+Status: implemented.
+
+Implemented:
+- Add transfer offers as negotiation records.
+- Submit pending offers from the transfer market.
+- Track offered fee, wage, source club, target club, expiry, and status.
+- Finalize acceptable pending offers into completed transfers.
+- Keep recent offers visible alongside completed transfer history.
+- Preserve transfer budget and wage validation through the existing transfer
+  processor.
+
+Deferred:
+- Selling-club AI decision making.
+- Counter offers.
+- Loan offers.
+- Transfer windows.
+- Contract release clauses as hard selling rules.
+- Offer expiry automation.
 
 
 Important Deferrals

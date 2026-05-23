@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_22_233000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_22_234000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -363,6 +363,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_233000) do
     t.index ["country_id"], name: "index_tournaments_on_country_id"
   end
 
+  create_table "transfer_offers", force: :cascade do |t|
+    t.bigint "athlete_id", null: false
+    t.datetime "created_at", null: false
+    t.date "decided_on"
+    t.date "expires_on", null: false
+    t.bigint "from_club_id"
+    t.text "notes"
+    t.decimal "offered_fee", precision: 15, scale: 2, default: "0.0", null: false
+    t.date "offered_on", null: false
+    t.decimal "offered_wage", precision: 15, scale: 2, default: "0.0", null: false
+    t.integer "status", default: 0, null: false
+    t.bigint "to_club_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["athlete_id", "to_club_id", "status"], name: "index_transfer_offers_on_athlete_id_and_to_club_id_and_status"
+    t.index ["athlete_id"], name: "index_transfer_offers_on_athlete_id"
+    t.index ["from_club_id"], name: "index_transfer_offers_on_from_club_id"
+    t.index ["to_club_id"], name: "index_transfer_offers_on_to_club_id"
+  end
+
   create_table "transfers", force: :cascade do |t|
     t.bigint "athlete_id", null: false
     t.datetime "created_at", null: false
@@ -441,6 +460,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_233000) do
   add_foreign_key "tournament_participations", "clubs"
   add_foreign_key "tournament_participations", "tournament_editions"
   add_foreign_key "tournaments", "countries"
+  add_foreign_key "transfer_offers", "athletes"
+  add_foreign_key "transfer_offers", "clubs", column: "from_club_id"
+  add_foreign_key "transfer_offers", "clubs", column: "to_club_id"
   add_foreign_key "transfers", "athletes"
   add_foreign_key "transfers", "clubs", column: "from_club_id"
   add_foreign_key "transfers", "clubs", column: "to_club_id"

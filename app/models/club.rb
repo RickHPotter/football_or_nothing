@@ -21,8 +21,14 @@ class Club < ApplicationRecord
   has_many :trophies, dependent: :destroy
   has_many :club_season_stats, dependent: :destroy
   has_many :manager_season_stats, dependent: :destroy
+  has_many :incoming_transfers, class_name: "Transfer", foreign_key: :to_club_id, dependent: :restrict_with_exception, inverse_of: :to_club
+  has_many :outgoing_transfers, class_name: "Transfer", foreign_key: :from_club_id, dependent: :restrict_with_exception, inverse_of: :from_club
 
   validates :name, :short_name, presence: true
   validates :name, uniqueness: { scope: :country_id }
   validates :reputation, numericality: { only_integer: true, greater_than: 0 }
+
+  def current_wage_total
+    current_athlete_contracts.sum(:wage)
+  end
 end

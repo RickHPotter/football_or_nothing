@@ -169,6 +169,8 @@ Transfer
 - Historical movement of an athlete between clubs.
 - Tracks from club, to club, athlete, transfer date, fee, type, and status.
 - Types may include permanent, loan, free transfer, release, youth promotion.
+- Current implementation supports completed permanent and free transfers,
+  updates current contracts, and enforces transfer and wage budget checks.
 
 Loan
 - Optional separate model if loans need enough behavior.

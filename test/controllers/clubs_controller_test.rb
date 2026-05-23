@@ -22,6 +22,7 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", "Trophies"
     assert_select "h2", "Club seasons"
     assert_select "h2", "Squad"
+    assert_select "a", "Transfer market"
     assert_select "td", fixtures(:one).tournament_edition.name
     assert_select "td", tournament_participations(:one).points.to_s
     assert_select "a", fixtures(:one).home_club.name

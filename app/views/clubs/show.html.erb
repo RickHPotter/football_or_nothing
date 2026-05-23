@@ -10,10 +10,13 @@
   <p>Cash balance: <%= number_to_currency(@finance.cash_balance) %></p>
   <p>Transfer budget: <%= number_to_currency(@finance.transfer_budget) %></p>
   <p>Wage budget: <%= number_to_currency(@finance.wage_budget) %></p>
+  <p>Available wage budget: <%= number_to_currency(@finance.available_wage_budget) %></p>
   <p>Debt: <%= number_to_currency(@finance.debt) %></p>
 <% else %>
   <p>No financial profile exists for this club.</p>
 <% end %>
+
+<p><%= link_to "Transfer market", career_transfers_path(@career) %></p>
 
 <h2>Stadium</h2>
 

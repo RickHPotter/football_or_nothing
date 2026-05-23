@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     post :advance, on: :member
     resource :club, only: :show
     resources :athletes, only: :show
+    resources :transfers, only: %i[index create]
     resources :fixtures, only: :show do
       post :simulate, on: :member
       post :start, on: :member

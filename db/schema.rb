@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_22_231010) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_22_232000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -360,6 +360,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_231010) do
     t.index ["country_id"], name: "index_tournaments_on_country_id"
   end
 
+  create_table "transfers", force: :cascade do |t|
+    t.bigint "athlete_id", null: false
+    t.datetime "created_at", null: false
+    t.decimal "fee", precision: 15, scale: 2, default: "0.0", null: false
+    t.bigint "from_club_id"
+    t.integer "status", default: 0, null: false
+    t.bigint "to_club_id", null: false
+    t.date "transfer_date", null: false
+    t.integer "transfer_type", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.decimal "wage", precision: 15, scale: 2, default: "0.0", null: false
+    t.index ["athlete_id", "transfer_date", "to_club_id"], name: "index_transfers_on_athlete_id_and_transfer_date_and_to_club_id"
+    t.index ["athlete_id"], name: "index_transfers_on_athlete_id"
+    t.index ["from_club_id"], name: "index_transfers_on_from_club_id"
+    t.index ["to_club_id"], name: "index_transfers_on_to_club_id"
+  end
+
   create_table "trophies", force: :cascade do |t|
     t.bigint "club_id", null: false
     t.datetime "created_at", null: false
@@ -421,6 +438,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_231010) do
   add_foreign_key "tournament_participations", "clubs"
   add_foreign_key "tournament_participations", "tournament_editions"
   add_foreign_key "tournaments", "countries"
+  add_foreign_key "transfers", "athletes"
+  add_foreign_key "transfers", "clubs", column: "from_club_id"
+  add_foreign_key "transfers", "clubs", column: "to_club_id"
   add_foreign_key "trophies", "clubs"
   add_foreign_key "trophies", "managers"
   add_foreign_key "trophies", "tournament_editions"

@@ -105,12 +105,23 @@ Deferred:
 
 Phase 6 - Transfer Skeleton
 ---------------------------
-1. Create transfers as historical records.
-2. Support free transfer.
-3. Support permanent transfer.
-4. Update athlete contracts through transfer flow.
-5. Keep old contracts/history intact.
-6. Enforce basic transfer budget and wage budget rules.
+Status: implemented.
+
+Implemented:
+- Create transfers as historical records.
+- Support free transfer.
+- Support permanent transfer.
+- Update athlete contracts through transfer flow.
+- Keep old contracts/history intact.
+- Enforce basic transfer budget and wage budget rules.
+- Show a transfer-market screen for the current club.
+
+Deferred:
+- Transfer negotiations and offers.
+- Loans.
+- Release clauses as enforced selling rules.
+- Transfer windows.
+- AI club transfer activity.
 
 
 Phase 7 - RPG Progression

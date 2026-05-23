@@ -111,6 +111,8 @@ Implemented:
   progression.
 - Tournament finalization with champion assignment, trophy creation, club season
   stats, manager season stats, and athlete season stats.
+- Transfer market with permanent and free transfers, historical transfer
+  records, contract movement, and basic budget enforcement.
 
 Next major phase:
-Transfers and contract movement.
+RPG progression.

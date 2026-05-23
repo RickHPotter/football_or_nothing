@@ -1,65 +1,100 @@
-<h1><%= [ @athlete.first_name, @athlete.last_name ].join(" ") %></h1>
+<section class="game-header">
+  <div class="game-title-row">
+    <div>
+      <h1><%= [ @athlete.first_name, @athlete.last_name ].join(" ") %></h1>
+      <p class="game-subtitle"><%= @athlete.country.name %> · <%= @athlete.position.humanize %> · <%= @athlete.preferred_foot.humanize %> foot</p>
+    </div>
+    <%= link_to "Back to club", career_club_path(@career), class: "btn btn-secondary" %>
+  </div>
+</section>
 
-<p>Nationality: <%= @athlete.country.name %></p>
-<p>Position: <%= @athlete.position.humanize %></p>
-<p>Preferred foot: <%= @athlete.preferred_foot.humanize %></p>
-<p>Current ability: <%= @athlete.current_ability %></p>
-<p>Potential ability: <%= @athlete.potential_ability %></p>
-<p>Morale: <%= @athlete.morale %></p>
-<p>Condition: <%= @athlete.condition %></p>
+<div class="game-grid">
+  <div class="game-main">
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Profile</h2>
+      </div>
+      <div class="panel-body stat-grid">
+        <div class="stat-tile"><div class="stat-label">Current ability</div><div class="stat-value"><%= @athlete.current_ability %></div></div>
+        <div class="stat-tile"><div class="stat-label">Potential</div><div class="stat-value"><%= @athlete.potential_ability %></div></div>
+        <div class="stat-tile"><div class="stat-label">Morale</div><div class="stat-value"><%= @athlete.morale %></div></div>
+        <div class="stat-tile"><div class="stat-label">Condition</div><div class="stat-value"><%= @athlete.condition %></div></div>
+      </div>
+    </section>
 
-<% if @contract %>
-  <h2>Contract</h2>
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Stats</h2>
+      </div>
+      <div class="panel-body">
+        <% if @stats.any? %>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Competition</th>
+                  <th>Club</th>
+                  <th>Apps</th>
+                  <th>Goals</th>
+                  <th>Assists</th>
+                  <th>Minutes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @stats.each do |stat| %>
+                  <tr>
+                    <td><%= stat.tournament_edition.name %></td>
+                    <td><%= stat.club.name %></td>
+                    <td><%= stat.appearances %></td>
+                    <td><strong><%= stat.goals %></strong></td>
+                    <td><%= stat.assists %></td>
+                    <td><%= stat.minutes_played %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="empty-state">No stats recorded yet.</p>
+        <% end %>
+      </div>
+    </section>
+  </div>
 
-  <p>Club: <%= @contract.club.name %></p>
-  <p>Wage: <%= number_to_currency(@contract.wage) %></p>
-  <p>Start date: <%= @contract.start_date %></p>
-  <p>End date: <%= @contract.end_date || "Open" %></p>
-  <p>Squad number: <%= @contract.squad_number || "-" %></p>
-<% end %>
-
-<h2>Stats</h2>
-
-<% if @stats.any? %>
-  <table>
-    <thead>
-      <tr>
-        <th>Competition</th>
-        <th>Club</th>
-        <th>Apps</th>
-        <th>Goals</th>
-        <th>Assists</th>
-        <th>Minutes</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @stats.each do |stat| %>
-        <tr>
-          <td><%= stat.tournament_edition.name %></td>
-          <td><%= stat.club.name %></td>
-          <td><%= stat.appearances %></td>
-          <td><%= stat.goals %></td>
-          <td><%= stat.assists %></td>
-          <td><%= stat.minutes_played %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p>No stats recorded yet.</p>
-<% end %>
-
-<h2>Attributes</h2>
-
-<table>
-  <tbody>
-    <% Athlete::ATTRIBUTES.each do |attribute| %>
-      <tr>
-        <th><%= attribute.to_s.humanize %></th>
-        <td><%= @athlete.public_send(attribute) %></td>
-      </tr>
+  <aside class="game-side">
+    <% if @contract %>
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Contract</h2>
+        </div>
+        <div class="panel-body space-y-2">
+          <p><span class="stat-label">Club</span><br><strong><%= @contract.club.name %></strong></p>
+          <p><span class="stat-label">Wage</span><br><%= number_to_currency(@contract.wage) %></p>
+          <p><span class="stat-label">Start date</span><br><%= @contract.start_date %></p>
+          <p><span class="stat-label">End date</span><br><%= @contract.end_date || "Open" %></p>
+          <p><span class="stat-label">Squad number</span><br><%= @contract.squad_number || "-" %></p>
+        </div>
+      </section>
     <% end %>
-  </tbody>
-</table>
 
-<%= link_to "Back to club", career_club_path(@career) %>
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Attributes</h2>
+      </div>
+      <div class="panel-body">
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <% Athlete::ATTRIBUTES.each do |attribute| %>
+                <tr>
+                  <th><%= attribute.to_s.humanize %></th>
+                  <td><strong><%= @athlete.public_send(attribute) %></strong></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </aside>
+</div>

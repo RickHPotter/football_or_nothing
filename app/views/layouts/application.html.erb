@@ -24,6 +24,48 @@
   </head>
 
   <body>
-    <%= yield %>
+    <div class="game-shell">
+      <header class="game-topbar">
+        <div class="game-topbar-inner">
+          <div>
+            <%= link_to "Football or Nothing", root_path, class: "game-brand" %>
+            <% if Current.user %>
+              <div class="text-xs text-board-100">
+                <%= Current.user.email_address %>
+              </div>
+            <% end %>
+          </div>
+
+          <% if Current.user %>
+            <% nav_career = Current.user.careers.includes(manager: { current_manager_contract: :club }).order(created_at: :desc).first %>
+            <nav class="game-nav">
+              <%= link_to "Home", root_path %>
+              <% if nav_career %>
+                <%= link_to "Career", career_path(nav_career) %>
+                <% if nav_career.manager&.current_club %>
+                  <%= link_to "Club", career_club_path(nav_career) %>
+                  <%= link_to "Transfers", career_transfers_path(nav_career) %>
+                <% end %>
+              <% else %>
+                <%= link_to "New Career", new_career_path %>
+              <% end %>
+              <%= button_to "Sign out", session_path, method: :delete %>
+            </nav>
+          <% end %>
+        </div>
+      </header>
+
+      <main class="game-page">
+        <% if flash[:alert] %>
+          <div class="flash flash-alert"><%= flash[:alert] %></div>
+        <% end %>
+
+        <% if flash[:notice] %>
+          <div class="flash flash-notice"><%= flash[:notice] %></div>
+        <% end %>
+
+        <%= yield %>
+      </main>
+    </div>
   </body>
 </html>

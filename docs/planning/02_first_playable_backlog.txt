@@ -171,6 +171,28 @@ Deferred:
 - Full preseason.
 
 
+Phase 9 - Frontend Playable UI Pass
+-----------------------------------
+Status: implemented.
+
+Implemented:
+- Add Tailwind CSS build pipeline.
+- Add a compact game layout and top navigation.
+- Add shared utility classes for panels, stat tiles, tables, badges, buttons,
+  flashes, and forms.
+- Redesign home, sign in, registration, career creation, career dashboard,
+  club dashboard, fixture/match screen, transfer market, and athlete profile.
+- Keep the UI dense and data-first, closer to a football management game than a
+  corporate admin panel.
+
+Deferred:
+- Full visual design system.
+- Responsive mobile polishing beyond basic layout behavior.
+- Icons and richer interaction affordances.
+- Dedicated history/news screen.
+- Advanced match visualizations.
+
+
 Important Deferrals
 -------------------
 These are important, but not required for the first playable loop:

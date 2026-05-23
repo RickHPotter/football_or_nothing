@@ -1,83 +1,116 @@
-<h1>Transfer Market</h1>
+<section class="game-header">
+  <div class="game-title-row">
+    <div>
+      <h1>Transfer Market</h1>
+      <p class="game-subtitle"><%= @club.name %></p>
+    </div>
+    <%= link_to "Back to club", career_club_path(@career), class: "btn btn-secondary" %>
+  </div>
+</section>
 
-<p>Club: <%= @club.name %></p>
+<div class="game-grid">
+  <div class="game-main">
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Available Players</h2>
+      </div>
+      <div class="panel-body">
+        <% if @market_athletes.any? %>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Club</th>
+                  <th>Position</th>
+                  <th>Ability</th>
+                  <th>Fee</th>
+                  <th>Wage</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @market_athletes.each do |athlete| %>
+                  <% contract = athlete.current_athlete_contract %>
+                  <% suggested_fee = contract ? (contract.release_clause || (athlete.current_ability * 50_000)) : 0 %>
+                  <% suggested_wage = contract ? [ contract.wage, 100 ].max : 100 %>
+                  <tr>
+                    <td><%= link_to [ athlete.first_name, athlete.last_name ].join(" "), career_athlete_path(@career, athlete) %></td>
+                    <td><%= contract&.club&.name || "Free agent" %></td>
+                    <td><span class="badge"><%= athlete.position.humanize %></span></td>
+                    <td><%= athlete.current_ability %></td>
+                    <td><%= number_to_currency(suggested_fee) %></td>
+                    <td><%= number_to_currency(suggested_wage) %></td>
+                    <td>
+                      <%= button_to "Sign", career_transfers_path(@career), params: {
+                        athlete_id: athlete.id,
+                        fee: suggested_fee,
+                        wage: suggested_wage
+                      } %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="empty-state">No players are currently visible in the market.</p>
+        <% end %>
+      </div>
+    </section>
+  </div>
 
-<% if @finance %>
-  <p>Transfer budget: <%= number_to_currency(@finance.transfer_budget) %></p>
-  <p>Available wage budget: <%= number_to_currency(@finance.available_wage_budget) %></p>
-<% else %>
-  <p>No financial profile exists for this club.</p>
-<% end %>
+  <aside class="game-side">
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Budget</h2>
+      </div>
+      <div class="panel-body">
+        <% if @finance %>
+          <div class="grid gap-2">
+            <div class="stat-tile"><div class="stat-label">Transfer budget</div><div class="stat-value"><%= number_to_currency(@finance.transfer_budget) %></div></div>
+            <div class="stat-tile"><div class="stat-label">Available wage budget</div><div class="stat-value"><%= number_to_currency(@finance.available_wage_budget) %></div></div>
+          </div>
+        <% else %>
+          <p class="empty-state">No financial profile exists for this club.</p>
+        <% end %>
+      </div>
+    </section>
 
-<h2>Available Players</h2>
-
-<% if @market_athletes.any? %>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Club</th>
-        <th>Position</th>
-        <th>Ability</th>
-        <th>Fee</th>
-        <th>Wage</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @market_athletes.each do |athlete| %>
-        <% contract = athlete.current_athlete_contract %>
-        <% suggested_fee = contract ? (contract.release_clause || (athlete.current_ability * 50_000)) : 0 %>
-        <% suggested_wage = contract ? [ contract.wage, 100 ].max : 100 %>
-        <tr>
-          <td><%= link_to [ athlete.first_name, athlete.last_name ].join(" "), career_athlete_path(@career, athlete) %></td>
-          <td><%= contract&.club&.name || "Free agent" %></td>
-          <td><%= athlete.position.humanize %></td>
-          <td><%= athlete.current_ability %></td>
-          <td><%= number_to_currency(suggested_fee) %></td>
-          <td><%= number_to_currency(suggested_wage) %></td>
-          <td>
-            <%= button_to "Sign", career_transfers_path(@career), params: {
-              athlete_id: athlete.id,
-              fee: suggested_fee,
-              wage: suggested_wage
-            } %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p>No players are currently visible in the market.</p>
-<% end %>
-
-<h2>Recent Transfers</h2>
-
-<% if @transfers.any? %>
-  <table>
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Player</th>
-        <th>From</th>
-        <th>Fee</th>
-        <th>Wage</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @transfers.each do |transfer| %>
-        <tr>
-          <td><%= transfer.transfer_date %></td>
-          <td><%= transfer.athlete.first_name %> <%= transfer.athlete.last_name %></td>
-          <td><%= transfer.from_club&.name || "Free agent" %></td>
-          <td><%= number_to_currency(transfer.fee) %></td>
-          <td><%= number_to_currency(transfer.wage) %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p>No incoming transfers yet.</p>
-<% end %>
-
-<%= link_to "Back to club", career_club_path(@career) %>
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Recent Transfers</h2>
+      </div>
+      <div class="panel-body">
+        <% if @transfers.any? %>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Player</th>
+                  <th>From</th>
+                  <th>Fee</th>
+                  <th>Wage</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @transfers.each do |transfer| %>
+                  <tr>
+                    <td><%= transfer.transfer_date %></td>
+                    <td><%= transfer.athlete.first_name %> <%= transfer.athlete.last_name %></td>
+                    <td><%= transfer.from_club&.name || "Free agent" %></td>
+                    <td><%= number_to_currency(transfer.fee) %></td>
+                    <td><%= number_to_currency(transfer.wage) %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="empty-state">No incoming transfers yet.</p>
+        <% end %>
+      </div>
+    </section>
+  </aside>
+</div>

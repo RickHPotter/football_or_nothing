@@ -1,130 +1,225 @@
-<h1><%= @career.name %></h1>
+<section class="game-header">
+  <div class="game-title-row">
+    <div>
+      <h1><%= @career.name %></h1>
+      <p class="game-subtitle">Current date: <%= @career.current_date %></p>
+    </div>
 
-<p>Current date: <%= @career.current_date %></p>
+    <% if @current_contract %>
+      <%= link_to "Open club dashboard", career_club_path(@career), class: "btn" %>
+    <% end %>
+  </div>
+</section>
 
 <% if @manager %>
-  <h2>Manager</h2>
-
-  <p>Name: <%= [ @manager.first_name, @manager.last_name ].join(" ") %></p>
-  <p>Nationality: <%= @manager.country.name %></p>
-  <p>Reputation: <%= @manager.reputation %></p>
-  <p>Status: <%= @manager.status.humanize %></p>
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Manager</h2>
+      <span class="badge"><%= @manager.status.humanize %></span>
+    </div>
+    <div class="panel-body stat-grid">
+      <div class="stat-tile">
+        <div class="stat-label">Name</div>
+        <div class="stat-value"><%= [ @manager.first_name, @manager.last_name ].join(" ") %></div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Nationality</div>
+        <div class="stat-value"><%= @manager.country.name %></div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Reputation</div>
+        <div class="stat-value"><%= @manager.reputation %></div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Career Status</div>
+        <div class="stat-value"><%= @manager.status.humanize %></div>
+      </div>
+    </div>
+  </section>
 
   <% if @current_contract %>
-    <h2>Current club</h2>
+    <div class="game-grid">
+      <div class="game-main">
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Next fixture</h2>
+          </div>
+          <div class="panel-body">
+            <% if @next_fixture %>
+              <div class="stat-grid">
+                <div class="stat-tile">
+                  <div class="stat-label">Date</div>
+                  <div class="stat-value"><%= @next_fixture.scheduled_on %></div>
+                </div>
+                <div class="stat-tile">
+                  <div class="stat-label">Home</div>
+                  <div class="stat-value"><%= @next_fixture.home_club.name %></div>
+                </div>
+                <div class="stat-tile">
+                  <div class="stat-label">Away</div>
+                  <div class="stat-value"><%= @next_fixture.away_club.name %></div>
+                </div>
+                <div class="stat-tile">
+                  <div class="stat-label">Round</div>
+                  <div class="stat-value"><%= @next_fixture.round %></div>
+                </div>
+              </div>
+              <div class="btn-row mt-3">
+                <%= button_to "Advance to match day", advance_career_path(@career) %>
+                <%= link_to "Open fixture", career_fixture_path(@career, @next_fixture), class: "btn btn-secondary" %>
+              </div>
+            <% else %>
+              <p class="empty-state">No upcoming fixtures are scheduled.</p>
 
-    <p>Club: <%= @current_contract.club.name %></p>
-    <p>Country: <%= @current_contract.club.country.name %></p>
-    <p>Wage: <%= number_to_currency(@current_contract.wage) %></p>
-    <p>Expectations: <%= @current_contract.expectations %></p>
+              <% if @rollover_candidate %>
+                <div class="mt-3">
+                  <p class="mb-2">Completed season: <strong><%= @rollover_candidate.name %></strong></p>
+                  <%= button_to "Start next season", rollover_career_path(@career) %>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </section>
 
-    <%= link_to "Open club dashboard", career_club_path(@career) %>
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Manager seasons</h2>
+          </div>
+          <div class="panel-body">
+            <% if @manager_season_stats.any? %>
+              <p class="mb-3 text-sm text-board-700">
+                Total:
+                <%= @manager_totals[:matches] %> matches,
+                <%= @manager_totals[:wins] %> wins,
+                <%= @manager_totals[:draws] %> draws,
+                <%= @manager_totals[:losses] %> losses,
+                <%= @manager_totals[:trophies] %> trophies
+              </p>
 
-    <h2>Next fixture</h2>
+              <div class="stat-grid mb-3">
+                <div class="stat-tile">
+                  <div class="stat-label">Matches</div>
+                  <div class="stat-value"><%= @manager_totals[:matches] %></div>
+                </div>
+                <div class="stat-tile">
+                  <div class="stat-label">Wins</div>
+                  <div class="stat-value"><%= @manager_totals[:wins] %></div>
+                </div>
+                <div class="stat-tile">
+                  <div class="stat-label">Losses</div>
+                  <div class="stat-value"><%= @manager_totals[:losses] %></div>
+                </div>
+                <div class="stat-tile">
+                  <div class="stat-label">Trophies</div>
+                  <div class="stat-value"><%= @manager_totals[:trophies] %></div>
+                </div>
+              </div>
 
-    <% if @next_fixture %>
-      <p>
-        <%= @next_fixture.scheduled_on %>:
-        <%= @next_fixture.home_club.name %>
-        vs
-        <%= @next_fixture.away_club.name %>
-      </p>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Competition</th>
+                      <th>Club</th>
+                      <th>Position</th>
+                      <th>Matches</th>
+                      <th>W</th>
+                      <th>D</th>
+                      <th>L</th>
+                      <th>Trophies</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @manager_season_stats.each do |stat| %>
+                      <tr>
+                        <td><%= stat.tournament_edition.name %></td>
+                        <td><%= stat.club.name %></td>
+                        <td><%= stat.position || "-" %></td>
+                        <td><%= stat.matches %></td>
+                        <td><%= stat.wins %></td>
+                        <td><%= stat.draws %></td>
+                        <td><%= stat.losses %></td>
+                        <td><%= stat.trophies %></td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            <% else %>
+              <p class="empty-state">No completed manager seasons yet.</p>
+            <% end %>
+          </div>
+        </section>
+      </div>
 
-      <%= button_to "Advance to match day", advance_career_path(@career) %>
-    <% else %>
-      <p>No upcoming fixtures are scheduled.</p>
+      <aside class="game-side">
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Current club</h2>
+          </div>
+          <div class="panel-body space-y-2">
+            <p><span class="stat-label">Club</span><br><strong><%= @current_contract.club.name %></strong></p>
+            <p><span class="stat-label">Country</span><br><%= @current_contract.club.country.name %></p>
+            <p><span class="stat-label">Wage</span><br><%= number_to_currency(@current_contract.wage) %></p>
+            <p><span class="stat-label">Expectations</span><br><%= @current_contract.expectations %></p>
+          </div>
+        </section>
 
-      <% if @rollover_candidate %>
-        <p>Completed season: <%= @rollover_candidate.name %></p>
-        <%= button_to "Start next season", rollover_career_path(@career) %>
-      <% end %>
-    <% end %>
-
-    <h2>Trophies</h2>
-
-    <% if @trophies.any? %>
-      <ul>
-        <% @trophies.each do |trophy| %>
-          <li><%= trophy.won_on %>: <%= trophy.name %> with <%= trophy.club.name %></li>
-        <% end %>
-      </ul>
-    <% else %>
-      <p>No trophies won yet.</p>
-    <% end %>
-
-    <h2>Manager seasons</h2>
-
-    <% if @manager_season_stats.any? %>
-      <p>
-        Total:
-        <%= @manager_totals[:matches] %> matches,
-        <%= @manager_totals[:wins] %> wins,
-        <%= @manager_totals[:draws] %> draws,
-        <%= @manager_totals[:losses] %> losses,
-        <%= @manager_totals[:trophies] %> trophies
-      </p>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Competition</th>
-            <th>Club</th>
-            <th>Position</th>
-            <th>Matches</th>
-            <th>W</th>
-            <th>D</th>
-            <th>L</th>
-            <th>Trophies</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @manager_season_stats.each do |stat| %>
-            <tr>
-              <td><%= stat.tournament_edition.name %></td>
-              <td><%= stat.club.name %></td>
-              <td><%= stat.position || "-" %></td>
-              <td><%= stat.matches %></td>
-              <td><%= stat.wins %></td>
-              <td><%= stat.draws %></td>
-              <td><%= stat.losses %></td>
-              <td><%= stat.trophies %></td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    <% else %>
-      <p>No completed manager seasons yet.</p>
-    <% end %>
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Trophies</h2>
+          </div>
+          <div class="panel-body">
+            <% if @trophies.any? %>
+              <ul class="space-y-2">
+                <% @trophies.each do |trophy| %>
+                  <li><span class="badge badge-good"><%= trophy.won_on %></span> <%= trophy.name %> with <%= trophy.club.name %></li>
+                <% end %>
+              </ul>
+            <% else %>
+              <p class="empty-state">No trophies won yet.</p>
+            <% end %>
+          </div>
+        </section>
+      </aside>
+    </div>
   <% else %>
-    <h2>Available jobs</h2>
-
-    <% if @available_clubs.any? %>
-      <table>
-        <thead>
-          <tr>
-            <th>Club</th>
-            <th>Country</th>
-            <th>Reputation</th>
-            <th>Transfer budget</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @available_clubs.each do |club| %>
-            <tr>
-              <td><%= club.name %></td>
-              <td><%= club.country.name %></td>
-              <td><%= club.reputation %></td>
-              <td><%= number_to_currency(club.club_finance&.transfer_budget || 0) %></td>
-              <td>
-                <%= button_to "Take job", career_manager_contracts_path(@career), params: { club_id: club.id } %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    <% else %>
-      <p>No clubs are willing to hire this manager yet.</p>
-    <% end %>
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Available jobs</h2>
+      </div>
+      <div class="panel-body">
+        <% if @available_clubs.any? %>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Club</th>
+                  <th>Country</th>
+                  <th>Reputation</th>
+                  <th>Transfer budget</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @available_clubs.each do |club| %>
+                  <tr>
+                    <td><%= club.name %></td>
+                    <td><%= club.country.name %></td>
+                    <td><span class="badge"><%= club.reputation %></span></td>
+                    <td><%= number_to_currency(club.club_finance&.transfer_budget || 0) %></td>
+                    <td>
+                      <%= button_to "Take job", career_manager_contracts_path(@career), params: { club_id: club.id } %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="empty-state">No clubs are willing to hire this manager yet.</p>
+        <% end %>
+      </div>
+    </section>
   <% end %>
 <% end %>

@@ -1,161 +1,201 @@
-<h1><%= @fixture.home_club.name %> <%= @fixture.scoreline %> <%= @fixture.away_club.name %></h1>
+<section class="game-header">
+  <div class="game-title-row">
+    <div>
+      <h1><%= @fixture.home_club.name %> <%= @fixture.scoreline %> <%= @fixture.away_club.name %></h1>
+      <p class="game-subtitle"><%= @fixture.tournament_edition.name %> · Round <%= @fixture.round %> · <%= @fixture.scheduled_on %> · <%= @fixture.stadium.name %></p>
+    </div>
+    <span class="badge <%= @fixture.completed? ? "badge-good" : "badge-warn" %>"><%= @fixture.status.humanize %></span>
+  </div>
+</section>
 
-<p>Competition: <%= @fixture.tournament_edition.name %></p>
-<p>Round: <%= @fixture.round %></p>
-<p>Date: <%= @fixture.scheduled_on %></p>
-<p>Stadium: <%= @fixture.stadium.name %></p>
-<p>Status: <%= @fixture.status.humanize %></p>
-<% if @match_state %>
-  <p>Clock: <%= @match_state.minute %>' (<%= @match_state.clock_status.humanize %>)</p>
-<% end %>
+<div class="game-grid">
+  <div class="game-main">
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Match control</h2>
+        <% if @match_state %>
+          <span class="badge">Clock <%= @match_state.minute %>' · <%= @match_state.clock_status.humanize %></span>
+        <% end %>
+      </div>
+      <div class="panel-body">
+        <% if @fixture.completed? %>
+          <div class="stat-grid">
+            <div class="stat-tile"><div class="stat-label">Home</div><div class="stat-value"><%= @fixture.home_goals %></div></div>
+            <div class="stat-tile"><div class="stat-label">Away</div><div class="stat-value"><%= @fixture.away_goals %></div></div>
+            <div class="stat-tile"><div class="stat-label">Result</div><div class="stat-value"><%= @fixture.scoreline %></div></div>
+            <div class="stat-tile"><div class="stat-label">Status</div><div class="stat-value">Full time</div></div>
+          </div>
 
-<% if @fixture.completed? %>
-  <p>Result: <%= @fixture.home_club.name %> <%= @fixture.home_goals %>, <%= @fixture.away_club.name %> <%= @fixture.away_goals %></p>
-
-  <% if @next_fixture %>
-    <p>
-      Next fixture:
-      <%= @next_fixture.scheduled_on %>,
-      <%= @next_fixture.home_club.name %>
-      vs
-      <%= @next_fixture.away_club.name %>
-    </p>
-
-    <%= button_to "Advance to next match", advance_career_path(@career) %>
-  <% else %>
-    <p>No upcoming fixtures are scheduled.</p>
-  <% end %>
-<% else %>
-  <% if @match_state.not_started? %>
-    <%= button_to "Start match clock", start_career_fixture_path(@career, @fixture) %>
-  <% elsif @match_state.running? %>
-    <%= button_to "Pause match", pause_career_fixture_path(@career, @fixture) %>
-    <%= button_to "Advance 15 minutes", advance_clock_career_fixture_path(@career, @fixture) %>
-  <% elsif @match_state.paused? %>
-    <%= button_to "Resume match", resume_career_fixture_path(@career, @fixture) %>
-  <% end %>
-
-  <%= button_to "Simulate match", simulate_career_fixture_path(@career, @fixture) %>
-<% end %>
-
-<h2>Lineups</h2>
-
-<% @lineups.each do |lineup| %>
-  <h3><%= lineup.club.name %> - <%= lineup.formation %> (<%= lineup.mentality.humanize %>)</h3>
-
-  <h4>Starting eleven</h4>
-  <% if lineup.starters.any? %>
-    <ol>
-      <% lineup.starters.each do |lineup_athlete| %>
-        <li>
-          <%= lineup_athlete.athlete.first_name %> <%= lineup_athlete.athlete.last_name %>
-          - <%= lineup_athlete.position.humanize %>
-          <% if lineup_athlete.substituted_on_minute %>
-            (on <%= lineup_athlete.substituted_on_minute %>')
+          <% if @next_fixture %>
+            <div class="mt-3 btn-row">
+              <%= button_to "Advance to next match", advance_career_path(@career) %>
+            </div>
+          <% else %>
+            <p class="empty-state mt-3">No upcoming fixtures are scheduled.</p>
           <% end %>
-        </li>
-      <% end %>
-    </ol>
-  <% else %>
-    <p>No starters selected.</p>
-  <% end %>
+        <% else %>
+          <div class="btn-row">
+            <% if @match_state.not_started? %>
+              <%= button_to "Start match clock", start_career_fixture_path(@career, @fixture) %>
+            <% elsif @match_state.running? %>
+              <%= button_to "Pause match", pause_career_fixture_path(@career, @fixture) %>
+              <%= button_to "Advance 15 minutes", advance_clock_career_fixture_path(@career, @fixture) %>
+            <% elsif @match_state.paused? %>
+              <%= button_to "Resume match", resume_career_fixture_path(@career, @fixture) %>
+            <% end %>
 
-  <h4>Bench</h4>
-  <% if lineup.bench.any? %>
-    <ol>
-      <% lineup.bench.each do |lineup_athlete| %>
-        <li>
-          <%= lineup_athlete.athlete.first_name %> <%= lineup_athlete.athlete.last_name %>
-          - <%= lineup_athlete.position.humanize %>
-          <% if lineup_athlete.substituted_off_minute %>
-            (off <%= lineup_athlete.substituted_off_minute %>')
+            <%= button_to "Simulate match", simulate_career_fixture_path(@career, @fixture) %>
+          </div>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Lineups</h2>
+      </div>
+      <div class="panel-body grid gap-4 md:grid-cols-2">
+        <% @lineups.each do |lineup| %>
+          <div class="border border-board-200">
+            <div class="bg-board-50 px-3 py-2">
+              <h3><%= lineup.club.name %> - <%= lineup.formation %> (<%= lineup.mentality.humanize %>)</h3>
+            </div>
+            <div class="p-3">
+              <h4>Starting eleven</h4>
+              <% if lineup.starters.any? %>
+                <ol class="mt-2 grid gap-1">
+                  <% lineup.starters.each do |lineup_athlete| %>
+                    <li>
+                      <%= lineup_athlete.athlete.first_name %> <%= lineup_athlete.athlete.last_name %>
+                      <span class="badge"><%= lineup_athlete.position.humanize %></span>
+                      <% if lineup_athlete.substituted_on_minute %>
+                        <span class="badge badge-good">on <%= lineup_athlete.substituted_on_minute %>'</span>
+                      <% end %>
+                    </li>
+                  <% end %>
+                </ol>
+              <% else %>
+                <p class="empty-state mt-2">No starters selected.</p>
+              <% end %>
+
+              <h4 class="mt-4">Bench</h4>
+              <% if lineup.bench.any? %>
+                <ol class="mt-2 grid gap-1">
+                  <% lineup.bench.each do |lineup_athlete| %>
+                    <li>
+                      <%= lineup_athlete.athlete.first_name %> <%= lineup_athlete.athlete.last_name %>
+                      <span class="badge"><%= lineup_athlete.position.humanize %></span>
+                      <% if lineup_athlete.substituted_off_minute %>
+                        <span class="badge badge-warn">off <%= lineup_athlete.substituted_off_minute %>'</span>
+                      <% end %>
+                    </li>
+                  <% end %>
+                </ol>
+              <% else %>
+                <p class="empty-state mt-2">No bench selected.</p>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Standings</h2>
+      </div>
+      <div class="panel-body">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Club</th>
+                <th>Pts</th>
+                <th>P</th>
+                <th>W</th>
+                <th>D</th>
+                <th>L</th>
+                <th>GF</th>
+                <th>GA</th>
+                <th>GD</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @standings.each do |participation| %>
+                <tr>
+                  <td><%= participation.club.name %></td>
+                  <td><strong><%= participation.points %></strong></td>
+                  <td><%= participation.played %></td>
+                  <td><%= participation.wins %></td>
+                  <td><%= participation.draws %></td>
+                  <td><%= participation.losses %></td>
+                  <td><%= participation.goals_for %></td>
+                  <td><%= participation.goals_against %></td>
+                  <td><%= participation.goal_difference %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <aside class="game-side">
+    <% unless @fixture.completed? %>
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Manager Decisions</h2>
+        </div>
+        <div class="panel-body">
+          <%= form_with model: @managed_lineup, url: tactics_career_fixture_path(@career, @fixture), method: :patch, class: "form-stack" do |form| %>
+            <div>
+              <%= form.label :formation %>
+              <%= form.text_field :formation %>
+            </div>
+            <div>
+              <%= form.label :mentality %>
+              <%= form.select :mentality, Lineup.mentalities.keys.map { |mentality| [ mentality.humanize, mentality ] } %>
+            </div>
+            <%= form.submit "Update tactics" %>
           <% end %>
-        </li>
-      <% end %>
-    </ol>
-  <% else %>
-    <p>No bench selected.</p>
-  <% end %>
-<% end %>
 
-<% unless @fixture.completed? %>
-  <h2>Manager Decisions</h2>
-
-  <%= form_with model: @managed_lineup, url: tactics_career_fixture_path(@career, @fixture), method: :patch do |form| %>
-    <p>
-      <%= form.label :formation %>
-      <%= form.text_field :formation %>
-    </p>
-    <p>
-      <%= form.label :mentality %>
-      <%= form.select :mentality, Lineup.mentalities.keys.map { |mentality| [ mentality.humanize, mentality ] } %>
-    </p>
-    <%= form.submit "Update tactics" %>
-  <% end %>
-
-  <% if @managed_lineup.starters.any? && @managed_lineup.bench.any? %>
-    <%= form_with url: substitute_career_fixture_path(@career, @fixture), method: :post do |form| %>
-      <p>
-        <%= form.label :off_lineup_athlete_id, "Player off" %>
-        <%= form.select :off_lineup_athlete_id, @managed_lineup.starters.map { |lineup_athlete| [ "#{lineup_athlete.athlete.first_name} #{lineup_athlete.athlete.last_name}", lineup_athlete.id ] } %>
-      </p>
-      <p>
-        <%= form.label :on_lineup_athlete_id, "Player on" %>
-        <%= form.select :on_lineup_athlete_id, @managed_lineup.bench.map { |lineup_athlete| [ "#{lineup_athlete.athlete.first_name} #{lineup_athlete.athlete.last_name}", lineup_athlete.id ] } %>
-      </p>
-      <%= form.submit "Make substitution" %>
+          <% if @managed_lineup.starters.any? && @managed_lineup.bench.any? %>
+            <%= form_with url: substitute_career_fixture_path(@career, @fixture), method: :post, class: "form-stack mt-4" do |form| %>
+              <div>
+                <%= form.label :off_lineup_athlete_id, "Player off" %>
+                <%= form.select :off_lineup_athlete_id, @managed_lineup.starters.map { |lineup_athlete| [ "#{lineup_athlete.athlete.first_name} #{lineup_athlete.athlete.last_name}", lineup_athlete.id ] } %>
+              </div>
+              <div>
+                <%= form.label :on_lineup_athlete_id, "Player on" %>
+                <%= form.select :on_lineup_athlete_id, @managed_lineup.bench.map { |lineup_athlete| [ "#{lineup_athlete.athlete.first_name} #{lineup_athlete.athlete.last_name}", lineup_athlete.id ] } %>
+              </div>
+              <%= form.submit "Make substitution" %>
+            <% end %>
+          <% else %>
+            <p class="empty-state mt-4">Substitutions need at least one starter and one bench player.</p>
+          <% end %>
+        </div>
+      </section>
     <% end %>
-  <% else %>
-    <p>Substitutions need at least one starter and one bench player.</p>
-  <% end %>
-<% end %>
 
-<h2>Timeline</h2>
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Timeline</h2>
+      </div>
+      <div class="panel-body">
+        <% if @events.any? %>
+          <ol class="grid gap-2">
+            <% @events.each do |event| %>
+              <li><span class="badge badge-good"><%= event.minute %>'</span> <%= event.description %></li>
+            <% end %>
+          </ol>
+        <% else %>
+          <p class="empty-state">No match events yet.</p>
+        <% end %>
+      </div>
+    </section>
+  </aside>
+</div>
 
-<% if @events.any? %>
-  <ol>
-    <% @events.each do |event| %>
-      <li>
-        <%= event.minute %>':
-        <%= event.description %>
-      </li>
-    <% end %>
-  </ol>
-<% else %>
-  <p>No match events yet.</p>
-<% end %>
-
-<h2>Standings</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th>Club</th>
-      <th>Pts</th>
-      <th>P</th>
-      <th>W</th>
-      <th>D</th>
-      <th>L</th>
-      <th>GF</th>
-      <th>GA</th>
-      <th>GD</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @standings.each do |participation| %>
-      <tr>
-        <td><%= participation.club.name %></td>
-        <td><%= participation.points %></td>
-        <td><%= participation.played %></td>
-        <td><%= participation.wins %></td>
-        <td><%= participation.draws %></td>
-        <td><%= participation.losses %></td>
-        <td><%= participation.goals_for %></td>
-        <td><%= participation.goals_against %></td>
-        <td><%= participation.goal_difference %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<%= link_to "Back to club", career_club_path(@career) %>
+<%= link_to "Back to club", career_club_path(@career), class: "btn btn-secondary" %>

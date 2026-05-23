@@ -1,22 +1,44 @@
-<h1>Football or Nothing</h1>
+<section class="game-header">
+  <div class="game-title-row">
+    <div>
+      <h1>Football or Nothing</h1>
+      <p class="game-subtitle">A compact football management career.</p>
+    </div>
 
-<% if @career&.manager %>
-  <p>
-    Manager:
-    <%= [ @career.manager.first_name, @career.manager.last_name ].join(" ") %>
-  </p>
+    <% if @career&.manager %>
+      <%= link_to "Open career", career_path(@career), class: "btn" %>
+    <% else %>
+      <%= link_to "Create manager", new_career_path, class: "btn" %>
+    <% end %>
+  </div>
+</section>
 
-  <p>Career date: <%= @career.current_date %></p>
-
-  <% if @career.manager.current_club %>
-    <p>Club: <%= @career.manager.current_club.name %></p>
-  <% else %>
-    <p>Status: Unemployed</p>
-  <% end %>
-
-  <%= link_to "Open career", career_path(@career) %>
-<% else %>
-  <p>You do not have a manager career yet.</p>
-
-  <%= link_to "Create manager", new_career_path %>
-<% end %>
+<section class="panel">
+  <div class="panel-header">
+    <h2>Save Slot</h2>
+  </div>
+  <div class="panel-body">
+    <% if @career&.manager %>
+      <div class="stat-grid">
+        <div class="stat-tile">
+          <div class="stat-label">Manager</div>
+          <div class="stat-value"><%= [ @career.manager.first_name, @career.manager.last_name ].join(" ") %></div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Date</div>
+          <div class="stat-value"><%= @career.current_date %></div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Club</div>
+          <div class="stat-value"><%= @career.manager.current_club&.name || "Unemployed" %></div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Status</div>
+          <div class="stat-value"><%= @career.manager.status.humanize %></div>
+        </div>
+      </div>
+    <% else %>
+      <p class="empty-state">You do not have a manager career yet.</p>
+    <% end %>
+  </div>
+</section>

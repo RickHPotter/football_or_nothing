@@ -1,210 +1,259 @@
-<h1><%= @club.name %></h1>
+<section class="game-header">
+  <div class="game-title-row">
+    <div>
+      <h1><%= @club.name %></h1>
+      <p class="game-subtitle"><%= @club.country.name %> · Founded <%= @club.founded_year || "Unknown" %></p>
+    </div>
+    <div class="btn-row">
+      <%= link_to "Transfer market", career_transfers_path(@career), class: "btn" %>
+      <%= link_to "Back to career", career_path(@career), class: "btn btn-secondary" %>
+    </div>
+  </div>
+</section>
 
-<p>Country: <%= @club.country.name %></p>
-<p>Reputation: <%= @club.reputation %></p>
-<p>Founded: <%= @club.founded_year || "Unknown" %></p>
-
-<h2>Finances</h2>
-
-<% if @finance %>
-  <p>Cash balance: <%= number_to_currency(@finance.cash_balance) %></p>
-  <p>Transfer budget: <%= number_to_currency(@finance.transfer_budget) %></p>
-  <p>Wage budget: <%= number_to_currency(@finance.wage_budget) %></p>
-  <p>Available wage budget: <%= number_to_currency(@finance.available_wage_budget) %></p>
-  <p>Debt: <%= number_to_currency(@finance.debt) %></p>
-<% else %>
-  <p>No financial profile exists for this club.</p>
-<% end %>
-
-<p><%= link_to "Transfer market", career_transfers_path(@career) %></p>
-
-<h2>Stadium</h2>
-
-<% if @stadium %>
-  <p>Name: <%= @stadium.name %></p>
-  <p>City: <%= @stadium.city %></p>
-  <p>Capacity: <%= number_with_delimiter(@stadium.capacity) %></p>
-  <p>Pitch quality: <%= @stadium.pitch_quality %></p>
-<% else %>
-  <p>No stadium exists for this club.</p>
-<% end %>
-
-<h2>Fixtures</h2>
-
-<% if @fixtures.any? %>
-  <table>
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Competition</th>
-        <th>Round</th>
-        <th>Home</th>
-        <th>Away</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @fixtures.each do |fixture| %>
-        <tr>
-          <td><%= fixture.scheduled_on %></td>
-          <td><%= fixture.tournament_edition.name %></td>
-          <td><%= fixture.round %></td>
-          <td><%= link_to fixture.home_club.name, career_fixture_path(@career, fixture) %></td>
-          <td><%= link_to fixture.away_club.name, career_fixture_path(@career, fixture) %></td>
-          <td><%= fixture.completed? ? fixture.scoreline : fixture.status.humanize %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p>No fixtures have been scheduled for this club.</p>
-<% end %>
-
-<h2>Standings</h2>
-
-<% if @standings.any? %>
-  <table>
-    <thead>
-      <tr>
-        <th>Club</th>
-        <th>Pts</th>
-        <th>P</th>
-        <th>W</th>
-        <th>D</th>
-        <th>L</th>
-        <th>GD</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @standings.each do |participation| %>
-        <tr>
-          <td><%= participation.club.name %></td>
-          <td><%= participation.points %></td>
-          <td><%= participation.played %></td>
-          <td><%= participation.wins %></td>
-          <td><%= participation.draws %></td>
-          <td><%= participation.losses %></td>
-          <td><%= participation.goal_difference %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p>No standings are available for this club.</p>
-<% end %>
-
-<h2>Top scorers</h2>
-
-<% if @top_scorers.any? %>
-  <table>
-    <thead>
-      <tr>
-        <th>Player</th>
-        <th>Goals</th>
-        <th>Apps</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @top_scorers.each do |stat| %>
-        <tr>
-          <td><%= link_to [ stat.athlete.first_name, stat.athlete.last_name ].join(" "), career_athlete_path(@career, stat.athlete) %></td>
-          <td><%= stat.goals %></td>
-          <td><%= stat.appearances %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p>No scorers recorded yet.</p>
-<% end %>
-
-<h2>Trophies</h2>
-
-<% if @trophies.any? %>
-  <ul>
-    <% @trophies.each do |trophy| %>
-      <li>
-        <%= trophy.won_on %>:
-        <%= trophy.name %>
-        <% if trophy.manager %>
-          under <%= [ trophy.manager.first_name, trophy.manager.last_name ].join(" ") %>
+<div class="game-grid">
+  <div class="game-main">
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Fixtures</h2>
+      </div>
+      <div class="panel-body">
+        <% if @fixtures.any? %>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Competition</th>
+                  <th>Round</th>
+                  <th>Home</th>
+                  <th>Away</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @fixtures.each do |fixture| %>
+                  <tr>
+                    <td><%= fixture.scheduled_on %></td>
+                    <td><%= fixture.tournament_edition.name %></td>
+                    <td><%= fixture.round %></td>
+                    <td><%= link_to fixture.home_club.name, career_fixture_path(@career, fixture) %></td>
+                    <td><%= link_to fixture.away_club.name, career_fixture_path(@career, fixture) %></td>
+                    <td><span class="badge <%= fixture.completed? ? "badge-good" : "" %>"><%= fixture.completed? ? fixture.scoreline : fixture.status.humanize %></span></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="empty-state">No fixtures have been scheduled for this club.</p>
         <% end %>
-      </li>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Standings</h2>
+      </div>
+      <div class="panel-body">
+        <% if @standings.any? %>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Club</th>
+                  <th>Pts</th>
+                  <th>P</th>
+                  <th>W</th>
+                  <th>D</th>
+                  <th>L</th>
+                  <th>GD</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @standings.each do |participation| %>
+                  <tr>
+                    <td><%= participation.club.name %></td>
+                    <td><strong><%= participation.points %></strong></td>
+                    <td><%= participation.played %></td>
+                    <td><%= participation.wins %></td>
+                    <td><%= participation.draws %></td>
+                    <td><%= participation.losses %></td>
+                    <td><%= participation.goal_difference %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="empty-state">No standings are available for this club.</p>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Squad</h2>
+      </div>
+      <div class="panel-body">
+        <% if @contracts.any? %>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>Name</th>
+                  <th>Position</th>
+                  <th>Ability</th>
+                  <th>Potential</th>
+                  <th>Condition</th>
+                  <th>Wage</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @contracts.each do |contract| %>
+                  <% athlete = contract.athlete %>
+                  <tr>
+                    <td><%= contract.squad_number || "-" %></td>
+                    <td><%= link_to [ athlete.first_name, athlete.last_name ].join(" "), career_athlete_path(@career, athlete) %></td>
+                    <td><span class="badge"><%= athlete.position.humanize %></span></td>
+                    <td><%= athlete.current_ability %></td>
+                    <td><%= athlete.potential_ability %></td>
+                    <td><%= athlete.condition %></td>
+                    <td><%= number_to_currency(contract.wage) %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="empty-state">No current squad contracts exist for this club.</p>
+        <% end %>
+      </div>
+    </section>
+  </div>
+
+  <aside class="game-side">
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Finances</h2>
+        <span class="badge">Rep <%= @club.reputation %></span>
+      </div>
+      <div class="panel-body">
+        <% if @finance %>
+          <div class="grid gap-2">
+            <div class="stat-tile"><div class="stat-label">Cash balance</div><div class="stat-value"><%= number_to_currency(@finance.cash_balance) %></div></div>
+            <div class="stat-tile"><div class="stat-label">Transfer budget</div><div class="stat-value"><%= number_to_currency(@finance.transfer_budget) %></div></div>
+            <div class="stat-tile"><div class="stat-label">Available wages</div><div class="stat-value"><%= number_to_currency(@finance.available_wage_budget) %></div></div>
+            <div class="stat-tile"><div class="stat-label">Debt</div><div class="stat-value"><%= number_to_currency(@finance.debt) %></div></div>
+          </div>
+        <% else %>
+          <p class="empty-state">No financial profile exists for this club.</p>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Stadium</h2>
+      </div>
+      <div class="panel-body space-y-2">
+        <% if @stadium %>
+          <p><span class="stat-label">Name</span><br><strong><%= @stadium.name %></strong></p>
+          <p><span class="stat-label">City</span><br><%= @stadium.city %></p>
+          <p><span class="stat-label">Capacity</span><br><%= number_with_delimiter(@stadium.capacity) %></p>
+          <p><span class="stat-label">Pitch</span><br><%= @stadium.pitch_quality %></p>
+        <% else %>
+          <p class="empty-state">No stadium exists for this club.</p>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Top scorers</h2>
+      </div>
+      <div class="panel-body">
+        <% if @top_scorers.any? %>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Player</th><th>Goals</th><th>Apps</th></tr></thead>
+              <tbody>
+                <% @top_scorers.each do |stat| %>
+                  <tr>
+                    <td><%= link_to [ stat.athlete.first_name, stat.athlete.last_name ].join(" "), career_athlete_path(@career, stat.athlete) %></td>
+                    <td><strong><%= stat.goals %></strong></td>
+                    <td><%= stat.appearances %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="empty-state">No scorers recorded yet.</p>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Trophies</h2>
+      </div>
+      <div class="panel-body">
+        <% if @trophies.any? %>
+          <ul class="space-y-2">
+            <% @trophies.each do |trophy| %>
+              <li><span class="badge badge-good"><%= trophy.won_on %></span> <%= trophy.name %></li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="empty-state">No trophies won yet.</p>
+        <% end %>
+      </div>
+    </section>
+  </aside>
+</div>
+
+<section class="panel">
+  <div class="panel-header">
+    <h2>Club seasons</h2>
+  </div>
+  <div class="panel-body">
+    <% if @club_season_stats.any? %>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Competition</th>
+              <th>Position</th>
+              <th>Pts</th>
+              <th>P</th>
+              <th>W</th>
+              <th>D</th>
+              <th>L</th>
+              <th>GD</th>
+              <th>Champion</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @club_season_stats.each do |stat| %>
+              <tr>
+                <td><%= stat.tournament_edition.name %></td>
+                <td><%= stat.position || "-" %></td>
+                <td><%= stat.points %></td>
+                <td><%= stat.played %></td>
+                <td><%= stat.wins %></td>
+                <td><%= stat.draws %></td>
+                <td><%= stat.losses %></td>
+                <td><%= stat.goal_difference %></td>
+                <td><span class="badge <%= stat.champion? ? "badge-good" : "" %>"><%= stat.champion? ? "Yes" : "No" %></span></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="empty-state">No completed club seasons yet.</p>
     <% end %>
-  </ul>
-<% else %>
-  <p>No trophies won yet.</p>
-<% end %>
-
-<h2>Club seasons</h2>
-
-<% if @club_season_stats.any? %>
-  <table>
-    <thead>
-      <tr>
-        <th>Competition</th>
-        <th>Position</th>
-        <th>Pts</th>
-        <th>P</th>
-        <th>W</th>
-        <th>D</th>
-        <th>L</th>
-        <th>GD</th>
-        <th>Champion</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @club_season_stats.each do |stat| %>
-        <tr>
-          <td><%= stat.tournament_edition.name %></td>
-          <td><%= stat.position || "-" %></td>
-          <td><%= stat.points %></td>
-          <td><%= stat.played %></td>
-          <td><%= stat.wins %></td>
-          <td><%= stat.draws %></td>
-          <td><%= stat.losses %></td>
-          <td><%= stat.goal_difference %></td>
-          <td><%= stat.champion? ? "Yes" : "No" %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p>No completed club seasons yet.</p>
-<% end %>
-
-<h2>Squad</h2>
-
-<% if @contracts.any? %>
-  <table>
-    <thead>
-      <tr>
-        <th>No.</th>
-        <th>Name</th>
-        <th>Position</th>
-        <th>Ability</th>
-        <th>Potential</th>
-        <th>Condition</th>
-        <th>Wage</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @contracts.each do |contract| %>
-        <% athlete = contract.athlete %>
-        <tr>
-          <td><%= contract.squad_number || "-" %></td>
-          <td><%= link_to [ athlete.first_name, athlete.last_name ].join(" "), career_athlete_path(@career, athlete) %></td>
-          <td><%= athlete.position.humanize %></td>
-          <td><%= athlete.current_ability %></td>
-          <td><%= athlete.potential_ability %></td>
-          <td><%= athlete.condition %></td>
-          <td><%= number_to_currency(contract.wage) %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p>No current squad contracts exist for this club.</p>
-<% end %>
-
-<%= link_to "Back to career", career_path(@career) %>
+  </div>
+</section>

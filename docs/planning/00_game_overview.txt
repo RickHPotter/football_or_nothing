@@ -118,6 +118,8 @@ Implemented:
 - Season rollover that creates the next tournament edition, carries clubs
   forward, resets standings, generates fixtures, and advances the career toward
   the next season.
+- Tailwind-powered playable UI pass with compact management-game screens for
+  career, club, match, transfers, athletes, and authentication.
 
 Next major phase:
-Frontend pass for the playable management screens.
+Richer match simulation and event variety.

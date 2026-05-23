@@ -8,6 +8,7 @@ class TournamentFinalizer
   end
 
   def call
+    return tournament_edition if tournament_edition.completed?
     return tournament_edition unless tournament_edition.ready_to_complete?
 
     winner = tournament_edition.leading_participation&.club
@@ -25,6 +26,7 @@ class TournamentFinalizer
         trophy.name = tournament_edition.name
         trophy.won_on = tournament_edition.ends_on
       end
+      ProgressionApplier.call(tournament_edition)
     end
 
     tournament_edition
@@ -65,7 +67,14 @@ class TournamentFinalizer
         stat.draws = participation.draws
         stat.losses = participation.losses
         stat.trophies = participation.club == winner ? 1 : 0
-        stat.reputation_change = participation.club == winner ? 2 : 0
+        stat.reputation_change = manager_reputation_change(participation, position, winner)
       end
+    end
+
+    def manager_reputation_change(participation, position, winner)
+      return 2 if participation.club == winner
+      return 1 if position <= (tournament_edition.tournament_participations.count / 2.0).ceil
+
+      0
     end
 end

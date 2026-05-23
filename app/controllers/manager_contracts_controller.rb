@@ -36,7 +36,7 @@ class ManagerContractsController < ApplicationController
       Club.active
         .left_outer_joins(:current_manager_contract)
         .where(manager_contracts: { id: nil })
-        .where(reputation: ..@manager.reputation + 5)
+        .where(reputation: ..@manager.job_reputation_ceiling)
     end
 
     def starting_wage_for(club)

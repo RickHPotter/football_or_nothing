@@ -126,12 +126,23 @@ Deferred:
 
 Phase 7 - RPG Progression
 -------------------------
-1. Add manager reputation.
-2. Add athlete attributes and potential.
-3. Add aging.
-4. Add morale and condition.
-5. Add club reputation.
-6. Use manager reputation to limit available jobs.
+Status: implemented.
+
+Implemented:
+- Add manager reputation.
+- Add athlete attributes and potential.
+- Add age-based ability progression and decline.
+- Add morale and condition.
+- Add club reputation.
+- Use manager reputation to limit available jobs.
+- Apply progression once when a tournament edition is finalized.
+
+Deferred:
+- Training plans.
+- Detailed development curves.
+- Injuries and fatigue.
+- Player personality.
+- Dynamic club reputation beyond champion gains.
 
 
 Important Deferrals

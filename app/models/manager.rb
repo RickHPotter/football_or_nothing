@@ -14,4 +14,12 @@ class Manager < ApplicationRecord
   validates :first_name, :last_name, presence: true
   validates :career_id, uniqueness: true
   validates :reputation, numericality: { only_integer: true, greater_than: 0 }
+
+  def job_reputation_ceiling
+    reputation + 5
+  end
+
+  def eligible_for_club?(club)
+    club.reputation <= job_reputation_ceiling
+  end
 end

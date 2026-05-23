@@ -65,7 +65,7 @@ class CareersController < ApplicationController
         .includes(:country, :club_finance)
         .left_outer_joins(:current_manager_contract)
         .where(manager_contracts: { id: nil })
-        .where(reputation: ..manager.reputation + 5)
+        .where(reputation: ..manager.job_reputation_ceiling)
         .order(:reputation, :name)
     end
 

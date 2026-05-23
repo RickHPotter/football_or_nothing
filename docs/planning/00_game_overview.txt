@@ -113,6 +113,8 @@ Implemented:
   stats, manager season stats, and athlete season stats.
 - Transfer market with permanent and free transfers, historical transfer
   records, contract movement, and basic budget enforcement.
+- RPG progression at season completion for manager reputation, club reputation,
+  athlete ability, morale, and condition.
 
 Next major phase:
-RPG progression.
+Second-season rollover and broader world simulation.

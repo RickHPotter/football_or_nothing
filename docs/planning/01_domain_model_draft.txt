@@ -24,6 +24,8 @@ Manager
 - Should not be permanently tied to one club.
 - Starts with low reputation and should not naturally qualify for elite
   international jobs at the beginning of a career.
+- Current implementation uses reputation to limit available jobs and applies
+  reputation gains from completed seasons.
 
 
 Football Geography
@@ -44,6 +46,8 @@ Club
 - Has many stadium relationships over time if stadiums can change.
 - Should be generated for the first versions, with real data import treated as
   a later input path.
+- Current implementation applies champion reputation growth at season
+  finalization.
 
 ClubFinance
 - Financial state for a club.
@@ -69,6 +73,8 @@ Athlete
   condition, injury status, and retirement status.
 - Should be connected to clubs through contracts, not only club_id, so history
   is preserved.
+- Current implementation applies simple age-based ability progression/decline
+  and morale/condition updates when a tournament edition is finalized.
 
 AthleteAttributeSet
 - Attribute container for an athlete.

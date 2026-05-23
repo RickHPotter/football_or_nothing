@@ -21,6 +21,9 @@ class TournamentFinalizerTest < ActiveSupport::TestCase
       goals_against: 2
     )
     manager_contracts(:one).update!(club: clubs(:one), current: true, status: :active, role: :head_coach, end_date: nil)
+    managers(:one).update!(reputation: 1)
+    clubs(:one).update!(reputation: 1)
+    athletes(:one).update!(birthdate: Date.new(2005, 1, 1), current_ability: 4, potential_ability: 8, morale: 50, condition: 80)
   end
 
   test "completes edition and creates trophy for standings leader" do
@@ -38,6 +41,20 @@ class TournamentFinalizerTest < ActiveSupport::TestCase
     assert_equal managers(:one), @edition.trophies.last.manager
     assert @edition.club_season_stats.find_by!(club: clubs(:one)).champion?
     assert_equal 1, @edition.manager_season_stats.find_by!(manager: managers(:one)).trophies
+  end
+
+  test "applies reputation and athlete progression once" do
+    TournamentFinalizer.call(@edition)
+
+    assert_equal 3, managers(:one).reload.reputation
+    assert_equal 2, clubs(:one).reload.reputation
+    assert_equal 5, athletes(:one).reload.current_ability
+    assert_equal 60, athletes(:one).morale
+    assert_equal 75, athletes(:one).condition
+
+    assert_no_changes -> { managers(:one).reload.reputation } do
+      TournamentFinalizer.call(@edition)
+    end
   end
 
   test "does not duplicate season stats" do

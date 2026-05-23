@@ -18,4 +18,16 @@ class Career < ApplicationRecord
       .order(:scheduled_on, :kickoff_minute, :round)
       .first
   end
+
+  def rollover_candidate
+    club = manager&.current_club
+    return if club.nil? || next_fixture
+
+    TournamentEdition
+      .completed
+      .joins(:tournament_participations)
+      .where(tournament_participations: { club_id: club.id })
+      .order(season_year: :desc, ends_on: :desc)
+      .first
+  end
 end

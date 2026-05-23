@@ -223,6 +223,16 @@ GameSave or Career
 Season
 - Represents one year/cycle in a career world.
 - Used by tournaments, contracts, stats, and aging.
+- Current implementation uses tournament editions as the concrete season unit
+  and rolls completed editions into the next scheduled edition.
+
+SeasonRollover
+- Service concept that starts the next season from a completed tournament
+  edition.
+- Carries participating clubs forward, creates fresh standings, generates
+  fixtures, and preserves previous season history.
+- Current implementation is idempotent enough to avoid duplicate next editions,
+  participations, and fixtures.
 
 CalendarEvent
 - Optional future model for scheduled simulation events.

@@ -92,6 +92,21 @@ class CareersControllerTest < ActionDispatch::IntegrationTest
     assert_select "button", "Advance to match day"
   end
 
+  test "show offers season rollover when completed season has no upcoming fixture" do
+    sign_out
+    sign_in_as(users(:one))
+    manager_contracts(:one).update!(current: true, status: :active, role: :head_coach, end_date: nil)
+    careers(:one).update!(current_date: "2026-12-31")
+    tournament_editions(:one).update!(status: :completed)
+    TournamentParticipation.find_or_create_by!(tournament_edition: tournament_editions(:one), club: clubs(:one)).update!(position: 1)
+    TournamentParticipation.find_or_create_by!(tournament_edition: tournament_editions(:one), club: clubs(:two)).update!(position: 2)
+
+    get career_path(careers(:one))
+
+    assert_response :success
+    assert_select "button", "Start next season"
+  end
+
   test "advance moves current date to next fixture" do
     sign_out
     sign_in_as(users(:one))
@@ -114,5 +129,24 @@ class CareersControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to career_path(careers(:one))
     assert_equal Date.new(2027, 1, 1), careers(:one).reload.current_date
+  end
+
+  test "rollover starts next season" do
+    sign_out
+    sign_in_as(users(:one))
+    manager_contracts(:one).update!(current: true, status: :active, role: :head_coach, end_date: nil)
+    careers(:one).update!(current_date: "2026-12-31")
+    tournament_editions(:one).update!(status: :completed)
+    tournament_editions(:one).fixtures.update_all(status: Fixture.statuses[:completed])
+    TournamentParticipation.find_or_create_by!(tournament_edition: tournament_editions(:one), club: clubs(:one)).update!(position: 1)
+    TournamentParticipation.find_or_create_by!(tournament_edition: tournament_editions(:one), club: clubs(:two)).update!(position: 2)
+
+    assert_difference "TournamentEdition.count", 1 do
+      post rollover_career_path(careers(:one))
+    end
+
+    next_edition = tournament_editions(:one).tournament.tournament_editions.find_by!(season_year: 2027)
+    assert_redirected_to career_path(careers(:one))
+    assert_equal next_edition.fixtures.order(:scheduled_on, :kickoff_minute, :round).first.scheduled_on, careers(:one).reload.current_date
   end
 end

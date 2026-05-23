@@ -1,5 +1,5 @@
 class CareersController < ApplicationController
-  before_action :set_career, only: %i[show advance]
+  before_action :set_career, only: %i[show advance rollover]
 
   def show
     @manager = @career.manager
@@ -9,6 +9,7 @@ class CareersController < ApplicationController
     @manager_season_stats = @manager&.manager_season_stats&.includes(:club, :tournament_edition)&.order(created_at: :desc) || []
     @manager_totals = manager_totals(@manager_season_stats)
     @available_clubs = available_clubs_for(@manager) if @manager&.unemployed?
+    @rollover_candidate = @career.rollover_candidate if @current_contract && @next_fixture.nil?
   end
 
   def advance
@@ -20,6 +21,21 @@ class CareersController < ApplicationController
     else
       redirect_to @career, alert: "No upcoming fixtures are scheduled."
     end
+  end
+
+  def rollover
+    candidate = @career.rollover_candidate
+
+    unless candidate
+      redirect_to @career, alert: "No completed season is ready for rollover."
+      return
+    end
+
+    SeasonRollover.call(candidate)
+    fixture = @career.next_fixture
+    @career.update!(current_date: fixture.scheduled_on) if fixture
+
+    redirect_to @career, notice: "Next season started."
   end
 
   def new

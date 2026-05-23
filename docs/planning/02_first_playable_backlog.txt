@@ -145,6 +145,32 @@ Deferred:
 - Dynamic club reputation beyond champion gains.
 
 
+Phase 8 - Season Rollover
+-------------------------
+Status: implemented.
+
+Implemented:
+- Create the next tournament edition from a completed edition.
+- Carry participating clubs forward.
+- Create fresh tournament participations with reset standings.
+- Generate new fixtures with the existing league scheduler.
+- Preserve previous season history.
+- Expose a career-page action when no upcoming fixture exists and a completed
+  season can be rolled over.
+- Advance the career date to the first fixture of the new season.
+- Avoid duplicate next seasons when rollover is triggered repeatedly.
+
+Deferred:
+- Promotion and relegation.
+- Transfer windows.
+- Contract expiration consequences.
+- AI club squad changes.
+- Calendar conflicts.
+- Cup and international competition rollover.
+- Season financial accounting.
+- Full preseason.
+
+
 Important Deferrals
 -------------------
 These are important, but not required for the first playable loop:

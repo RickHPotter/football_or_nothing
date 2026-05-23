@@ -33,6 +33,11 @@
       <%= button_to "Advance to match day", advance_career_path(@career) %>
     <% else %>
       <p>No upcoming fixtures are scheduled.</p>
+
+      <% if @rollover_candidate %>
+        <p>Completed season: <%= @rollover_candidate.name %></p>
+        <%= button_to "Start next season", rollover_career_path(@career) %>
+      <% end %>
     <% end %>
 
     <h2>Trophies</h2>

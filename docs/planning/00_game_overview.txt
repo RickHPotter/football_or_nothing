@@ -115,6 +115,9 @@ Implemented:
   records, contract movement, and basic budget enforcement.
 - RPG progression at season completion for manager reputation, club reputation,
   athlete ability, morale, and condition.
+- Season rollover that creates the next tournament edition, carries clubs
+  forward, resets standings, generates fixtures, and advances the career toward
+  the next season.
 
 Next major phase:
-Second-season rollover and broader world simulation.
+Frontend pass for the playable management screens.

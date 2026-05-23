@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resource :session
   resources :careers, only: %i[new create show] do
     post :advance, on: :member
+    post :rollover, on: :member
     resource :club, only: :show
     resources :athletes, only: :show
     resources :transfers, only: %i[index create]

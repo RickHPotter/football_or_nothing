@@ -122,6 +122,8 @@ Tournament
 - May be international/global when not tied to one country.
 - Has format data: league, cup, group stage, knockout, mixed.
 - Has season/calendar configuration.
+- International competitions should use the same model where possible, with
+  scope and participation rules deciding behavior.
 
 TournamentEdition
 - One specific season/edition of a tournament.
@@ -150,6 +152,12 @@ MatchResult
 - Match outcome and aggregate stats.
 - Can be part of Fixture or separate if simulation details become large.
 - Stores goals, possession, cards, injuries, attendance, and rating summaries.
+
+MatchStat
+- Future per-club fixture statistics model.
+- Stores possession, shots, shots on target, fouls, yellow cards, red cards,
+  and other aggregate match stats.
+- Useful once tactical simulation affects more than scoreline and timeline.
 
 MatchState
 - Runtime or persisted state for a match in progress.
@@ -183,6 +191,10 @@ Transfer
 Loan
 - Optional separate model if loans need enough behavior.
 - Could also start as Transfer with type = loan and fields for loan dates.
+- Planned behavior should preserve the parent club contract while temporarily
+  making the athlete available to the loan club.
+- Track start date, end date, wage contribution, optional fee, parent club, and
+  loan club.
 
 TransferOffer
 - Future model for negotiations.
@@ -190,6 +202,73 @@ TransferOffer
   expiration.
 - Current implementation stores pending offers and can finalize acceptable
   offers into completed transfers.
+
+AiTransferPlanner
+- Future service concept for transfer-window world movement.
+- Should inspect squad needs, budgets, club reputation, and available players
+  before creating offers or free-agent signings.
+- Should avoid repeated churn for the same athlete within one transfer window.
+
+SquadNeedsAnalyzer
+- Future service concept that compares a club's available squad against desired
+  position depth.
+- Inputs should include injuries, suspensions, loans, contracts, and formation
+  preferences.
+
+
+Training and Development
+------------------------
+TrainingPlan
+- Club-level training configuration controlled by the manager.
+- Tracks focus, intensity, active dates, and possibly manager/staff ownership.
+- Early focuses: balanced, fitness, attacking, defending, technical, youth
+  development.
+
+TrainingResult
+- Optional history model for visible development changes.
+- Tracks athlete, changed attribute, old value, new value, and date.
+- Useful for explaining development instead of silently mutating attributes.
+
+
+Scouting
+--------
+ScoutingAssignment
+- Represents a club scouting task.
+- Tracks target country, position, focus, status, starts_on, and ends_on.
+- Should generate or refresh scout reports over time.
+
+ScoutReport
+- Club-specific knowledge about an athlete.
+- Tracks observed current ability, observed potential ability, confidence,
+  summary, and creation date.
+- Allows the transfer market to show uncertain information before a player is
+  fully scouted.
+
+
+Staff
+-----
+StaffMember
+- Non-player football professional.
+- Roles include assistant manager, coach, fitness coach, scout, and physio.
+- Has reputation and role-relevant attributes.
+
+StaffContract
+- Join/history model between staff member and club.
+- Tracks wage, start date, end date, current flag, and status.
+- Staff should affect training, scouting, recovery, and advice.
+
+
+Youth Development
+-----------------
+YouthAcademy
+- Club youth setup or club-level academy fields.
+- Holds academy quality and possibly annual operating cost.
+
+YouthIntake
+- Yearly event that creates academy prospects.
+- Tracks club, season year, generated date, and generated athletes.
+- Quality should depend on club reputation, country reputation, and academy
+  quality, with rare high-potential outliers.
 
 
 Achievements and History
@@ -258,6 +337,26 @@ DataImport
 - Future model or service for importing real football data.
 - Should map external records into the same domain models instead of creating a
   parallel real-data schema.
+- Import should be idempotent and source-aware, using external source/id fields
+  or a dedicated import run table.
+
+DataImportRun
+- Optional audit/history model for imports.
+- Tracks source, started_at, finished_at, status, counts, and errors.
+
+ExternalIdentity
+- Optional normalization model if multiple imported models need source/id
+  mapping without adding external fields to every table.
+
+
+News and World Activity
+-----------------------
+NewsItem
+- Generated world/career event visible to the player.
+- Tracks category, title, body, occurred_on, and optional links to club,
+  athlete, manager, tournament, fixture, or transfer.
+- Categories should include match, transfer, injury, discipline, trophy,
+  contract, youth, and world.
 
 
 Statistics

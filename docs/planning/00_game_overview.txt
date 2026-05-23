@@ -130,4 +130,6 @@ Implemented:
   lineup generation.
 
 Next major phase:
-Loans and AI squad movement.
+Loans, then AI squad movement, followed by training, scouting, staff, youth,
+news, tactical simulation, international competitions, real-data import, and UI
+system polish.

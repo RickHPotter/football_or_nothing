@@ -273,6 +273,504 @@ Deferred:
 - Player condition impact on event probabilities.
 
 
+Phase 14 - Loans
+----------------
+Status: planned.
+
+Goal:
+Support temporary player movement without destroying parent-club contract
+history.
+
+Scope:
+- Add loan support to the transfer flow.
+- Track loan start date, end date, wage contribution, and optional loan fee.
+- Keep the parent club contract intact while the player is temporarily
+  available for the loan club.
+- Include loaned-in players in the loan club squad.
+- Exclude loaned-out players from the parent club lineup pool.
+- Return players to parent clubs when loans expire.
+
+Likely implementation:
+- Extend `TransferOffer` and `Transfer` with loan-related type/status fields if
+  the current structures remain sufficient.
+- Consider a dedicated `Loan` model if behavior grows beyond basic fields.
+- Add helper scopes for loaned-in and loaned-out squad membership.
+- Make `Fixture#ensure_match_setup!` respect loan availability.
+
+UI:
+- Transfer market offer type selector: permanent/free/loan.
+- Club dashboard labels for loaned-in and loaned-out players.
+- Athlete profile shows parent club and temporary loan club.
+
+Deferred:
+- Loan recalls.
+- Buy options.
+- Complex wage splits.
+- AI loan negotiations.
+
+
+Phase 15 - AI Squad Movement
+----------------------------
+Status: planned.
+
+Goal:
+Make the world move during transfer windows without relying only on the player.
+
+Scope:
+- AI clubs inspect squad needs.
+- AI clubs sign free agents when affordable.
+- AI clubs submit simple transfer offers.
+- AI clubs renew or release expired players conservatively.
+- Run AI movement during transfer windows and season rollover.
+
+Likely services:
+- `AiTransferPlanner`
+- `SquadNeedsAnalyzer`
+- `AiContractRenewalProcessor`
+
+Rules:
+- Clubs target weak positions first.
+- Clubs respect transfer and wage budgets.
+- Low-reputation or low-budget clubs prefer free agents.
+- High-reputation clubs target higher-ability players.
+- Avoid moving the same player repeatedly in one window.
+
+UI:
+- Transfer market shows recent AI transfers.
+- Career dashboard gets a compact world activity panel.
+
+Deferred:
+- Bidding wars.
+- Player preferences.
+- Agents.
+- Advanced squad registration.
+
+
+Phase 16 - Training
+-------------------
+Status: planned.
+
+Goal:
+Give the manager a recurring development lever for squad growth and condition.
+
+Scope:
+- Add club training focus:
+  - balanced
+  - fitness
+  - attacking
+  - defending
+  - technical
+  - youth development
+- Add training intensity.
+- Apply training effects on date advancement, month advancement, or season
+  rollover.
+- Training should affect attributes, condition, morale, and injury risk.
+
+Likely models:
+- `TrainingPlan`
+  - club
+  - manager
+  - focus
+  - intensity
+  - active_from
+- Optional `TrainingResult`
+  - athlete
+  - changed attribute
+  - old value
+  - new value
+  - occurred_on
+
+Rules:
+- High intensity improves faster but lowers condition.
+- Low condition should increase injury risk in later match simulation phases.
+- Young high-potential athletes improve more.
+- Older athletes maintain or decline.
+
+UI:
+- Club dashboard training panel.
+- Athlete profile development history.
+- Career dashboard monthly training summary.
+
+Deferred:
+- Staff modifiers.
+- Facilities.
+- Individual player training.
+- Tactical familiarity.
+
+
+Phase 17 - Scouting
+-------------------
+Status: planned.
+
+Goal:
+Make player discovery and information uncertainty part of recruitment.
+
+Scope:
+- Add scouting assignments.
+- Add scouting reports.
+- Hide or fuzz information for unscouted players.
+- Reveal ability, potential, wage expectations, and fit over time.
+- Support basic searches by position, country, reputation, and ability range.
+
+Likely models:
+- `ScoutReport`
+  - athlete
+  - club
+  - observed current ability
+  - observed potential ability
+  - confidence
+  - summary
+  - created_on
+- `ScoutingAssignment`
+  - club
+  - country or position
+  - focus
+  - status
+  - starts_on
+  - ends_on
+
+UI:
+- New scouting screen.
+- Transfer market shows known vs unscouted players.
+- Athlete profile shows report confidence.
+
+Deferred:
+- Staff scout quality.
+- Hidden attributes.
+- International restrictions.
+- Scouting costs.
+
+
+Phase 18 - Staff
+----------------
+Status: planned.
+
+Goal:
+Model non-player personnel that affect training, scouting, fitness, and match
+preparation.
+
+Core roles:
+- assistant manager
+- coach
+- fitness coach
+- scout
+- physio
+
+Likely models:
+- `StaffMember`
+  - name
+  - country
+  - role
+  - reputation
+  - attributes
+- `StaffContract`
+  - staff member
+  - club
+  - wage
+  - start date
+  - end date
+  - current flag
+
+Staff attributes:
+- coaching
+- fitness
+- scouting
+- judging ability
+- judging potential
+- physiotherapy
+- discipline
+- motivation
+
+Effects:
+- Coaches improve training.
+- Scouts improve report accuracy.
+- Physios reduce injury duration.
+- Assistants can generate squad and match advice.
+
+UI:
+- Club staff screen.
+- Staff hiring screen.
+- Training and scouting screens show staff effects.
+
+Deferred:
+- Staff personalities.
+- Staff poaching.
+- Deep staff wage-budget accounting.
+
+
+Phase 19 - Youth Academy
+------------------------
+Status: planned.
+
+Goal:
+Create a long-term squad-building path through generated youth prospects.
+
+Scope:
+- Add yearly youth intake.
+- Generate youth athletes for clubs.
+- Youth potential depends on club reputation, country reputation, and academy
+  quality.
+- Allow promotion to senior squad.
+
+Likely models:
+- `YouthAcademy` or club fields such as `academy_quality`.
+- `YouthIntake`
+  - club
+  - season_year
+  - generated_on
+- Optional athlete flags for youth/senior squad status.
+
+Rules:
+- Bigger clubs produce better youth on average.
+- Low-reputation clubs can still rarely produce excellent prospects.
+- Youth players start with lower current ability and higher growth runway.
+
+UI:
+- Club dashboard youth academy panel.
+- Youth intake screen.
+- Athlete profile academy graduate marker.
+
+Deferred:
+- Youth competitions.
+- Youth coaches.
+- Training groups.
+- Youth poaching.
+
+
+Phase 20 - News Feed
+--------------------
+Status: planned.
+
+Goal:
+Make the world feel alive and explain important events to the player.
+
+Scope:
+- Generate news items for:
+  - match results
+  - injuries
+  - red cards
+  - transfers
+  - trophies
+  - season rollover
+  - manager reputation changes
+  - youth intake
+- Career dashboard gets a news feed.
+- Club dashboard gets club-specific news.
+
+Likely model:
+- `NewsItem`
+  - career/world scope
+  - club optional
+  - athlete optional
+  - manager optional
+  - tournament optional
+  - category
+  - title
+  - body
+  - occurred_on
+
+Categories:
+- match
+- transfer
+- injury
+- discipline
+- trophy
+- contract
+- youth
+- world
+
+UI:
+- Career dashboard news feed.
+- Club dashboard club news.
+- Optional dedicated news page.
+
+Deferred:
+- Press conferences.
+- Media reputation.
+- Fan reaction.
+- Player morale reactions to media.
+
+
+Phase 21 - Tactical Simulation
+------------------------------
+Status: planned.
+
+Goal:
+Make formation, mentality, squad condition, cards, injuries, and substitutions
+matter in match outcomes.
+
+Scope:
+- Formation and mentality affect scoring chances.
+- Player positions and attributes affect event probability.
+- Condition affects performance.
+- Red cards affect team strength after the event minute.
+- Injuries reduce team strength.
+- Substitutions affect late-game strength.
+- Store basic match stats.
+
+Likely refactor:
+- `MatchStrengthCalculator`
+- `MatchEventGenerator`
+- `MatchStatUpdater`
+- `MatchTimeline`
+
+Likely model:
+- `MatchStat`
+  - fixture
+  - club
+  - possession
+  - shots
+  - shots_on_target
+  - fouls
+  - yellow_cards
+  - red_cards
+
+UI:
+- Fixture page match stats panel.
+- Timeline grouped by event type.
+- Better clock/progression display.
+
+Deferred:
+- True possession engine.
+- Tactical role familiarity.
+- Advanced substitution AI.
+- Set pieces.
+
+
+Phase 22 - International Competitions
+-------------------------------------
+Status: planned.
+
+Goal:
+Expand the world beyond a single domestic league.
+
+Scope:
+- Support international tournaments.
+- Support multi-country competitions.
+- Add national-team-style clubs/teams if needed.
+- Use manager reputation to gate international jobs.
+- Generate fixtures without breaking the domestic calendar.
+
+Likely model work:
+- Clarify `Club#international`.
+- Consider a team type:
+  - club
+  - national team
+- Use existing tournament scope values for domestic/international.
+- Add country rankings or coefficients later.
+
+Rules:
+- Early managers should not qualify for major international jobs.
+- International tournaments should initially be fixture-light.
+- Clubs may participate in domestic and international competitions.
+
+UI:
+- Career dashboard competitions section.
+- Club dashboard competition tabs.
+- Tournament page likely becomes necessary.
+
+Deferred:
+- National squad selection.
+- International breaks.
+- Continental qualification.
+- Coefficients.
+
+
+Phase 23 - Data Import Foundation
+---------------------------------
+Status: planned.
+
+Goal:
+Prepare for importing real football data without corrupting generated careers.
+
+Scope:
+- Add import services that map external data into existing domain models.
+- Preserve fictional world generation.
+- Avoid duplicate countries, clubs, athletes, and contracts.
+- Make imports idempotent.
+
+Likely services:
+- `DataImport::CountriesImporter`
+- `DataImport::ClubsImporter`
+- `DataImport::AthletesImporter`
+- `DataImport::ContractsImporter`
+
+Likely model additions:
+- `external_source`
+- `external_id`
+- Optional `DataImportRun`
+
+Rules:
+- Generated and imported data can coexist.
+- External IDs are namespaced by source.
+- Import should not overwrite save-specific history.
+
+UI:
+- No full UI required at first.
+- Start with task/runner-driven import.
+
+Deferred:
+- Automated scraping.
+- Licensing checks.
+- Live data updates.
+- Conflict-resolution UI.
+
+
+Phase 24 - UI System Polish
+---------------------------
+Status: planned.
+
+Goal:
+Turn the current Tailwind pass into a consistent reusable game interface.
+
+Scope:
+- Extract reusable view partials/components:
+  - panel
+  - stat tile
+  - data table
+  - badge
+  - action bar
+  - player row
+  - fixture row
+- Add active navigation state.
+- Improve mobile layouts.
+- Add icons sparingly.
+- Improve empty states.
+- Add competition and season filters where useful.
+
+Screens to revisit:
+- career dashboard
+- club dashboard
+- fixture screen
+- transfer market
+- athlete profile
+- training
+- scouting
+- staff
+- youth
+- news
+
+Deferred:
+- Animations.
+- Theme customization.
+- Canvas or visual match engine.
+
+
+Recommended Order After Phase 13
+--------------------------------
+1. Phase 14 - Loans
+2. Phase 15 - AI squad movement
+3. Phase 16 - Training
+4. Phase 17 - Scouting
+5. Phase 18 - Staff
+6. Phase 19 - Youth academy
+7. Phase 20 - News feed
+8. Phase 21 - Tactical simulation
+9. Phase 22 - International competitions
+10. Phase 23 - Data import foundation
+11. Phase 24 - UI system polish
+
+
 Important Deferrals
 -------------------
 These are important, but not required for the first playable loop:

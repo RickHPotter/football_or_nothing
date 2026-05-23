@@ -124,6 +124,8 @@ Implemented:
   substitutions, and event-linked athlete season stats.
 - Transfer offers that separate negotiation intent from completed player
   movement, with pending offers and finalization.
+- Basic transfer-window policy and season-rollover contract expiry for athlete
+  contracts.
 
 Next major phase:
-Contract expiration and transfer-window rules.
+Loans and squad availability rules.

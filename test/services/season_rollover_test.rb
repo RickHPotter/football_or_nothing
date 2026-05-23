@@ -44,4 +44,13 @@ class SeasonRolloverTest < ActiveSupport::TestCase
       SeasonRollover.call(@edition)
     end
   end
+
+  test "expires contracts before next season starts" do
+    athlete_contracts(:one).update!(club: clubs(:one), current: true, status: :active, end_date: Date.new(2026, 12, 31))
+
+    SeasonRollover.call(@edition)
+
+    assert athlete_contracts(:one).reload.expired?
+    assert_not athlete_contracts(:one).current?
+  end
 end

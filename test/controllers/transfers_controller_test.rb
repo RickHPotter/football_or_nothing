@@ -81,4 +81,18 @@ class TransfersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to career_transfers_path(@career)
     assert offer.reload.pending?
   end
+
+  test "does not create offer outside transfer window" do
+    @career.update!(current_date: Date.new(2026, 7, 1))
+
+    assert_no_difference "TransferOffer.count" do
+      post career_transfers_path(@career), params: {
+        athlete_id: @target.id,
+        fee: 1_000,
+        wage: 100
+      }
+    end
+
+    assert_redirected_to career_transfers_path(@career)
+  end
 end

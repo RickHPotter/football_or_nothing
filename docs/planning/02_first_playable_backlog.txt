@@ -158,11 +158,11 @@ Implemented:
   season can be rolled over.
 - Advance the career date to the first fixture of the new season.
 - Avoid duplicate next seasons when rollover is triggered repeatedly.
+- Expire athlete contracts that end before the next season starts.
 
 Deferred:
 - Promotion and relegation.
 - Transfer windows.
-- Contract expiration consequences.
 - AI club squad changes.
 - Calendar conflicts.
 - Cup and international competition rollover.
@@ -233,6 +233,26 @@ Deferred:
 - Transfer windows.
 - Contract release clauses as hard selling rules.
 - Offer expiry automation.
+
+
+Phase 12 - Windows and Contract Expiry
+--------------------------------------
+Status: implemented.
+
+Implemented:
+- Add a transfer-window policy.
+- Allow transfers during preseason and short postseason windows.
+- Block transfer offers and offer finalization outside the transfer window.
+- Add a contract expiry processor for athlete contracts.
+- Expire current athlete contracts before the next season starts during season
+  rollover.
+
+Deferred:
+- Persisted transfer window records.
+- Per-country transfer-window configuration.
+- Contract renewal negotiations.
+- Free-agent consequences for expired contracts.
+- Squad registration rules.
 
 
 Important Deferrals

@@ -10,6 +10,11 @@ class TransfersController < ApplicationController
   end
 
   def create
+    unless transfer_window_open?
+      redirect_to career_transfers_path(@career), alert: "The transfer window is closed."
+      return
+    end
+
     athlete = Athlete.find(params.expect(:athlete_id))
     TransferOffer.create!(
       athlete:,
@@ -29,6 +34,11 @@ class TransfersController < ApplicationController
   end
 
   def complete_offer
+    unless transfer_window_open?
+      redirect_to career_transfers_path(@career), alert: "The transfer window is closed."
+      return
+    end
+
     offer = @club.incoming_transfer_offers.find(params.expect(:id))
     TransferOfferProcessor.call(offer:, transfer_date: @career.current_date)
 
@@ -53,5 +63,9 @@ class TransfersController < ApplicationController
         .where.not(id: @club.current_athletes.select(:id))
         .order(reputation: :desc, current_ability: :desc, last_name: :asc)
         .limit(30)
+    end
+
+    def transfer_window_open?
+      TransferWindowPolicy.open?(club: @club, date: @career.current_date)
     end
 end

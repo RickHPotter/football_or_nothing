@@ -12,6 +12,7 @@ class SeasonRollover
 
     TournamentEdition.transaction do
       next_edition = find_or_create_next_edition
+      ContractExpiryProcessor.call(cutoff_date: next_edition.starts_on)
       LeagueScheduler.call(next_edition, clubs_to_carry_forward) if next_edition.fixtures.none?
       next_edition
     end

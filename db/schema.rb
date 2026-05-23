@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_22_224004) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_22_231010) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -179,6 +179,36 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_224004) do
     t.index ["tournament_edition_id"], name: "index_fixtures_on_tournament_edition_id"
   end
 
+  create_table "lineup_athletes", force: :cascade do |t|
+    t.bigint "athlete_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "lineup_id", null: false
+    t.integer "lineup_slot", null: false
+    t.integer "position", null: false
+    t.boolean "starter", default: true, null: false
+    t.integer "substituted_off_minute"
+    t.integer "substituted_on_minute"
+    t.integer "tactical_role", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["athlete_id"], name: "index_lineup_athletes_on_athlete_id"
+    t.index ["lineup_id", "athlete_id"], name: "index_lineup_athletes_on_lineup_id_and_athlete_id", unique: true
+    t.index ["lineup_id", "lineup_slot"], name: "index_lineup_athletes_on_lineup_id_and_lineup_slot", unique: true
+    t.index ["lineup_id"], name: "index_lineup_athletes_on_lineup_id"
+  end
+
+  create_table "lineups", force: :cascade do |t|
+    t.bigint "club_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "fixture_id", null: false
+    t.string "formation", default: "4-4-2", null: false
+    t.integer "mentality", default: 1, null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_id"], name: "index_lineups_on_club_id"
+    t.index ["fixture_id", "club_id"], name: "index_lineups_on_fixture_id_and_club_id", unique: true
+    t.index ["fixture_id"], name: "index_lineups_on_fixture_id"
+  end
+
   create_table "manager_contracts", force: :cascade do |t|
     t.bigint "club_id", null: false
     t.datetime "created_at", null: false
@@ -245,6 +275,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_224004) do
     t.index ["club_id"], name: "index_match_events_on_club_id"
     t.index ["fixture_id", "minute", "id"], name: "index_match_events_on_fixture_id_and_minute_and_id"
     t.index ["fixture_id"], name: "index_match_events_on_fixture_id"
+  end
+
+  create_table "match_states", force: :cascade do |t|
+    t.integer "away_substitutions", default: 0, null: false
+    t.integer "clock_status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.bigint "fixture_id", null: false
+    t.integer "home_substitutions", default: 0, null: false
+    t.integer "minute", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["fixture_id"], name: "index_match_states_on_fixture_id", unique: true
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -356,6 +397,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_224004) do
   add_foreign_key "fixtures", "clubs", column: "home_club_id"
   add_foreign_key "fixtures", "stadiums"
   add_foreign_key "fixtures", "tournament_editions"
+  add_foreign_key "lineup_athletes", "athletes"
+  add_foreign_key "lineup_athletes", "lineups"
+  add_foreign_key "lineups", "clubs"
+  add_foreign_key "lineups", "fixtures"
   add_foreign_key "manager_contracts", "clubs"
   add_foreign_key "manager_contracts", "managers"
   add_foreign_key "manager_season_stats", "clubs"
@@ -367,6 +412,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_224004) do
   add_foreign_key "match_events", "athletes"
   add_foreign_key "match_events", "clubs"
   add_foreign_key "match_events", "fixtures"
+  add_foreign_key "match_states", "fixtures"
   add_foreign_key "sessions", "users"
   add_foreign_key "stadiums", "clubs"
   add_foreign_key "stadiums", "countries"

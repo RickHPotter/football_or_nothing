@@ -6,6 +6,8 @@ class Fixture < ApplicationRecord
   belongs_to :away_club, class_name: "Club"
   belongs_to :stadium
   has_many :match_events, dependent: :destroy
+  has_many :lineups, dependent: :destroy
+  has_one :match_state, dependent: :destroy
 
   validates :scheduled_on, :round, presence: true
   validates :kickoff_minute, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than: 1440 }
@@ -22,7 +24,48 @@ class Fixture < ApplicationRecord
     "#{home_goals}-#{away_goals}"
   end
 
+  def ensure_match_setup!
+    transaction do
+      create_match_state! unless match_state
+      [ home_club, away_club ].each { |club| ensure_lineup_for!(club) }
+    end
+  end
+
+  def lineup_for(club)
+    lineups.find_by(club:)
+  end
+
+  def club_substitution_count(club)
+    return 0 unless match_state
+
+    home_club_id == club.id ? match_state.home_substitutions : match_state.away_substitutions
+  end
+
   private
+    def ensure_lineup_for!(club)
+      lineup = lineups.find_or_create_by!(club:) do |record|
+        record.formation = "4-4-2"
+        record.mentality = :balanced
+      end
+      return if lineup.lineup_athletes.exists?
+
+      athletes_for_lineup(club).each_with_index do |athlete, index|
+        lineup.lineup_athletes.create!(
+          athlete:,
+          position: athlete.position,
+          tactical_role: :standard,
+          lineup_slot: index + 1,
+          starter: index < 11
+        )
+      end
+    end
+
+    def athletes_for_lineup(club)
+      athletes = club.current_athletes.order(position: :asc, current_ability: :desc, id: :asc).to_a
+      athletes = club.athletes.order(position: :asc, current_ability: :desc, id: :asc).to_a if athletes.empty?
+      athletes.first(18)
+    end
+
     def clubs_must_differ
       errors.add(:away_club, "must differ from home club") if home_club_id == away_club_id
     end

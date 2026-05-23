@@ -5,6 +5,9 @@
 <p>Date: <%= @fixture.scheduled_on %></p>
 <p>Stadium: <%= @fixture.stadium.name %></p>
 <p>Status: <%= @fixture.status.humanize %></p>
+<% if @match_state %>
+  <p>Clock: <%= @match_state.minute %>' (<%= @match_state.clock_status.humanize %>)</p>
+<% end %>
 
 <% if @fixture.completed? %>
   <p>Result: <%= @fixture.home_club.name %> <%= @fixture.home_goals %>, <%= @fixture.away_club.name %> <%= @fixture.away_goals %></p>
@@ -23,7 +26,88 @@
     <p>No upcoming fixtures are scheduled.</p>
   <% end %>
 <% else %>
+  <% if @match_state.not_started? %>
+    <%= button_to "Start match clock", start_career_fixture_path(@career, @fixture) %>
+  <% elsif @match_state.running? %>
+    <%= button_to "Pause match", pause_career_fixture_path(@career, @fixture) %>
+    <%= button_to "Advance 15 minutes", advance_clock_career_fixture_path(@career, @fixture) %>
+  <% elsif @match_state.paused? %>
+    <%= button_to "Resume match", resume_career_fixture_path(@career, @fixture) %>
+  <% end %>
+
   <%= button_to "Simulate match", simulate_career_fixture_path(@career, @fixture) %>
+<% end %>
+
+<h2>Lineups</h2>
+
+<% @lineups.each do |lineup| %>
+  <h3><%= lineup.club.name %> - <%= lineup.formation %> (<%= lineup.mentality.humanize %>)</h3>
+
+  <h4>Starting eleven</h4>
+  <% if lineup.starters.any? %>
+    <ol>
+      <% lineup.starters.each do |lineup_athlete| %>
+        <li>
+          <%= lineup_athlete.athlete.first_name %> <%= lineup_athlete.athlete.last_name %>
+          - <%= lineup_athlete.position.humanize %>
+          <% if lineup_athlete.substituted_on_minute %>
+            (on <%= lineup_athlete.substituted_on_minute %>')
+          <% end %>
+        </li>
+      <% end %>
+    </ol>
+  <% else %>
+    <p>No starters selected.</p>
+  <% end %>
+
+  <h4>Bench</h4>
+  <% if lineup.bench.any? %>
+    <ol>
+      <% lineup.bench.each do |lineup_athlete| %>
+        <li>
+          <%= lineup_athlete.athlete.first_name %> <%= lineup_athlete.athlete.last_name %>
+          - <%= lineup_athlete.position.humanize %>
+          <% if lineup_athlete.substituted_off_minute %>
+            (off <%= lineup_athlete.substituted_off_minute %>')
+          <% end %>
+        </li>
+      <% end %>
+    </ol>
+  <% else %>
+    <p>No bench selected.</p>
+  <% end %>
+<% end %>
+
+<% unless @fixture.completed? %>
+  <h2>Manager Decisions</h2>
+
+  <%= form_with model: @managed_lineup, url: tactics_career_fixture_path(@career, @fixture), method: :patch do |form| %>
+    <p>
+      <%= form.label :formation %>
+      <%= form.text_field :formation %>
+    </p>
+    <p>
+      <%= form.label :mentality %>
+      <%= form.select :mentality, Lineup.mentalities.keys.map { |mentality| [ mentality.humanize, mentality ] } %>
+    </p>
+    <%= form.submit "Update tactics" %>
+  <% end %>
+
+  <% if @managed_lineup.starters.any? && @managed_lineup.bench.any? %>
+    <%= form_with url: substitute_career_fixture_path(@career, @fixture), method: :post do |form| %>
+      <p>
+        <%= form.label :off_lineup_athlete_id, "Player off" %>
+        <%= form.select :off_lineup_athlete_id, @managed_lineup.starters.map { |lineup_athlete| [ "#{lineup_athlete.athlete.first_name} #{lineup_athlete.athlete.last_name}", lineup_athlete.id ] } %>
+      </p>
+      <p>
+        <%= form.label :on_lineup_athlete_id, "Player on" %>
+        <%= form.select :on_lineup_athlete_id, @managed_lineup.bench.map { |lineup_athlete| [ "#{lineup_athlete.athlete.first_name} #{lineup_athlete.athlete.last_name}", lineup_athlete.id ] } %>
+      </p>
+      <%= form.submit "Make substitution" %>
+    <% end %>
+  <% else %>
+    <p>Substitutions need at least one starter and one bench player.</p>
+  <% end %>
 <% end %>
 
 <h2>Timeline</h2>

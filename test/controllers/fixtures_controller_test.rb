@@ -13,9 +13,71 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", /#{@fixture.home_club.name}/
+    assert_select "h2", "Lineups"
+    assert_select "h2", "Manager Decisions"
     assert_select "h2", "Timeline"
     assert_select "h2", "Standings"
     assert_select "button", "Simulate match"
+  end
+
+  test "start pause and resume match clock" do
+    post start_career_fixture_path(@career, @fixture)
+
+    assert_redirected_to career_fixture_path(@career, @fixture)
+    assert @fixture.reload.in_progress?
+    assert @fixture.match_state.running?
+
+    post pause_career_fixture_path(@career, @fixture)
+
+    assert @fixture.match_state.reload.paused?
+
+    post resume_career_fixture_path(@career, @fixture)
+
+    assert @fixture.match_state.reload.running?
+  end
+
+  test "advance clock completes match at full time" do
+    post start_career_fixture_path(@career, @fixture)
+
+    6.times { post advance_clock_career_fixture_path(@career, @fixture) }
+
+    assert @fixture.reload.completed?
+    assert @fixture.match_state.reload.full_time?
+  end
+
+  test "updates managed club tactics" do
+    get career_fixture_path(@career, @fixture)
+
+    patch tactics_career_fixture_path(@career, @fixture), params: {
+      lineup: {
+        formation: "4-3-3",
+        mentality: "attacking"
+      }
+    }
+
+    assert_redirected_to career_fixture_path(@career, @fixture)
+    lineup = @fixture.reload.lineup_for(@career.manager.current_club)
+    assert_equal "4-3-3", lineup.formation
+    assert lineup.attacking?
+  end
+
+  test "records substitution for managed club" do
+    add_squad_depth(@career.manager.current_club, 12)
+    get career_fixture_path(@career, @fixture)
+
+    lineup = @fixture.reload.lineup_for(@career.manager.current_club)
+    starter = lineup.starters.first
+    substitute = lineup.bench.first
+
+    post substitute_career_fixture_path(@career, @fixture), params: {
+      off_lineup_athlete_id: starter.id,
+      on_lineup_athlete_id: substitute.id
+    }
+
+    assert_redirected_to career_fixture_path(@career, @fixture)
+    assert_not starter.reload.starter?
+    assert substitute.reload.starter?
+    assert_equal 1, @fixture.match_state.reload.home_substitutions
   end
 
   test "simulate completes fixture" do
@@ -76,4 +138,31 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  private
+    def add_squad_depth(club, count)
+      count.times do |index|
+        athlete = Athlete.create!(
+          country: club.country,
+          first_name: "Depth",
+          last_name: "Player #{index}",
+          position: :central_midfielder,
+          preferred_foot: :right,
+          current_ability: 5,
+          potential_ability: 5,
+          reputation: 1,
+          morale: 50,
+          condition: 100,
+          status: :active,
+          **Athlete::ATTRIBUTES.index_with { 5 }
+        )
+        club.athlete_contracts.create!(
+          athlete:,
+          start_date: Date.new(2026, 1, 1),
+          wage: 100,
+          status: :active,
+          current: true
+        )
+      end
+    end
 end

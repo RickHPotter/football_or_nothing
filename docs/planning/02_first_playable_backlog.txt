@@ -8,6 +8,8 @@ Reach a minimal playable football-management loop before expanding the world.
 
 Phase 1 - Foundation
 --------------------
+Status: mostly implemented.
+
 1. Add default Rails authentication.
 2. Create the user-to-manager career concept.
 3. Create countries.
@@ -28,6 +30,8 @@ Phase 1 - Foundation
 
 Phase 2 - Club Management Skeleton
 ----------------------------------
+Status: mostly implemented.
+
 1. Show manager dashboard.
 2. Show current club dashboard.
 3. Show squad list.
@@ -40,6 +44,8 @@ Phase 2 - Club Management Skeleton
 
 Phase 3 - Tournament Skeleton
 -----------------------------
+Status: implemented for a generated domestic league.
+
 1. Create tournament.
 2. Create tournament edition.
 3. Register clubs through tournament participations.
@@ -50,23 +56,51 @@ Phase 3 - Tournament Skeleton
 
 Phase 4 - Match Simulation v1
 -----------------------------
-1. Create lineups and bench selections.
-2. Simulate fixture time from minute 0 to full time.
-3. Allow the match flow to pause for manager decisions.
-4. Support substitutions.
-5. Store goals and match status.
-6. Update standings.
-7. Update basic athlete stats.
-8. Add deterministic seeds or logs for easier debugging.
+Status: implemented.
+
+Implemented:
+- Fixture page.
+- Deterministic instant simulation.
+- Match status and score storage.
+- Standings updates.
+- Match timeline with goal events.
+- Career date advancement to match day and next match.
+- Basic athlete stats from simulated matches.
+- Lineups and bench selections.
+- Live clock in 15-minute advances.
+- Pausing and resuming for manager decisions.
+- Substitutions.
+- Basic tactical changes through formation and mentality.
+
+Deferred:
+- True minute-by-minute simulation events.
+- Detailed events beyond goals.
 
 
 Phase 5 - History
 -----------------
-1. Store trophies.
-2. Store tournament participation outcomes.
-3. Store manager season stats.
-4. Store club season stats.
-5. Store athlete season stats.
+Status: core implemented.
+
+Implemented:
+- Store trophies.
+- Store tournament participation outcomes.
+- Complete tournament editions when all fixtures are completed.
+- Assign champion from standings.
+- Store manager season stats.
+- Store club season stats.
+- Store athlete season stats.
+- Show trophy history on career and club pages.
+- Show manager season history on career page.
+- Show club season history and top scorers on club page.
+- Show athlete stats on athlete profiles.
+
+Deferred:
+- Top scorer awards.
+- Best player/keeper/young player awards.
+- News/history feed.
+- Hall of fame records.
+- Promotion/relegation history.
+- Rich financial season snapshots.
 
 
 Phase 6 - Transfer Skeleton

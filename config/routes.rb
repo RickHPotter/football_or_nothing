@@ -7,6 +7,12 @@ Rails.application.routes.draw do
     resources :athletes, only: :show
     resources :fixtures, only: :show do
       post :simulate, on: :member
+      post :start, on: :member
+      post :pause, on: :member
+      post :resume, on: :member
+      post :advance_clock, on: :member
+      patch :tactics, on: :member
+      post :substitute, on: :member
     end
     resources :manager_contracts, only: :create
   end

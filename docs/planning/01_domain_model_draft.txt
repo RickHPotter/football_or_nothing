@@ -131,6 +131,13 @@ Fixture
 - Has home club, away club, stadium, scheduled date, status, and result.
 - Should support live simulation state once match time is modeled.
 
+MatchEvent
+- Historical timeline event for a fixture.
+- Current implementation stores goal events with minute, club, athlete, and
+  description.
+- Future event types should include cards, injuries, substitutions, tactical
+  changes, and major chances.
+
 MatchResult
 - Match outcome and aggregate stats.
 - Can be part of Fixture or separate if simulation details become large.
@@ -142,15 +149,18 @@ MatchState
   tactical choices, incidents, and whether the manager has paused time.
 - Important for the Brasfoot-like match flow where time advances and the manager
   can stop play to make changes.
+- Current implementation stores minute, clock status, and substitution counts.
 
 Lineup
 - Club selection for a fixture.
 - Tracks formation, starters, bench, captain, and tactical setup.
+- Current implementation stores fixture, club, formation, mentality, and status.
 
 LineupAthlete
 - Join model between lineup and athlete.
 - Tracks selected position, tactical role, starter/bench status, and
   substitution timing.
+- Current implementation supports starter/bench status and substitution timing.
 
 
 Transfers and Market
@@ -176,6 +186,8 @@ Trophy
 - Represents a title won by a club or manager.
 - Usually belongs to tournament edition.
 - Links winner club, manager, and possibly captain/top scorer later.
+- Implemented as the historical title event created when a tournament edition
+  is finalized.
 
 ClubTrophy
 - Optional join/history model if Trophy represents trophy type instead of event.
@@ -183,6 +195,12 @@ ClubTrophy
 ManagerAchievement
 - Future RPG/career record.
 - Examples: promotion, avoided relegation, won derby, unbeaten run.
+
+TournamentFinalizer
+- Service concept that closes a tournament edition when all fixtures are
+  completed.
+- Assigns champion from standings, marks participations complete, creates
+  trophy history, and snapshots club/manager season stats.
 
 
 Game Time and World State
@@ -225,14 +243,20 @@ Statistics
 AthleteSeasonStat
 - Per-athlete, per-club, per-season statistics.
 - Goals, assists, appearances, cards, injuries, minutes, average rating.
+- Current implementation tracks appearances, goals, assists, minutes, and an
+  average rating placeholder.
 
 ClubSeasonStat
 - Per-club, per-season aggregate statistics.
 - Wins, draws, losses, goals for/against, finances, reputation change.
+- Current implementation snapshots final position, record, points, goal
+  difference, and champion flag.
 
 ManagerSeasonStat
 - Per-manager, per-season statistics.
 - Matches, wins, trophies, reputation change, job changes.
+- Current implementation snapshots the club managed, final position, match
+  record, trophies, and reputation change placeholder.
 
 
 Likely First Migrations
@@ -252,10 +276,15 @@ Likely First Migrations
 13. tournament_editions
 14. tournament_participations
 15. fixtures
-16. lineups
-17. lineup_athletes
-18. transfers
-19. trophies
+16. match_events
+17. athlete_season_stats
+18. trophies
+19. club_season_stats
+20. manager_season_stats
+21. match_states
+22. lineups
+23. lineup_athletes
+24. transfers
 
 
 Modeling Notes

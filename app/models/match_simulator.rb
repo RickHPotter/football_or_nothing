@@ -93,7 +93,7 @@ class MatchSimulator
     end
 
     def update_athlete_stats(club)
-      club.current_athletes.find_each do |athlete|
+      athletes_in_match(club).each do |athlete|
         stat = athlete_stat_for(club, athlete)
         stat.appearances += 1
         stat.minutes_played += 90
@@ -116,8 +116,16 @@ class MatchSimulator
     end
 
     def scoring_options(club)
-      athletes = club.current_athletes.order(position: :desc, current_ability: :desc, id: :asc).to_a
+      athletes = athletes_in_match(club).sort_by { |athlete| [ -Athlete.positions[athlete.position], -athlete.current_ability, athlete.id ] }
       athletes.presence || club.athletes.order(current_ability: :desc, id: :asc).to_a
+    end
+
+    def athletes_in_match(club)
+      fixture.ensure_match_setup!
+      lineup = fixture.lineup_for(club)
+      lineup_athletes = lineup&.lineup_athletes&.starters&.includes(:athlete)&.order(:lineup_slot)
+      athletes = lineup_athletes&.map(&:athlete).to_a
+      athletes.presence || club.current_athletes.order(position: :asc, current_ability: :desc, id: :asc).limit(11).to_a
     end
 
     def goal_minute(index, goal_count, salt)

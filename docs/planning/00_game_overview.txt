@@ -93,3 +93,24 @@ Target around 20 core attributes for early design.
 
 Data policy:
 Start fictional. Later, support feeding real data into the game.
+
+
+Current Prototype Progress
+--------------------------
+Implemented:
+- Rails authentication with sign up and sign in.
+- Manager career creation.
+- Generated fictional country, clubs, stadiums, squads, finances, tournament,
+  fixtures, and contracts.
+- Initial job selection for low-reputation managers.
+- Club dashboard with finances, stadium, fixtures, standings, trophies, season
+  history, top scorers, and squad.
+- Athlete profile with contract, attributes, and season stats.
+- Fixture page with simulation, scoreline, match clock, pause/resume controls,
+  lineups, substitutions, basic tactics, timeline, standings, and next-match
+  progression.
+- Tournament finalization with champion assignment, trophy creation, club season
+  stats, manager season stats, and athlete season stats.
+
+Next major phase:
+Transfers and contract movement.

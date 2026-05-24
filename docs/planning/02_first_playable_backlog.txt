@@ -713,7 +713,7 @@ Deferred:
 
 Phase 22 - International Competitions
 -------------------------------------
-Status: planned.
+Status: implemented.
 
 Goal:
 Expand the world beyond a single domestic league.
@@ -725,13 +725,14 @@ Scope:
 - Use manager reputation to gate international jobs.
 - Generate fixtures without breaking the domestic calendar.
 
-Likely model work:
-- Clarify `Club#international`.
-- Consider a team type:
-  - club
-  - national team
-- Use existing tournament scope values for domestic/international.
-- Add country rankings or coefficients later.
+Implemented:
+- `InternationalCompetitionGenerator`.
+- Creates an international tournament with `Tournament#scope = international`.
+- Creates lightweight national-team-style clubs with `Club#international`.
+- Generates stadiums and squads for international teams.
+- Schedules fixtures through the existing league scheduler.
+- Career dashboard shows international editions.
+- Manager eligibility gates international clubs behind high reputation.
 
 Rules:
 - Early managers should not qualify for major international jobs.
@@ -740,14 +741,14 @@ Rules:
 
 UI:
 - Career dashboard competitions section.
-- Club dashboard competition tabs.
-- Tournament page likely becomes necessary.
 
 Deferred:
 - National squad selection.
 - International breaks.
 - Continental qualification.
 - Coefficients.
+- Club dashboard competition tabs.
+- Dedicated tournament page.
 
 
 Phase 23 - Data Import Foundation

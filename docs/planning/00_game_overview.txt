@@ -148,6 +148,9 @@ Implemented:
 - Tactical match simulation with strength calculation from lineups, mentality,
   attributes, condition, cards, injuries, substitutions, plus stored match
   stats on fixture pages.
+- International competition generation with national-team-style clubs,
+  international tournament editions, fixtures, and reputation-gated
+  international job eligibility.
 
 Next major phase:
-International competitions, followed by real-data import and UI system polish.
+Real-data import, followed by UI system polish.

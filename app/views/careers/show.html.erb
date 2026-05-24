@@ -150,6 +150,33 @@
             <% end %>
           </div>
         </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <h2>International Competitions</h2>
+          </div>
+          <div class="panel-body">
+            <% if @international_editions.any? %>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Competition</th><th>Dates</th><th>Status</th><th>Champion</th></tr></thead>
+                  <tbody>
+                    <% @international_editions.each do |edition| %>
+                      <tr>
+                        <td><%= edition.name %></td>
+                        <td><%= edition.starts_on %> to <%= edition.ends_on %></td>
+                        <td><span class="badge"><%= edition.status.humanize %></span></td>
+                        <td><%= edition.champion&.name || "-" %></td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            <% else %>
+              <p class="empty-state">No international competitions have been generated yet.</p>
+            <% end %>
+          </div>
+        </section>
       </div>
 
       <aside class="game-side">

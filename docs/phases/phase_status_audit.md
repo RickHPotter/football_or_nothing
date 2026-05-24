@@ -9,11 +9,11 @@ so the next phase can be chosen deliberately.
 
 Summary
 -------
-Phases 1 through 21 are implemented enough to support the current first
+Phases 1 through 22 are implemented enough to support the current first
 playable loop.
 
-There are no blocking leftovers from phases 1 through 21 that must be completed
-before starting Phase 22.
+There are no blocking leftovers from phases 1 through 22 that must be completed
+before starting Phase 23.
 
 There are, however, many intentional deferrals. These are not bugs by
 themselves; they are future depth.
@@ -38,6 +38,7 @@ Implemented First-Playable Loop
 - Youth academy.
 - News feed.
 - Tactical simulation and match stats.
+- International competition generation.
 
 
 Not Blocking Before Phase 21
@@ -59,21 +60,19 @@ These deferred items can wait until their dedicated future expansion:
 - UI component extraction.
 
 
-Worth Considering Before Phase 22
+Worth Considering Before Phase 23
 ---------------------------------
-These are not blockers, but they are close enough to international competitions
-that they may affect Phase 22 design:
+These are not blockers, but they are close enough to real-data import that they
+may affect Phase 23 design:
 
-- `Club#international` exists, but the app does not yet distinguish club teams
-  from national teams beyond a flag.
-- Calendar conflicts are still simple.
-- The UI has no tournament detail page yet, so international competition
-  visibility will initially need to live on career/club screens.
+- Generated data has no external identity fields yet.
+- Import behavior needs to coexist with generated fictional data.
+- Imports should be idempotent and should not overwrite save history.
 
 
 Recommended Next Step
 ---------------------
-Proceed to Phase 22 - International Competitions.
+Proceed to Phase 23 - Data Import Foundation.
 
-Phase 22 should focus on creating a small international competition path without
-disrupting the domestic league loop.
+Phase 23 should focus on import identity fields, import runs, and idempotent
+service objects for countries, clubs, athletes, and contracts.

@@ -141,6 +141,12 @@ Fixture
 - Has home club, away club, stadium, scheduled date, status, and result.
 - Should support live simulation state once match time is modeled.
 
+InternationalCompetitionGenerator
+- Implemented service that creates international tournament editions using the
+  existing tournament and fixture infrastructure.
+- Creates lightweight international clubs for countries and schedules fixtures
+  through the league scheduler.
+
 MatchEvent
 - Historical timeline event for a fixture.
 - Current implementation stores goals, major chances, yellow cards, red cards,

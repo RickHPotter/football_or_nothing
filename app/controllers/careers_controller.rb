@@ -11,6 +11,7 @@ class CareersController < ApplicationController
     @manager_season_stats = @manager&.manager_season_stats&.includes(:club, :tournament_edition)&.order(created_at: :desc) || []
     @manager_totals = manager_totals(@manager_season_stats)
     @news_items = news_items_for(@manager&.current_club)
+    @international_editions = international_editions
     @available_clubs = available_clubs_for(@manager) if @manager&.unemployed?
     @rollover_candidate = @career.rollover_candidate if @current_contract && @next_fixture.nil?
   end
@@ -84,13 +85,23 @@ class CareersController < ApplicationController
   def available_clubs_for(manager)
     return Club.none unless manager
 
-    Club.active
+      Club.active
         .includes(:country, :club_finance)
         .left_outer_joins(:current_manager_contract)
         .where(manager_contracts: { id: nil })
         .where(reputation: ..manager.job_reputation_ceiling)
         .order(:reputation, :name)
-  end
+        .select { |club| manager.eligible_for_club?(club) }
+    end
+
+    def international_editions
+      TournamentEdition
+        .includes(:tournament, :champion)
+        .joins(:tournament)
+        .where(tournaments: { scope: Tournament.scopes[:international] })
+        .order(starts_on: :desc)
+        .limit(5)
+    end
 
   def manager_totals(stats)
     {

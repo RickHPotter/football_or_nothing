@@ -25,6 +25,10 @@ class Club < ApplicationRecord
   has_many :training_results, dependent: :destroy
   has_many :scouting_assignments, dependent: :destroy
   has_many :scout_reports, dependent: :destroy
+  has_many :staff_contracts, dependent: :destroy
+  has_many :staff_members, through: :staff_contracts
+  has_many :current_staff_contracts, -> { where(current: true) }, class_name: "StaffContract", inverse_of: :club
+  has_many :current_staff_members, through: :current_staff_contracts, source: :staff_member
   has_many :incoming_transfers, class_name: "Transfer", foreign_key: :to_club_id, dependent: :restrict_with_exception, inverse_of: :to_club
   has_many :outgoing_transfers, class_name: "Transfer", foreign_key: :from_club_id, dependent: :restrict_with_exception, inverse_of: :from_club
   has_many :incoming_transfer_offers, class_name: "TransferOffer", foreign_key: :to_club_id, dependent: :restrict_with_exception, inverse_of: :to_club
@@ -35,7 +39,7 @@ class Club < ApplicationRecord
   validates :reputation, numericality: { only_integer: true, greater_than: 0 }
 
   def current_wage_total
-    current_athlete_contracts.sum(:wage)
+    current_athlete_contracts.sum(:wage) + current_staff_contracts.sum(:wage)
   end
 
   def loaned_in_contracts
@@ -46,5 +50,9 @@ class Club < ApplicationRecord
     athlete_contracts
       .where(current: false, loan: false)
       .where(id: AthleteContract.where(current: true, loan: true).select(:parent_athlete_contract_id))
+  end
+
+  def staff_rating(attribute)
+    current_staff_members.maximum(attribute) || 0
   end
 end

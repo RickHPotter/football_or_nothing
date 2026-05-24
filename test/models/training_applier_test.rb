@@ -51,4 +51,38 @@ class TrainingApplierTest < ActiveSupport::TestCase
 
     assert @club.reload.training_plan.balanced?
   end
+
+  test "fitness staff offsets condition pressure" do
+    StaffMember.create!(
+      country: countries(:one),
+      first_name: "Fit",
+      last_name: "Coach",
+      role: :fitness_coach,
+      reputation: 8,
+      coaching: 8,
+      fitness: 12,
+      scouting: 4,
+      judging_ability: 4,
+      judging_potential: 4,
+      physiotherapy: 4,
+      discipline: 8,
+      motivation: 8
+    ).staff_contracts.create!(club: @club, start_date: Date.new(2026, 1, 1), wage: 100)
+    TrainingPlan.create!(
+      club: @club,
+      manager: @manager,
+      focus: :fitness,
+      intensity: :high,
+      active_from: Date.new(2026, 1, 1)
+    )
+
+    TrainingApplier.call(
+      club: @club,
+      manager: @manager,
+      from_date: Date.new(2026, 1, 1),
+      to_date: Date.new(2026, 1, 8)
+    )
+
+    assert_equal 86, @athlete.reload.condition
+  end
 end

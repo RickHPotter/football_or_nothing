@@ -489,7 +489,7 @@ Deferred:
 
 Phase 18 - Staff
 ----------------
-Status: planned.
+Status: implemented.
 
 Goal:
 Model non-player personnel that affect training, scouting, fitness, and match
@@ -502,7 +502,7 @@ Core roles:
 - scout
 - physio
 
-Likely models:
+Implemented models:
 - `StaffMember`
   - name
   - country
@@ -528,20 +528,22 @@ Staff attributes:
 - motivation
 
 Effects:
-- Coaches improve training.
-- Scouts improve report accuracy.
-- Physios reduce injury duration.
-- Assistants can generate squad and match advice.
+- Coaches improve training growth.
+- Fitness coaches offset training condition pressure.
+- Scouts improve report confidence.
+- Staff wages count against the club wage budget.
 
 UI:
 - Club staff screen.
 - Staff hiring screen.
-- Training and scouting screens show staff effects.
 
 Deferred:
 - Staff personalities.
 - Staff poaching.
 - Deep staff wage-budget accounting.
+- Physio injury-duration effects.
+- Assistant squad and match advice.
+- Training and scouting screens showing exact staff modifiers.
 
 
 Phase 19 - Youth Academy

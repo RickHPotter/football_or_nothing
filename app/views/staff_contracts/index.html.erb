@@ -1,0 +1,76 @@
+<section class="game-header">
+  <div class="game-title-row">
+    <div>
+      <h1>Staff</h1>
+      <p class="game-subtitle"><%= @club.name %></p>
+    </div>
+    <%= link_to "Back to club", career_club_path(@career), class: "btn btn-secondary" %>
+  </div>
+</section>
+
+<div class="game-grid">
+  <div class="game-main">
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Current Staff</h2>
+      </div>
+      <div class="panel-body">
+        <% if @contracts.any? %>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Role</th><th>Rep</th><th>Best</th><th>Wage</th></tr></thead>
+              <tbody>
+                <% @contracts.each do |contract| %>
+                  <% staff = contract.staff_member %>
+                  <tr>
+                    <td><%= staff.full_name %></td>
+                    <td><span class="badge"><%= staff.role.humanize %></span></td>
+                    <td><%= staff.reputation %></td>
+                    <td><%= StaffMember::ATTRIBUTES.map { |attribute| [ attribute, staff.public_send(attribute) ] }.max_by(&:last).first.to_s.humanize %></td>
+                    <td><%= number_to_currency(contract.wage) %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="empty-state">No staff hired yet.</p>
+        <% end %>
+      </div>
+    </section>
+  </div>
+
+  <aside class="game-side">
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Available Staff</h2>
+      </div>
+      <div class="panel-body">
+        <% if @available_staff.any? %>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Role</th><th>Action</th></tr></thead>
+              <tbody>
+                <% @available_staff.each do |staff| %>
+                  <% wage = [ staff.reputation * 150, 100 ].max %>
+                  <tr>
+                    <td><%= staff.full_name %></td>
+                    <td><span class="badge"><%= staff.role.humanize %></span></td>
+                    <td>
+                      <%= button_to "Hire", career_staff_contracts_path(@career), params: {
+                        staff_member_id: staff.id,
+                        wage:
+                      } %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="empty-state">No free staff are available.</p>
+        <% end %>
+      </div>
+    </section>
+  </aside>
+</div>

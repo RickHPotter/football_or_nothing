@@ -259,11 +259,17 @@ StaffMember
 - Non-player football professional.
 - Roles include assistant manager, coach, fitness coach, scout, and physio.
 - Has reputation and role-relevant attributes.
+- Current implementation includes staff identity, role, reputation, status, and
+  attributes for coaching, fitness, scouting, judging ability, judging
+  potential, physiotherapy, discipline, and motivation.
 
 StaffContract
 - Join/history model between staff member and club.
 - Tracks wage, start date, end date, current flag, and status.
 - Staff should affect training, scouting, recovery, and advice.
+- Current implementation lets clubs hire free staff, includes staff wages in
+  wage-budget pressure, improves training through coaches/fitness coaches, and
+  improves scouting confidence through scouts.
 
 
 Youth Development

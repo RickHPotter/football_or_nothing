@@ -56,6 +56,7 @@ class ScoutingAssignmentProcessor
 
     def confidence_for(assignment)
       base = assignment.general? ? 60 : 70
+      base += 10 if club.staff_rating(:scouting) >= 12
       assignment.country.present? || assignment.position.present? ? base + 10 : base
     end
 

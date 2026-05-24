@@ -91,6 +91,7 @@ class TrainingApplier
       return 0 unless athlete.current_ability < athlete.potential_ability
 
       base = INTENSITY_GROWTH.fetch(plan.intensity)
+      base += 1 if club.staff_rating(:coaching) >= 12
       base += 1 if plan.youth_development? && athlete.age && athlete.age < 23
       base += 1 if athlete.potential_ability - athlete.current_ability >= 5
       base.positive? && growth_weeks >= 1 ? 1 : 0
@@ -103,7 +104,9 @@ class TrainingApplier
     end
 
     def condition_delta(plan)
-      INTENSITY_CONDITION.fetch(plan.intensity) * growth_weeks
+      delta = INTENSITY_CONDITION.fetch(plan.intensity) * growth_weeks
+      delta += growth_weeks if club.staff_rating(:fitness) >= 12
+      delta
     end
 
     def growth_weeks

@@ -45,6 +45,7 @@
                 <% if nav_career.manager&.current_club %>
                   <%= link_to "Club", career_club_path(nav_career) %>
                   <%= link_to "Transfers", career_transfers_path(nav_career) %>
+                  <%= link_to "Staff", career_staff_contracts_path(nav_career) %>
                   <%= link_to "Scouting", career_scouting_assignments_path(nav_career) %>
                 <% end %>
               <% else %>

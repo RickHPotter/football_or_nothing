@@ -139,7 +139,9 @@ Implemented:
 - Scouting assignments and reports with country/position/focus targeting,
   date-advance report generation, and transfer-market ability uncertainty for
   unscouted players.
+- Staff members and staff contracts with hiring, staff wage pressure, training
+  modifiers, and scouting-confidence modifiers.
 
 Next major phase:
-Staff, followed by youth, news, tactical simulation, international competitions,
-real-data import, and UI system polish.
+Youth academy, followed by news, tactical simulation, international
+competitions, real-data import, and UI system polish.

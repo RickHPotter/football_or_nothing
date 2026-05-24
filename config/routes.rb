@@ -7,6 +7,7 @@ Rails.application.routes.draw do
     resource :club, only: :show
     resource :training_plan, only: :update
     resources :athletes, only: :show
+    resources :staff_contracts, only: %i[index create]
     resources :scouting_assignments, only: %i[index create]
     resources :transfers, only: %i[index create] do
       post :complete_offer, on: :member

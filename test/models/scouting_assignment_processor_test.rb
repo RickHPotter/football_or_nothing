@@ -43,4 +43,31 @@ class ScoutingAssignmentProcessorTest < ActiveSupport::TestCase
       ScoutingAssignmentProcessor.call(club: @club, date: Date.new(2026, 1, 14))
     end
   end
+
+  test "scouting staff improves report confidence" do
+    StaffMember.create!(
+      country: countries(:one),
+      first_name: "Ana",
+      last_name: "Scout",
+      role: :scout,
+      reputation: 8,
+      coaching: 4,
+      fitness: 4,
+      scouting: 12,
+      judging_ability: 12,
+      judging_potential: 12,
+      physiotherapy: 4,
+      discipline: 8,
+      motivation: 8
+    ).staff_contracts.create!(club: @club, start_date: Date.new(2026, 1, 1), wage: 100)
+    @club.scouting_assignments.create!(
+      focus: :general,
+      starts_on: Date.new(2026, 1, 1),
+      ends_on: Date.new(2026, 1, 15)
+    )
+
+    ScoutingAssignmentProcessor.call(club: @club, date: Date.new(2026, 1, 16))
+
+    assert_operator ScoutReport.last.confidence, :>=, 70
+  end
 end

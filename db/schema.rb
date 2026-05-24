@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_22_242000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_22_243000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -351,6 +351,41 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_242000) do
     t.index ["country_id"], name: "index_stadiums_on_country_id"
   end
 
+  create_table "staff_contracts", force: :cascade do |t|
+    t.bigint "club_id", null: false
+    t.datetime "created_at", null: false
+    t.boolean "current", default: true, null: false
+    t.date "end_date"
+    t.bigint "staff_member_id", null: false
+    t.date "start_date", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.decimal "wage", precision: 15, scale: 2, default: "0.0", null: false
+    t.index ["club_id"], name: "index_staff_contracts_on_club_id"
+    t.index ["staff_member_id", "current"], name: "index_staff_contracts_on_staff_member_id_and_current", unique: true, where: "current"
+    t.index ["staff_member_id"], name: "index_staff_contracts_on_staff_member_id"
+  end
+
+  create_table "staff_members", force: :cascade do |t|
+    t.integer "coaching", default: 1, null: false
+    t.bigint "country_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "discipline", default: 1, null: false
+    t.string "first_name", null: false
+    t.integer "fitness", default: 1, null: false
+    t.integer "judging_ability", default: 1, null: false
+    t.integer "judging_potential", default: 1, null: false
+    t.string "last_name", null: false
+    t.integer "motivation", default: 1, null: false
+    t.integer "physiotherapy", default: 1, null: false
+    t.integer "reputation", default: 1, null: false
+    t.integer "role", default: 0, null: false
+    t.integer "scouting", default: 1, null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["country_id"], name: "index_staff_members_on_country_id"
+  end
+
   create_table "tournament_editions", force: :cascade do |t|
     t.bigint "champion_id"
     t.datetime "created_at", null: false
@@ -528,6 +563,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_242000) do
   add_foreign_key "sessions", "users"
   add_foreign_key "stadiums", "clubs"
   add_foreign_key "stadiums", "countries"
+  add_foreign_key "staff_contracts", "clubs"
+  add_foreign_key "staff_contracts", "staff_members"
+  add_foreign_key "staff_members", "countries"
   add_foreign_key "tournament_editions", "clubs", column: "champion_id"
   add_foreign_key "tournament_editions", "tournaments"
   add_foreign_key "tournament_participations", "clubs"

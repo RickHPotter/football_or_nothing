@@ -277,12 +277,17 @@ Youth Development
 YouthAcademy
 - Club youth setup or club-level academy fields.
 - Holds academy quality and possibly annual operating cost.
+- Current implementation uses `Club#academy_quality`.
 
 YouthIntake
 - Yearly event that creates academy prospects.
 - Tracks club, season year, generated date, and generated athletes.
 - Quality should depend on club reputation, country reputation, and academy
   quality, with rare high-potential outliers.
+- Current implementation generates one intake per club season and links
+  prospects through `Athlete#youth_intake`.
+- Prospects can be promoted into senior athlete contracts and marked as academy
+  graduates.
 
 
 Achievements and History

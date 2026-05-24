@@ -1,0 +1,77 @@
+<section class="game-header">
+  <div class="game-title-row">
+    <div>
+      <h1>Youth Academy</h1>
+      <p class="game-subtitle"><%= @club.name %> · Quality <%= @club.academy_quality %></p>
+    </div>
+    <%= link_to "Back to club", career_club_path(@career), class: "btn btn-secondary" %>
+  </div>
+</section>
+
+<div class="game-grid">
+  <div class="game-main">
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Prospects</h2>
+        <%= button_to "Generate intake", career_youth_intakes_path(@career), class: "btn" %>
+      </div>
+      <div class="panel-body">
+        <% if @current_intake&.athletes&.any? %>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Position</th><th>Ability</th><th>Potential</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                <% @current_intake.athletes.order(potential_ability: :desc).each do |athlete| %>
+                  <tr>
+                    <td><%= athlete.first_name %> <%= athlete.last_name %></td>
+                    <td><span class="badge"><%= athlete.position.humanize %></span></td>
+                    <td><%= athlete.current_ability %></td>
+                    <td><%= athlete.potential_ability %></td>
+                    <td><%= athlete.academy_graduate? ? "Promoted" : "Academy" %></td>
+                    <td>
+                      <% if athlete.youth_academy_player? %>
+                        <%= button_to "Promote", promote_career_youth_intakes_path(@career), params: { athlete_id: athlete.id, wage: 100 } %>
+                      <% else %>
+                        -
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="empty-state">No youth prospects generated yet.</p>
+        <% end %>
+      </div>
+    </section>
+  </div>
+
+  <aside class="game-side">
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Intakes</h2>
+      </div>
+      <div class="panel-body">
+        <% if @intakes.any? %>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Season</th><th>Date</th><th>Players</th></tr></thead>
+              <tbody>
+                <% @intakes.each do |intake| %>
+                  <tr>
+                    <td><%= intake.season_year %></td>
+                    <td><%= intake.generated_on %></td>
+                    <td><%= intake.athletes.size %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="empty-state">No intakes recorded.</p>
+        <% end %>
+      </div>
+    </section>
+  </aside>
+</div>

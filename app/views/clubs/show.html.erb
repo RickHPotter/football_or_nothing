@@ -194,6 +194,22 @@
 
     <section class="panel">
       <div class="panel-header">
+        <h2>Youth Academy</h2>
+        <span class="badge">Q<%= @club.academy_quality %></span>
+      </div>
+      <div class="panel-body space-y-2">
+        <% if @latest_youth_intake %>
+          <p><span class="stat-label">Latest intake</span><br><strong><%= @latest_youth_intake.season_year %></strong></p>
+          <p><span class="stat-label">Prospects</span><br><%= @latest_youth_intake.athletes.count %></p>
+        <% else %>
+          <p class="empty-state">No academy intake generated yet.</p>
+        <% end %>
+        <%= link_to "Open academy", career_youth_intakes_path(@career), class: "btn btn-secondary" %>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
         <h2>Stadium</h2>
       </div>
       <div class="panel-body space-y-2">

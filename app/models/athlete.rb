@@ -19,6 +19,7 @@ class Athlete < ApplicationRecord
   enum :status, { active: 0, injured: 1, retired: 2 }
 
   belongs_to :country
+  belongs_to :youth_intake, optional: true
   has_many :athlete_contracts, dependent: :destroy
   has_many :clubs, through: :athlete_contracts
   has_one :current_athlete_contract, -> { where(current: true) }, class_name: "AthleteContract", inverse_of: :athlete

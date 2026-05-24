@@ -548,7 +548,7 @@ Deferred:
 
 Phase 19 - Youth Academy
 ------------------------
-Status: planned.
+Status: implemented.
 
 Goal:
 Create a long-term squad-building path through generated youth prospects.
@@ -560,13 +560,25 @@ Scope:
   quality.
 - Allow promotion to senior squad.
 
-Likely models:
-- `YouthAcademy` or club fields such as `academy_quality`.
+Implemented models:
+- Club field `academy_quality`.
 - `YouthIntake`
   - club
   - season_year
   - generated_on
-- Optional athlete flags for youth/senior squad status.
+- Athlete fields:
+  - youth_intake
+  - youth_academy_player
+  - academy_graduate
+
+Implemented behavior:
+- Clubs can generate one youth intake per season.
+- Intake prospects are generated as academy athletes without senior contracts.
+- Prospect potential depends on club reputation, country reputation, and academy
+  quality.
+- Managers can promote academy prospects into the senior squad.
+- Promotion creates a current athlete contract and marks the athlete as an
+  academy graduate.
 
 Rules:
 - Bigger clubs produce better youth on average.
@@ -583,6 +595,8 @@ Deferred:
 - Youth coaches.
 - Training groups.
 - Youth poaching.
+- Academy investment and operating costs.
+- Richer intake personalities and rare outliers.
 
 
 Phase 20 - News Feed

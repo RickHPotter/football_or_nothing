@@ -23,6 +23,7 @@ class ClubsController < ApplicationController
       active_from: @career.current_date
     )
     @training_results = @club.training_results.includes(:athlete).order(occurred_on: :desc, created_at: :desc).limit(6)
+    @latest_youth_intake = @club.youth_intakes.includes(:athletes).order(season_year: :desc).first
   end
 
   private

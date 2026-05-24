@@ -141,7 +141,9 @@ Implemented:
   unscouted players.
 - Staff members and staff contracts with hiring, staff wage pressure, training
   modifiers, and scouting-confidence modifiers.
+- Youth academy intakes with academy quality, generated prospects, and
+  promotion into senior squad contracts.
 
 Next major phase:
-Youth academy, followed by news, tactical simulation, international
-competitions, real-data import, and UI system polish.
+News feed, followed by tactical simulation, international competitions,
+real-data import, and UI system polish.

@@ -29,6 +29,7 @@ class Club < ApplicationRecord
   has_many :staff_members, through: :staff_contracts
   has_many :current_staff_contracts, -> { where(current: true) }, class_name: "StaffContract", inverse_of: :club
   has_many :current_staff_members, through: :current_staff_contracts, source: :staff_member
+  has_many :youth_intakes, dependent: :destroy
   has_many :incoming_transfers, class_name: "Transfer", foreign_key: :to_club_id, dependent: :restrict_with_exception, inverse_of: :to_club
   has_many :outgoing_transfers, class_name: "Transfer", foreign_key: :from_club_id, dependent: :restrict_with_exception, inverse_of: :from_club
   has_many :incoming_transfer_offers, class_name: "TransferOffer", foreign_key: :to_club_id, dependent: :restrict_with_exception, inverse_of: :to_club
@@ -37,6 +38,7 @@ class Club < ApplicationRecord
   validates :name, :short_name, presence: true
   validates :name, uniqueness: { scope: :country_id }
   validates :reputation, numericality: { only_integer: true, greater_than: 0 }
+  validates :academy_quality, numericality: { only_integer: true, in: 1..20 }
 
   def current_wage_total
     current_athlete_contracts.sum(:wage) + current_staff_contracts.sum(:wage)

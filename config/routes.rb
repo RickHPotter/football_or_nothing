@@ -9,6 +9,9 @@ Rails.application.routes.draw do
     resources :athletes, only: :show
     resources :staff_contracts, only: %i[index create]
     resources :scouting_assignments, only: %i[index create]
+    resources :youth_intakes, only: %i[index create] do
+      post :promote, on: :collection
+    end
     resources :transfers, only: %i[index create] do
       post :complete_offer, on: :member
     end

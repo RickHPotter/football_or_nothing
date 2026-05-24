@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_22_243000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_22_244000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -57,6 +57,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_243000) do
   end
 
   create_table "athletes", force: :cascade do |t|
+    t.boolean "academy_graduate", default: false, null: false
     t.integer "acceleration", default: 1, null: false
     t.date "birthdate"
     t.integer "composure", default: 1, null: false
@@ -95,7 +96,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_243000) do
     t.datetime "updated_at", null: false
     t.integer "weight_kg"
     t.integer "work_rate", default: 1, null: false
+    t.boolean "youth_academy_player", default: false, null: false
+    t.bigint "youth_intake_id"
     t.index ["country_id"], name: "index_athletes_on_country_id"
+    t.index ["youth_intake_id"], name: "index_athletes_on_youth_intake_id"
   end
 
   create_table "careers", force: :cascade do |t|
@@ -143,6 +147,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_243000) do
   end
 
   create_table "clubs", force: :cascade do |t|
+    t.integer "academy_quality", default: 5, null: false
     t.bigint "country_id", null: false
     t.datetime "created_at", null: false
     t.integer "founded_year"
@@ -523,6 +528,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_243000) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  create_table "youth_intakes", force: :cascade do |t|
+    t.bigint "club_id", null: false
+    t.datetime "created_at", null: false
+    t.date "generated_on", null: false
+    t.integer "season_year", null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_id", "season_year"], name: "index_youth_intakes_on_club_id_and_season_year", unique: true
+    t.index ["club_id"], name: "index_youth_intakes_on_club_id"
+  end
+
   add_foreign_key "athlete_contracts", "athlete_contracts", column: "parent_athlete_contract_id"
   add_foreign_key "athlete_contracts", "athletes"
   add_foreign_key "athlete_contracts", "clubs"
@@ -530,6 +545,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_243000) do
   add_foreign_key "athlete_season_stats", "clubs"
   add_foreign_key "athlete_season_stats", "tournament_editions"
   add_foreign_key "athletes", "countries"
+  add_foreign_key "athletes", "youth_intakes"
   add_foreign_key "careers", "users"
   add_foreign_key "club_finances", "clubs"
   add_foreign_key "club_season_stats", "clubs"
@@ -585,4 +601,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_243000) do
   add_foreign_key "trophies", "clubs"
   add_foreign_key "trophies", "managers"
   add_foreign_key "trophies", "tournament_editions"
+  add_foreign_key "youth_intakes", "clubs"
 end

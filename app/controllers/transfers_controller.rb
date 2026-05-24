@@ -5,6 +5,7 @@ class TransfersController < ApplicationController
   def index
     @finance = @club.club_finance
     @market_athletes = market_athletes
+    @scout_reports = @club.scout_reports.where(athlete: @market_athletes).index_by(&:athlete_id)
     @offers = @club.incoming_transfer_offers.includes(:athlete, :from_club).recent.limit(20)
     @transfers = @club.incoming_transfers.includes(:athlete, :from_club).order(transfer_date: :desc, created_at: :desc).limit(20)
   end

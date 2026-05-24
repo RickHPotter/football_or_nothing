@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_22_241000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_22_242000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -296,6 +296,37 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_241000) do
     t.index ["fixture_id"], name: "index_match_states_on_fixture_id", unique: true
   end
 
+  create_table "scout_reports", force: :cascade do |t|
+    t.bigint "athlete_id", null: false
+    t.bigint "club_id", null: false
+    t.integer "confidence", null: false
+    t.datetime "created_at", null: false
+    t.date "created_on", null: false
+    t.integer "observed_current_ability", null: false
+    t.integer "observed_potential_ability", null: false
+    t.bigint "scouting_assignment_id"
+    t.text "summary"
+    t.datetime "updated_at", null: false
+    t.index ["athlete_id"], name: "index_scout_reports_on_athlete_id"
+    t.index ["club_id", "athlete_id"], name: "index_scout_reports_on_club_id_and_athlete_id", unique: true
+    t.index ["club_id"], name: "index_scout_reports_on_club_id"
+    t.index ["scouting_assignment_id"], name: "index_scout_reports_on_scouting_assignment_id"
+  end
+
+  create_table "scouting_assignments", force: :cascade do |t|
+    t.bigint "club_id", null: false
+    t.bigint "country_id"
+    t.datetime "created_at", null: false
+    t.date "ends_on", null: false
+    t.integer "focus", default: 0, null: false
+    t.integer "position"
+    t.date "starts_on", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_id"], name: "index_scouting_assignments_on_club_id"
+    t.index ["country_id"], name: "index_scouting_assignments_on_country_id"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
@@ -489,6 +520,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_241000) do
   add_foreign_key "match_events", "clubs"
   add_foreign_key "match_events", "fixtures"
   add_foreign_key "match_states", "fixtures"
+  add_foreign_key "scout_reports", "athletes"
+  add_foreign_key "scout_reports", "clubs"
+  add_foreign_key "scout_reports", "scouting_assignments"
+  add_foreign_key "scouting_assignments", "clubs"
+  add_foreign_key "scouting_assignments", "countries"
   add_foreign_key "sessions", "users"
   add_foreign_key "stadiums", "clubs"
   add_foreign_key "stadiums", "countries"

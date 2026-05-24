@@ -28,6 +28,7 @@ class Athlete < ApplicationRecord
   has_many :transfers, dependent: :restrict_with_exception
   has_many :transfer_offers, dependent: :restrict_with_exception
   has_many :training_results, dependent: :destroy
+  has_many :scout_reports, dependent: :destroy
 
   validates :first_name, :last_name, presence: true
   validates :current_ability, :potential_ability, :reputation,

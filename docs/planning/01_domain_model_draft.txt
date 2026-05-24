@@ -240,6 +240,8 @@ ScoutingAssignment
 - Represents a club scouting task.
 - Tracks target country, position, focus, status, starts_on, and ends_on.
 - Should generate or refresh scout reports over time.
+- Current implementation processes completed assignments during date
+  advancement.
 
 ScoutReport
 - Club-specific knowledge about an athlete.
@@ -247,6 +249,8 @@ ScoutReport
   summary, and creation date.
 - Allows the transfer market to show uncertain information before a player is
   fully scouted.
+- Current implementation stores one report per club/player and uses observed
+  ability in the transfer market when available.
 
 
 Staff

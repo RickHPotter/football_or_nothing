@@ -434,7 +434,7 @@ Deferred:
 
 Phase 17 - Scouting
 -------------------
-Status: planned.
+Status: implemented.
 
 Goal:
 Make player discovery and information uncertainty part of recruitment.
@@ -463,16 +463,28 @@ Likely models:
   - starts_on
   - ends_on
 
+Implemented behavior:
+- Managers can create club scouting assignments from a scouting screen.
+- Assignments can target country, position, and focus.
+- Date advancement processes assignments whose end date has passed.
+- Completed assignments generate scout reports for matching players outside the
+  manager's current squad.
+- Reports store observed ability, observed potential, confidence, summary, and
+  report date.
+- Transfer market displays observed ability and confidence for scouted players
+  and hides exact ability for unscouted players.
+
 UI:
 - New scouting screen.
 - Transfer market shows known vs unscouted players.
-- Athlete profile shows report confidence.
 
 Deferred:
 - Staff scout quality.
 - Hidden attributes.
 - International restrictions.
 - Scouting costs.
+- Athlete profile report confidence for non-owned targets.
+- Advanced searches by reputation and ability range.
 
 
 Phase 18 - Staff

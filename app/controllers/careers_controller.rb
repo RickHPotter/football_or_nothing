@@ -19,6 +19,7 @@ class CareersController < ApplicationController
       current_date = @career.current_date
       @career.update!(current_date: fixture.scheduled_on)
       apply_training(current_date, fixture.scheduled_on)
+      process_scouting(fixture.scheduled_on)
       redirect_to career_fixture_path(@career, fixture), notice: "Advanced to match day."
     else
       redirect_to @career, alert: "No upcoming fixtures are scheduled."
@@ -106,5 +107,11 @@ class CareersController < ApplicationController
         from_date:,
         to_date:
       )
+    end
+
+    def process_scouting(date)
+      return unless @career.manager&.current_club
+
+      ScoutingAssignmentProcessor.call(club: @career.manager.current_club, date:)
     end
 end

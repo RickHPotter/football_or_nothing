@@ -1,0 +1,104 @@
+<section class="game-header">
+  <div class="game-title-row">
+    <div>
+      <h1>Scouting</h1>
+      <p class="game-subtitle"><%= @club.name %></p>
+    </div>
+    <%= link_to "Back to club", career_club_path(@career), class: "btn btn-secondary" %>
+  </div>
+</section>
+
+<div class="game-grid">
+  <div class="game-main">
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Reports</h2>
+      </div>
+      <div class="panel-body">
+        <% if @reports.any? %>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Player</th>
+                  <th>Country</th>
+                  <th>Position</th>
+                  <th>Ability</th>
+                  <th>Potential</th>
+                  <th>Confidence</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @reports.each do |report| %>
+                  <tr>
+                    <td><%= report.created_on %></td>
+                    <td><%= report.athlete.first_name %> <%= report.athlete.last_name %></td>
+                    <td><%= report.athlete.country.name %></td>
+                    <td><span class="badge"><%= report.athlete.position.humanize %></span></td>
+                    <td><%= report.observed_current_ability %></td>
+                    <td><%= report.observed_potential_ability %></td>
+                    <td><%= report.confidence %>%</td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="empty-state">No reports completed yet.</p>
+        <% end %>
+      </div>
+    </section>
+  </div>
+
+  <aside class="game-side">
+    <section class="panel">
+      <div class="panel-header">
+        <h2>New Assignment</h2>
+      </div>
+      <div class="panel-body">
+        <%= form_with model: @assignment, url: career_scouting_assignments_path(@career), class: "space-y-3" do |form| %>
+          <div>
+            <%= form.label :country_id, "Country", class: "stat-label" %>
+            <%= form.collection_select :country_id, @countries, :id, :name, { include_blank: "Any country" }, class: "field-input" %>
+          </div>
+          <div>
+            <%= form.label :position, class: "stat-label" %>
+            <%= form.select :position, Athlete.defined_enums.fetch("position").keys.map { |position| [ position.humanize, position ] }, { include_blank: "Any position" }, class: "field-input" %>
+          </div>
+          <div>
+            <%= form.label :focus, class: "stat-label" %>
+            <%= form.select :focus, ScoutingAssignment.defined_enums.fetch("focus").keys.map { |focus| [ focus.humanize, focus ] }, {}, class: "field-input" %>
+          </div>
+          <%= form.submit "Start assignment", class: "btn" %>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Assignments</h2>
+      </div>
+      <div class="panel-body">
+        <% if @assignments.any? %>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Ends</th><th>Focus</th><th>Status</th></tr></thead>
+              <tbody>
+                <% @assignments.each do |assignment| %>
+                  <tr>
+                    <td><%= assignment.ends_on %></td>
+                    <td><%= assignment.focus.humanize %></td>
+                    <td><span class="badge <%= assignment.completed? ? "badge-good" : "" %>"><%= assignment.status.humanize %></span></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="empty-state">No scouting assignments yet.</p>
+        <% end %>
+      </div>
+    </section>
+  </aside>
+</div>

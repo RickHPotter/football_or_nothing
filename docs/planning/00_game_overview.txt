@@ -136,7 +136,10 @@ Implemented:
 - Club training plans with focus/intensity controls, date-advance training
   application, condition impact, attribute development, and recent result
   history.
+- Scouting assignments and reports with country/position/focus targeting,
+  date-advance report generation, and transfer-market ability uncertainty for
+  unscouted players.
 
 Next major phase:
-Scouting, followed by staff, youth, news, tactical simulation, international
-competitions, real-data import, and UI system polish.
+Staff, followed by youth, news, tactical simulation, international competitions,
+real-data import, and UI system polish.

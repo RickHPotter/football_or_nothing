@@ -32,6 +32,7 @@
               <tbody>
                 <% @market_athletes.each do |athlete| %>
                   <% contract = athlete.current_athlete_contract %>
+                  <% report = @scout_reports[athlete.id] %>
                   <% suggested_fee = contract ? (contract.release_clause || (athlete.current_ability * 50_000)) : 0 %>
                   <% suggested_wage = contract ? [ contract.wage, 100 ].max : 100 %>
                   <% loan_ends_on = @career.current_date + 180.days %>
@@ -39,7 +40,13 @@
                     <td><%= link_to [ athlete.first_name, athlete.last_name ].join(" "), career_athlete_path(@career, athlete) %></td>
                     <td><%= contract&.club&.name || "Free agent" %></td>
                     <td><span class="badge"><%= athlete.position.humanize %></span></td>
-                    <td><%= athlete.current_ability %></td>
+                    <td>
+                      <% if report %>
+                        <%= report.observed_current_ability %> <small>(<%= report.confidence %>%)</small>
+                      <% else %>
+                        <span class="badge">Unscouted</span>
+                      <% end %>
+                    </td>
                     <td><%= number_to_currency(suggested_fee) %></td>
                     <td><%= number_to_currency(suggested_wage) %></td>
                     <td>

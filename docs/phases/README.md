@@ -22,12 +22,14 @@ Implemented Phase Documents
 - `21_tactical_simulation.md`
 - `22_international_competitions.md`
 - `23_data_import_foundation.md`
+- `24_ui_system_polish.md`
 - `phase_status_audit.md`
 
 
 Current Continuation Point
 --------------------------
-Phases 14 through 23 are implemented at first-playable depth.
+Phases 14 through 24 are implemented at first-playable depth.
 
-The next planned phase is Phase 24 - UI System Polish, unless the project
-chooses to address one of the Phase 1-20 deferred items first.
+The first playable backlog through Phase 24 is implemented at first-playable
+depth. The next work should be chosen from deferred depth, bug fixing, or a new
+planning pass.

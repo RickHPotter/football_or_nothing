@@ -9,11 +9,11 @@ so the next phase can be chosen deliberately.
 
 Summary
 -------
-Phases 1 through 23 are implemented enough to support the current first
+Phases 1 through 24 are implemented enough to support the current first
 playable loop.
 
-There are no blocking leftovers from phases 1 through 23 that must be completed
-before starting Phase 24.
+There are no blocking leftovers from phases 1 through 24 in the first playable
+backlog.
 
 There are, however, many intentional deferrals. These are not bugs by
 themselves; they are future depth.
@@ -40,6 +40,7 @@ Implemented First-Playable Loop
 - Tactical simulation and match stats.
 - International competition generation.
 - Data import foundation.
+- Initial UI system polish.
 
 
 Not Blocking Before Phase 21
@@ -61,19 +62,17 @@ These deferred items can wait until their dedicated future expansion:
 - UI component extraction.
 
 
-Worth Considering Before Phase 24
----------------------------------
-These are not blockers, but they are close enough to UI polish that they may
-affect Phase 24 design:
+Worth Considering Next
+----------------------
+These are not blockers, but they are good candidates for the next planning pass:
 
-- Many screens repeat panel/table/badge markup directly.
-- Navigation does not yet highlight active sections.
+- Many screens still repeat table and stat tile markup directly.
 - Empty states and mobile density are inconsistent across newer feature screens.
+- RuboCop currently reports global complexity/style debt in older files.
 
 
 Recommended Next Step
 ---------------------
-Proceed to Phase 24 - UI System Polish.
-
-Phase 24 should focus on small reusable view helpers and navigation polish
-without changing the game loop.
+Recommended next step:
+Define the next backlog around either tactical depth, UI hardening, or code
+quality cleanup.

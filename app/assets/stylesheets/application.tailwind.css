@@ -74,9 +74,13 @@
     @apply flex flex-wrap gap-1;
   }
 
-  .game-nav a,
+  .game-nav-link,
   .game-nav button {
     @apply border border-board-700 bg-board-700 px-3 py-1.5 text-xs font-bold uppercase text-board-50 no-underline hover:bg-pitch-800 hover:no-underline;
+  }
+
+  .game-nav-link.is-active {
+    @apply border-pitch-700 bg-pitch-800 text-white;
   }
 
   .game-page {

@@ -153,6 +153,9 @@ Implemented:
   international job eligibility.
 - Data import foundation with external identity fields, import run tracking,
   and idempotent importers for countries, clubs, athletes, and contracts.
+- Initial UI system polish with reusable helper methods, a shared panel partial,
+  and active navigation state.
 
 Next major phase:
-UI system polish.
+The first playable backlog through Phase 24 is complete at initial depth. Next
+work should come from a new planning pass or deferred-depth priorities.

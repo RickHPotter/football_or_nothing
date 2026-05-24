@@ -39,18 +39,18 @@
           <% if Current.user %>
             <% nav_career = Current.user.careers.includes(manager: { current_manager_contract: :club }).order(created_at: :desc).first %>
             <nav class="game-nav">
-              <%= link_to "Home", root_path %>
+              <%= game_nav_link "Home", root_path %>
               <% if nav_career %>
-                <%= link_to "Career", career_path(nav_career) %>
+                <%= game_nav_link "Career", career_path(nav_career) %>
                 <% if nav_career.manager&.current_club %>
-                  <%= link_to "Club", career_club_path(nav_career) %>
-                  <%= link_to "Transfers", career_transfers_path(nav_career) %>
-                  <%= link_to "Staff", career_staff_contracts_path(nav_career) %>
-                  <%= link_to "Scouting", career_scouting_assignments_path(nav_career) %>
-                  <%= link_to "Youth", career_youth_intakes_path(nav_career) %>
+                  <%= game_nav_link "Club", career_club_path(nav_career) %>
+                  <%= game_nav_link "Transfers", career_transfers_path(nav_career) %>
+                  <%= game_nav_link "Staff", career_staff_contracts_path(nav_career) %>
+                  <%= game_nav_link "Scouting", career_scouting_assignments_path(nav_career) %>
+                  <%= game_nav_link "Youth", career_youth_intakes_path(nav_career) %>
                 <% end %>
               <% else %>
-                <%= link_to "New Career", new_career_path %>
+                <%= game_nav_link "New Career", new_career_path %>
               <% end %>
               <%= button_to "Sign out", session_path, method: :delete %>
             </nav>

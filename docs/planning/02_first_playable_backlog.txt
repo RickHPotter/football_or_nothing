@@ -794,7 +794,7 @@ Deferred:
 
 Phase 24 - UI System Polish
 ---------------------------
-Status: planned.
+Status: implemented.
 
 Goal:
 Turn the current Tailwind pass into a consistent reusable game interface.
@@ -814,6 +814,13 @@ Scope:
 - Improve empty states.
 - Add competition and season filters where useful.
 
+Implemented:
+- `game_nav_link` helper.
+- `status_badge` helper.
+- `panel` helper and `shared/_panel` partial.
+- Active navigation state in the top bar.
+- Initial CSS support for active nav links.
+
 Screens to revisit:
 - career dashboard
 - club dashboard
@@ -830,6 +837,8 @@ Deferred:
 - Animations.
 - Theme customization.
 - Canvas or visual match engine.
+- Full table/stat-tile component extraction.
+- Mobile-specific layout pass.
 
 
 Recommended Order After Phase 13

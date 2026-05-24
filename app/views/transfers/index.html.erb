@@ -34,6 +34,7 @@
                   <% contract = athlete.current_athlete_contract %>
                   <% suggested_fee = contract ? (contract.release_clause || (athlete.current_ability * 50_000)) : 0 %>
                   <% suggested_wage = contract ? [ contract.wage, 100 ].max : 100 %>
+                  <% loan_ends_on = @career.current_date + 180.days %>
                   <tr>
                     <td><%= link_to [ athlete.first_name, athlete.last_name ].join(" "), career_athlete_path(@career, athlete) %></td>
                     <td><%= contract&.club&.name || "Free agent" %></td>
@@ -42,11 +43,21 @@
                     <td><%= number_to_currency(suggested_fee) %></td>
                     <td><%= number_to_currency(suggested_wage) %></td>
                     <td>
-                      <%= button_to "Offer", career_transfers_path(@career), params: {
+                      <%= button_to "Buy", career_transfers_path(@career), params: {
                         athlete_id: athlete.id,
                         fee: suggested_fee,
-                        wage: suggested_wage
+                        wage: suggested_wage,
+                        transfer_type: "permanent"
                       } %>
+                      <% if contract %>
+                        <%= button_to "Loan", career_transfers_path(@career), params: {
+                          athlete_id: athlete.id,
+                          fee: 0,
+                          wage: suggested_wage,
+                          transfer_type: "loan",
+                          loan_ends_on:
+                        } %>
+                      <% end %>
                     </td>
                   </tr>
                 <% end %>
@@ -91,6 +102,7 @@
                   <th>From</th>
                   <th>Fee</th>
                   <th>Wage</th>
+                  <th>Type</th>
                   <th>Status</th>
                   <th></th>
                 </tr>
@@ -102,6 +114,12 @@
                     <td><%= offer.from_club&.name || "Free agent" %></td>
                     <td><%= number_to_currency(offer.offered_fee) %></td>
                     <td><%= number_to_currency(offer.offered_wage) %></td>
+                    <td>
+                      <span class="badge"><%= offer.transfer_type.humanize %></span>
+                      <% if offer.loan? %>
+                        <br><small>Until <%= offer.loan_ends_on %></small>
+                      <% end %>
+                    </td>
                     <td><span class="badge <%= offer.completed? ? "badge-good" : "" %>"><%= offer.status.humanize %></span></td>
                     <td>
                       <% if offer.pending? %>
@@ -136,6 +154,7 @@
                   <th>From</th>
                   <th>Fee</th>
                   <th>Wage</th>
+                  <th>Type</th>
                 </tr>
               </thead>
               <tbody>
@@ -146,6 +165,12 @@
                     <td><%= transfer.from_club&.name || "Free agent" %></td>
                     <td><%= number_to_currency(transfer.fee) %></td>
                     <td><%= number_to_currency(transfer.wage) %></td>
+                    <td>
+                      <span class="badge"><%= transfer.transfer_type.humanize %></span>
+                      <% if transfer.loan? %>
+                        <br><small>Until <%= transfer.loan_ends_on %></small>
+                      <% end %>
+                    </td>
                   </tr>
                 <% end %>
               </tbody>

@@ -128,8 +128,9 @@ Implemented:
   contracts.
 - Squad availability rules that make injuries and suspensions affect future
   lineup generation.
+- Loan transfers with temporary current contracts, parent-contract restoration
+  on expiry, and transfer-market loan offers.
 
 Next major phase:
-Loans, then AI squad movement, followed by training, scouting, staff, youth,
-news, tactical simulation, international competitions, real-data import, and UI
-system polish.
+AI squad movement, followed by training, scouting, staff, youth, news, tactical
+simulation, international competitions, real-data import, and UI system polish.

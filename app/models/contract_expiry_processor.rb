@@ -8,7 +8,7 @@ class ContractExpiryProcessor
   end
 
   def call
-    AthleteContract.where(current: true).where.not(end_date: nil).where(end_date: ...cutoff_date).find_each do |contract|
+    AthleteContract.where(current: true, loan: false).where.not(end_date: nil).where(end_date: ...cutoff_date).find_each do |contract|
       contract.update!(current: false, status: :expired)
     end
   end

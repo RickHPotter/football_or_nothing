@@ -35,6 +35,22 @@ class TransferOfferProcessorTest < ActiveSupport::TestCase
     assert_equal @buyer, @athlete.reload.current_club
   end
 
+  test "completes acceptable loan offer" do
+    @offer.update!(
+      transfer_type: :loan,
+      offered_fee: 0,
+      loan_ends_on: Date.new(2026, 8, 1)
+    )
+
+    assert_difference "Transfer.count", 1 do
+      TransferOfferProcessor.call(offer: @offer, transfer_date: Date.new(2026, 2, 2))
+    end
+
+    assert @offer.reload.completed?
+    assert @athlete.reload.current_athlete_contract.loan?
+    assert_equal @buyer, @athlete.current_club
+  end
+
   test "rejects offer below asking price" do
     @offer.update!(offered_fee: 500)
 

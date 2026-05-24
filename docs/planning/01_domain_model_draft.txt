@@ -185,23 +185,24 @@ Transfer
 - Historical movement of an athlete between clubs.
 - Tracks from club, to club, athlete, transfer date, fee, type, and status.
 - Types may include permanent, loan, free transfer, release, youth promotion.
-- Current implementation supports completed permanent and free transfers,
+- Current implementation supports completed permanent, free, and loan transfers,
   updates current contracts, and enforces transfer and wage budget checks.
 
 Loan
-- Optional separate model if loans need enough behavior.
-- Could also start as Transfer with type = loan and fields for loan dates.
-- Planned behavior should preserve the parent club contract while temporarily
-  making the athlete available to the loan club.
-- Track start date, end date, wage contribution, optional fee, parent club, and
-  loan club.
+- Current implementation uses `Transfer` with type = loan and loan end date,
+  plus a current loan `AthleteContract`.
+- Loan behavior preserves the parent club contract as non-current while
+  temporarily making the athlete available to the loan club.
+- Loan expiry restores the parent contract and expires the temporary loan
+  contract.
+- Deferred details include recalls, buy options, and complex wage splits.
 
 TransferOffer
 - Future model for negotiations.
 - Tracks bidding club, selling club, athlete, fee, wage proposal, status, and
   expiration.
 - Current implementation stores pending offers and can finalize acceptable
-  offers into completed transfers.
+  permanent, free, and loan offers into completed transfers.
 
 AiTransferPlanner
 - Future service concept for transfer-window world movement.

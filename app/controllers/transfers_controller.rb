@@ -24,6 +24,8 @@ class TransfersController < ApplicationController
       expires_on: @career.current_date + 14.days,
       offered_fee: params.expect(:fee),
       offered_wage: params.expect(:wage),
+      transfer_type: params[:transfer_type].presence || "permanent",
+      loan_ends_on: params[:loan_ends_on].presence,
       status: :pending,
       notes: "Initial offer from #{@club.name}."
     )

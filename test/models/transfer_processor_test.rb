@@ -59,6 +59,43 @@ class TransferProcessorTest < ActiveSupport::TestCase
     assert_equal @buyer, @athlete.reload.current_club
   end
 
+  test "completes loan and keeps parent contract for return" do
+    transfer = TransferProcessor.call(
+      athlete: @athlete,
+      to_club: @buyer,
+      transfer_date: Date.new(2026, 2, 1),
+      fee: 0,
+      wage: 100,
+      transfer_type: :loan,
+      loan_ends_on: Date.new(2026, 8, 1)
+    )
+
+    loan_contract = @athlete.reload.current_athlete_contract
+
+    assert transfer.loan?
+    assert_equal Date.new(2026, 8, 1), transfer.loan_ends_on
+    assert @contract.reload.active?
+    assert_not @contract.current?
+    assert loan_contract.loan?
+    assert_equal @contract, loan_contract.parent_athlete_contract
+    assert_equal @buyer, @athlete.current_club
+  end
+
+  test "rejects loan without end date" do
+    assert_no_difference "Transfer.count" do
+      assert_raises ActiveRecord::RecordInvalid do
+        TransferProcessor.call(
+          athlete: @athlete,
+          to_club: @buyer,
+          transfer_date: Date.new(2026, 2, 1),
+          fee: 0,
+          wage: 100,
+          transfer_type: :loan
+        )
+      end
+    end
+  end
+
   test "rejects transfer above budget" do
     @buyer.club_finance.update!(transfer_budget: 500)
 

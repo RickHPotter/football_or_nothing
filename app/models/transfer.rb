@@ -1,5 +1,5 @@
 class Transfer < ApplicationRecord
-  enum :transfer_type, { permanent: 0, free_transfer: 1 }
+  enum :transfer_type, { permanent: 0, free_transfer: 1, loan: 2 }
   enum :status, { completed: 0, failed: 1 }
 
   belongs_to :athlete
@@ -8,6 +8,7 @@ class Transfer < ApplicationRecord
 
   validates :transfer_date, presence: true
   validates :fee, :wage, numericality: { greater_than_or_equal_to: 0 }
+  validates :loan_ends_on, presence: true, if: :loan?
   validate :from_and_to_clubs_must_differ
 
   private

@@ -275,7 +275,7 @@ Deferred:
 
 Phase 14 - Loans
 ----------------
-Status: planned.
+Status: implemented.
 
 Goal:
 Support temporary player movement without destroying parent-club contract
@@ -290,23 +290,30 @@ Scope:
 - Exclude loaned-out players from the parent club lineup pool.
 - Return players to parent clubs when loans expire.
 
-Likely implementation:
-- Extend `TransferOffer` and `Transfer` with loan-related type/status fields if
-  the current structures remain sufficient.
-- Consider a dedicated `Loan` model if behavior grows beyond basic fields.
-- Add helper scopes for loaned-in and loaned-out squad membership.
-- Make `Fixture#ensure_match_setup!` respect loan availability.
+Implemented:
+- `Transfer` and `TransferOffer` support `loan` transfer type and loan end date.
+- Loan offers can be submitted and finalized through the transfer market.
+- Loan completion pauses the parent contract by setting it non-current without
+  terminating it.
+- Loan completion creates a current loan contract for the destination club and
+  links it to the parent contract.
+- Current squad and lineup pools naturally include loaned-in athletes and
+  exclude loaned-out athletes through current contract membership.
+- `LoanExpiryProcessor` returns expired loan athletes to their parent contracts.
+- Season rollover expires loans before normal contract expiry.
+- Clubs expose helper methods for loaned-in and loaned-out contracts.
 
 UI:
-- Transfer market offer type selector: permanent/free/loan.
-- Club dashboard labels for loaned-in and loaned-out players.
-- Athlete profile shows parent club and temporary loan club.
+- Transfer market supports buy and loan offers.
+- Open offers and recent transfer lists show transfer type and loan end date.
 
 Deferred:
 - Loan recalls.
 - Buy options.
 - Complex wage splits.
 - AI loan negotiations.
+- Club dashboard labels for loaned-in and loaned-out players.
+- Athlete profile loan context.
 
 
 Phase 15 - AI Squad Movement

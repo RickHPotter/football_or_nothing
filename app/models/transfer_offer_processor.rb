@@ -19,7 +19,9 @@ class TransferOfferProcessor
         to_club: offer.to_club,
         transfer_date:,
         fee: offer.offered_fee,
-        wage: offer.offered_wage
+        wage: offer.offered_wage,
+        transfer_type: offer.transfer_type,
+        loan_ends_on: offer.loan_ends_on
       )
       offer.update!(status: :completed)
       transfer

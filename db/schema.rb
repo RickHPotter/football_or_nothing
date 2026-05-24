@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_22_235000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_22_240000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -21,6 +21,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_235000) do
     t.boolean "current", default: true, null: false
     t.date "end_date"
     t.boolean "loan", default: false, null: false
+    t.date "loan_ends_on"
+    t.bigint "parent_athlete_contract_id"
     t.decimal "release_clause", precision: 15, scale: 2
     t.integer "squad_number"
     t.date "start_date", null: false
@@ -31,6 +33,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_235000) do
     t.index ["athlete_id"], name: "index_athlete_contracts_on_athlete_id"
     t.index ["club_id", "squad_number", "current"], name: "idx_on_club_id_squad_number_current_5d43105888", unique: true, where: "(current AND (squad_number IS NOT NULL))"
     t.index ["club_id"], name: "index_athlete_contracts_on_club_id"
+    t.index ["parent_athlete_contract_id"], name: "index_athlete_contracts_on_parent_athlete_contract_id"
   end
 
   create_table "athlete_season_stats", force: :cascade do |t|
@@ -371,12 +374,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_235000) do
     t.date "decided_on"
     t.date "expires_on", null: false
     t.bigint "from_club_id"
+    t.date "loan_ends_on"
     t.text "notes"
     t.decimal "offered_fee", precision: 15, scale: 2, default: "0.0", null: false
     t.date "offered_on", null: false
     t.decimal "offered_wage", precision: 15, scale: 2, default: "0.0", null: false
     t.integer "status", default: 0, null: false
     t.bigint "to_club_id", null: false
+    t.integer "transfer_type", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["athlete_id", "to_club_id", "status"], name: "index_transfer_offers_on_athlete_id_and_to_club_id_and_status"
     t.index ["athlete_id"], name: "index_transfer_offers_on_athlete_id"
@@ -389,6 +394,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_235000) do
     t.datetime "created_at", null: false
     t.decimal "fee", precision: 15, scale: 2, default: "0.0", null: false
     t.bigint "from_club_id"
+    t.date "loan_ends_on"
     t.integer "status", default: 0, null: false
     t.bigint "to_club_id", null: false
     t.date "transfer_date", null: false
@@ -423,6 +429,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_235000) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "athlete_contracts", "athlete_contracts", column: "parent_athlete_contract_id"
   add_foreign_key "athlete_contracts", "athletes"
   add_foreign_key "athlete_contracts", "clubs"
   add_foreign_key "athlete_season_stats", "athletes"

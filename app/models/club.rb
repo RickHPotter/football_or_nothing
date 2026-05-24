@@ -33,4 +33,14 @@ class Club < ApplicationRecord
   def current_wage_total
     current_athlete_contracts.sum(:wage)
   end
+
+  def loaned_in_contracts
+    current_athlete_contracts.where(loan: true)
+  end
+
+  def loaned_out_contracts
+    athlete_contracts
+      .where(current: false, loan: false)
+      .where(id: AthleteContract.where(current: true, loan: true).select(:parent_athlete_contract_id))
+  end
 end

@@ -154,10 +154,15 @@ MatchResult
 - Stores goals, possession, cards, injuries, attendance, and rating summaries.
 
 MatchStat
-- Future per-club fixture statistics model.
+- Implemented per-club fixture statistics model.
 - Stores possession, shots, shots on target, fouls, yellow cards, red cards,
   and other aggregate match stats.
-- Useful once tactical simulation affects more than scoreline and timeline.
+- Written by match simulation and shown on fixture pages.
+
+MatchStrengthCalculator
+- Implemented service for tactical simulation.
+- Calculates attack, defense, control, and discipline from lineups, attributes,
+  mentality, condition, red cards, injuries, substitutions, and club reputation.
 
 MatchState
 - Runtime or persisted state for a match in progress.

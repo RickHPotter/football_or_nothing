@@ -100,6 +100,46 @@
       </div>
     </section>
 
+    <% if @match_stats.any? %>
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Match Stats</h2>
+        </div>
+        <div class="panel-body">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Club</th>
+                  <th>Poss</th>
+                  <th>Shots</th>
+                  <th>On target</th>
+                  <th>Fouls</th>
+                  <th>YC</th>
+                  <th>RC</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% [ @fixture.home_club, @fixture.away_club ].each do |club| %>
+                  <% stat = @match_stats[club.id] %>
+                  <% next unless stat %>
+                  <tr>
+                    <td><%= club.name %></td>
+                    <td><%= stat.possession %>%</td>
+                    <td><%= stat.shots %></td>
+                    <td><%= stat.shots_on_target %></td>
+                    <td><%= stat.fouls %></td>
+                    <td><%= stat.yellow_cards %></td>
+                    <td><%= stat.red_cards %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    <% end %>
+
     <section class="panel">
       <div class="panel-header">
         <h2>Standings</h2>

@@ -19,12 +19,13 @@ Implemented Phase Documents
 - `18_staff.md`
 - `19_youth_academy.md`
 - `20_news_feed.md`
+- `21_tactical_simulation.md`
 - `phase_status_audit.md`
 
 
 Current Continuation Point
 --------------------------
-Phases 14 through 20 are implemented at first-playable depth.
+Phases 14 through 21 are implemented at first-playable depth.
 
-The next planned phase is Phase 21 - Tactical Simulation, unless the project
+The next planned phase is Phase 22 - International Competitions, unless the project
 chooses to address one of the Phase 1-20 deferred items first.

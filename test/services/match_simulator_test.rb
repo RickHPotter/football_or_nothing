@@ -39,6 +39,7 @@ class MatchSimulatorTest < ActiveSupport::TestCase
     assert_not_nil @fixture.away_goals
     assert_equal @fixture.home_goals + @fixture.away_goals, @fixture.match_events.goal.count
     assert @fixture.match_events.where.not(event_type: :goal).any?
+    assert_equal 2, @fixture.match_stats.count
     assert_equal 1, participation_for(@fixture.home_club).played
     assert_equal 1, participation_for(@fixture.away_club).played
     assert(@fixture.home_club.current_athletes.all? do |athlete|
@@ -64,6 +65,17 @@ class MatchSimulatorTest < ActiveSupport::TestCase
 
       assert_operator stat.yellow_cards + stat.red_cards + stat.injuries, :>=, 1
     end
+  end
+
+  test "stores match stats for both clubs" do
+    MatchSimulator.call(@fixture)
+
+    home_stat = @fixture.match_stats.find_by!(club: @fixture.home_club)
+    away_stat = @fixture.match_stats.find_by!(club: @fixture.away_club)
+
+    assert_equal 100, home_stat.possession + away_stat.possession
+    assert_operator home_stat.shots, :>=, home_stat.shots_on_target
+    assert_operator away_stat.shots, :>=, away_stat.shots_on_target
   end
 
   test "applies injuries and suspensions from events" do

@@ -13,8 +13,10 @@ class MatchSimulator
     return fixture if fixture.completed?
 
     Fixture.transaction do
-      home_goals, away_goals = score
       fixture.match_events.destroy_all
+      create_match_texture_events
+      home_goals, away_goals = score
+      fixture.match_stats.destroy_all
       fixture.update!(
         home_goals:,
         away_goals:,
@@ -22,9 +24,9 @@ class MatchSimulator
       )
       create_goal_events(fixture.home_club, home_goals, 11)
       create_goal_events(fixture.away_club, away_goals, 47)
-      create_match_texture_events
       update_athlete_stats(fixture.home_club)
       update_athlete_stats(fixture.away_club)
+      create_match_stats!
       update_standings(home_goals, away_goals)
       publish_match_news!
       fixture.tournament_edition.in_progress! if fixture.tournament_edition.scheduled?
@@ -39,12 +41,12 @@ class MatchSimulator
   attr_reader :fixture
 
   def score
-    home_strength = club_strength(fixture.home_club) + 2
-    away_strength = club_strength(fixture.away_club)
+    home_strength = team_strength(fixture.home_club)[:attack] + 2
+    away_strength = team_strength(fixture.away_club)[:attack]
 
     [
-      goals_for(home_strength, away_strength, 17),
-      goals_for(away_strength, home_strength, 53)
+      goals_for(home_strength, team_strength(fixture.away_club)[:defense], 17),
+      goals_for(away_strength, team_strength(fixture.home_club)[:defense], 53)
     ]
   end
 
@@ -68,8 +70,7 @@ class MatchSimulator
   end
 
   def club_strength(club)
-    player_average = club.current_athletes.average(:current_ability).to_f
-    player_average + club.reputation
+    team_strength(club)[:attack]
   end
 
   def goals_for(attacking_strength, defensive_strength, salt)
@@ -126,6 +127,43 @@ class MatchSimulator
     create_substitution_event(fixture.home_club, 241)
     create_substitution_event(fixture.away_club, 257)
     apply_availability_events
+  end
+
+  def create_match_stats!
+    home_strength = team_strength(fixture.home_club)
+    away_strength = team_strength(fixture.away_club)
+    home_possession = possession_for(home_strength[:control], away_strength[:control])
+    away_possession = 100 - home_possession
+
+    create_match_stat!(fixture.home_club, home_strength, away_strength, home_possession, fixture.home_goals)
+    create_match_stat!(fixture.away_club, away_strength, home_strength, away_possession, fixture.away_goals)
+  end
+
+  def create_match_stat!(club, strength, opponent_strength, possession, goals)
+    shot_base = 5 + (strength[:attack] - opponent_strength[:defense]).round
+    shots = [ shot_base + (possession / 20) + seeded_value(club.id), goals, 1 ].max
+    shots_on_target = [ (shots * 0.45).round + goals, shots ].min
+    yellow_cards = fixture.match_events.yellow_card.where(club:).count
+    red_cards = fixture.match_events.red_card.where(club:).count
+
+    fixture.match_stats.create!(
+      club:,
+      possession:,
+      shots:,
+      shots_on_target:,
+      fouls: [ 6 + yellow_cards + red_cards + (20 - strength[:discipline]).round, 0 ].max,
+      yellow_cards:,
+      red_cards:
+    )
+  end
+
+  def possession_for(control, opponent_control)
+    (50 + (control - opponent_control).round).clamp(35, 65)
+  end
+
+  def team_strength(club)
+    @team_strength ||= {}
+    @team_strength[club.id] ||= MatchStrengthCalculator.call(fixture:, club:)
   end
 
   def create_major_chance_events(club, salt)

@@ -9,11 +9,11 @@ so the next phase can be chosen deliberately.
 
 Summary
 -------
-Phases 1 through 20 are implemented enough to support the current first
+Phases 1 through 21 are implemented enough to support the current first
 playable loop.
 
-There are no blocking leftovers from phases 1 through 20 that must be completed
-before starting Phase 21.
+There are no blocking leftovers from phases 1 through 21 that must be completed
+before starting Phase 22.
 
 There are, however, many intentional deferrals. These are not bugs by
 themselves; they are future depth.
@@ -37,6 +37,7 @@ Implemented First-Playable Loop
 - Staff.
 - Youth academy.
 - News feed.
+- Tactical simulation and match stats.
 
 
 Not Blocking Before Phase 21
@@ -58,37 +59,21 @@ These deferred items can wait until their dedicated future expansion:
 - UI component extraction.
 
 
-Worth Considering Before Phase 21
+Worth Considering Before Phase 22
 ---------------------------------
-These are not blockers, but they are close enough to tactical simulation that
-they may affect Phase 21 design:
+These are not blockers, but they are close enough to international competitions
+that they may affect Phase 22 design:
 
-- Player condition currently changes, but it does not strongly influence match
-  outcomes yet.
-- Tactical roles exist in lineups, but role familiarity and advanced tactical
-  effects are not modeled.
-- Cards and injuries are stored as events, but team strength does not yet
-  react dynamically after a red card or injury.
-- Match stats are still event-derived rather than possession/shot-model based.
+- `Club#international` exists, but the app does not yet distinguish club teams
+  from national teams beyond a flag.
+- Calendar conflicts are still simple.
+- The UI has no tournament detail page yet, so international competition
+  visibility will initially need to live on career/club screens.
 
 
 Recommended Next Step
 ---------------------
-Proceed to Phase 21 - Tactical Simulation.
+Proceed to Phase 22 - International Competitions.
 
-Phase 21 should focus on making existing data matter in match outcomes:
-- formation
-- mentality
-- position fit
-- player attributes
-- condition
-- red cards
-- injuries
-- substitutions
-
-The most useful first implementation is likely:
-1. `MatchStrengthCalculator`
-2. `MatchStat`
-3. A refactor of `MatchSimulator` to use team strength snapshots and write match
-   stats.
-4. Fixture UI for match stats.
+Phase 22 should focus on creating a small international competition path without
+disrupting the domestic league loop.

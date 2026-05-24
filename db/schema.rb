@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_22_245000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_22_246000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -299,6 +299,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_245000) do
     t.integer "minute", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["fixture_id"], name: "index_match_states_on_fixture_id", unique: true
+  end
+
+  create_table "match_stats", force: :cascade do |t|
+    t.bigint "club_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "fixture_id", null: false
+    t.integer "fouls", default: 0, null: false
+    t.integer "possession", default: 50, null: false
+    t.integer "red_cards", default: 0, null: false
+    t.integer "shots", default: 0, null: false
+    t.integer "shots_on_target", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "yellow_cards", default: 0, null: false
+    t.index ["club_id"], name: "index_match_stats_on_club_id"
+    t.index ["fixture_id", "club_id"], name: "index_match_stats_on_fixture_id_and_club_id", unique: true
+    t.index ["fixture_id"], name: "index_match_stats_on_fixture_id"
   end
 
   create_table "news_items", force: :cascade do |t|
@@ -590,6 +606,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_245000) do
   add_foreign_key "match_events", "clubs"
   add_foreign_key "match_events", "fixtures"
   add_foreign_key "match_states", "fixtures"
+  add_foreign_key "match_stats", "clubs"
+  add_foreign_key "match_stats", "fixtures"
   add_foreign_key "news_items", "athletes"
   add_foreign_key "news_items", "careers"
   add_foreign_key "news_items", "clubs"

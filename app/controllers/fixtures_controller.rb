@@ -9,6 +9,7 @@ class FixturesController < ApplicationController
   def show
     @standings = @fixture.tournament_edition.standings
     @events = @fixture.match_events.includes(:club, :athlete).order(:minute, :id)
+    @match_stats = @fixture.match_stats.includes(:club).index_by(&:club_id)
     @next_fixture = @career.next_fixture if @fixture.completed?
     @match_state = @fixture.match_state
     @lineups = @fixture.lineups.includes(lineup_athletes: :athlete).for_fixture_order

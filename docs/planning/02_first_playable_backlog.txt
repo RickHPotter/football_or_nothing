@@ -666,7 +666,7 @@ Deferred:
 
 Phase 21 - Tactical Simulation
 ------------------------------
-Status: planned.
+Status: implemented.
 
 Goal:
 Make formation, mentality, squad condition, cards, injuries, and substitutions
@@ -681,13 +681,11 @@ Scope:
 - Substitutions affect late-game strength.
 - Store basic match stats.
 
-Likely refactor:
+Implemented:
 - `MatchStrengthCalculator`
-- `MatchEventGenerator`
-- `MatchStatUpdater`
-- `MatchTimeline`
-
-Likely model:
+  - Calculates attack, defense, control, and discipline from lineups,
+    attributes, mentality, condition, cards, injuries, substitutions, and club
+    reputation.
 - `MatchStat`
   - fixture
   - club
@@ -697,17 +695,20 @@ Likely model:
   - fouls
   - yellow_cards
   - red_cards
+- Match simulation now scores attack strength against defensive strength.
+- Match simulation creates match stats for both clubs.
+- Fixture page shows match stats when present.
 
 UI:
 - Fixture page match stats panel.
-- Timeline grouped by event type.
-- Better clock/progression display.
 
 Deferred:
 - True possession engine.
 - Tactical role familiarity.
 - Advanced substitution AI.
 - Set pieces.
+- Timeline grouped by event type.
+- Better clock/progression display.
 
 
 Phase 22 - International Competitions

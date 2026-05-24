@@ -8,6 +8,7 @@ class Fixture < ApplicationRecord
   belongs_to :away_club, class_name: "Club"
   belongs_to :stadium
   has_many :match_events, dependent: :destroy
+  has_many :match_stats, dependent: :destroy
   has_many :lineups, dependent: :destroy
   has_one :match_state, dependent: :destroy
 

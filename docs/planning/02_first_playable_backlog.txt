@@ -318,7 +318,7 @@ Deferred:
 
 Phase 15 - AI Squad Movement
 ----------------------------
-Status: planned.
+Status: implemented.
 
 Goal:
 Make the world move during transfer windows without relying only on the player.
@@ -330,10 +330,23 @@ Scope:
 - AI clubs renew or release expired players conservatively.
 - Run AI movement during transfer windows and season rollover.
 
-Likely services:
-- `AiTransferPlanner`
+Implemented services:
 - `SquadNeedsAnalyzer`
+  - Compares current squad positions against a conservative minimum shape.
+  - Returns missing positions and counts.
+- `AiTransferPlanner`
+  - Runs for non-excluded AI clubs during open transfer windows.
+  - Targets missing positions first.
+  - Prefers affordable free agents.
+  - Falls back to affordable permanent transfers.
+  - Avoids athletes moved in the recent window and in the current run.
 - `AiContractRenewalProcessor`
+  - Reviews expiring active non-loan contracts.
+  - Renews useful players when the club can absorb the wage.
+  - Lets weaker or unaffordable contracts expire through the normal expiry
+    processor.
+- Season rollover now runs AI renewal, loan expiry, contract expiry, and then
+  AI transfer planning before scheduling the next edition.
 
 Rules:
 - Clubs target weak positions first.
@@ -351,6 +364,8 @@ Deferred:
 - Player preferences.
 - Agents.
 - Advanced squad registration.
+- Dedicated world activity/news UI.
+- AI loans.
 
 
 Phase 16 - Training

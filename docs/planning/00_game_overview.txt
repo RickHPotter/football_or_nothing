@@ -130,7 +130,10 @@ Implemented:
   lineup generation.
 - Loan transfers with temporary current contracts, parent-contract restoration
   on expiry, and transfer-market loan offers.
+- AI squad movement with position-needs analysis, simple free-agent/permanent
+  signings during transfer windows, and conservative contract renewals during
+  season rollover.
 
 Next major phase:
-AI squad movement, followed by training, scouting, staff, youth, news, tactical
-simulation, international competitions, real-data import, and UI system polish.
+Training, followed by scouting, staff, youth, news, tactical simulation,
+international competitions, real-data import, and UI system polish.

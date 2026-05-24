@@ -14,4 +14,5 @@ class AthleteContract < ApplicationRecord
   validates :wage, numericality: { greater_than_or_equal_to: 0 }
   validates :release_clause, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :squad_number, numericality: { only_integer: true, in: 1..99 }, allow_nil: true
+  validates :external_id, uniqueness: { scope: :external_source }, allow_nil: true
 end

@@ -753,7 +753,7 @@ Deferred:
 
 Phase 23 - Data Import Foundation
 ---------------------------------
-Status: planned.
+Status: implemented.
 
 Goal:
 Prepare for importing real football data without corrupting generated careers.
@@ -764,16 +764,17 @@ Scope:
 - Avoid duplicate countries, clubs, athletes, and contracts.
 - Make imports idempotent.
 
-Likely services:
+Implemented services:
 - `DataImport::CountriesImporter`
 - `DataImport::ClubsImporter`
 - `DataImport::AthletesImporter`
 - `DataImport::ContractsImporter`
 
-Likely model additions:
-- `external_source`
-- `external_id`
-- Optional `DataImportRun`
+Implemented model additions:
+- `external_source` and `external_id` on countries, clubs, athletes, and
+  athlete contracts.
+- `DataImportRun`.
+- Unique external identity indexes.
 
 Rules:
 - Generated and imported data can coexist.

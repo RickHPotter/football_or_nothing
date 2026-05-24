@@ -372,11 +372,16 @@ WorldGenerator
 - First versions should use fictional data.
 
 DataImport
-- Future model or service for importing real football data.
-- Should map external records into the same domain models instead of creating a
+- Implemented service namespace for importing real football data.
+- Maps external records into the same domain models instead of creating a
   parallel real-data schema.
-- Import should be idempotent and source-aware, using external source/id fields
-  or a dedicated import run table.
+- Current importers support countries, clubs, athletes, and athlete contracts.
+- Uses `external_source` and `external_id` for idempotency.
+
+DataImportRun
+- Implemented import audit model.
+- Tracks source, status, processed record count, notes, started_at, and
+  finished_at.
 
 DataImportRun
 - Optional audit/history model for imports.

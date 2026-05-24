@@ -151,6 +151,8 @@ Implemented:
 - International competition generation with national-team-style clubs,
   international tournament editions, fixtures, and reputation-gated
   international job eligibility.
+- Data import foundation with external identity fields, import run tracking,
+  and idempotent importers for countries, clubs, athletes, and contracts.
 
 Next major phase:
-Real-data import, followed by UI system polish.
+UI system polish.

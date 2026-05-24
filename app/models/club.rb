@@ -43,6 +43,7 @@ class Club < ApplicationRecord
   validates :name, uniqueness: { scope: :country_id }
   validates :reputation, numericality: { only_integer: true, greater_than: 0 }
   validates :academy_quality, numericality: { only_integer: true, in: 1..20 }
+  validates :external_id, uniqueness: { scope: :external_source }, allow_nil: true
 
   def current_wage_total
     current_athlete_contracts.sum(:wage) + current_staff_contracts.sum(:wage)

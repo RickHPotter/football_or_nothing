@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_22_246000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_22_247000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -20,6 +20,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_246000) do
     t.datetime "created_at", null: false
     t.boolean "current", default: true, null: false
     t.date "end_date"
+    t.string "external_id"
+    t.string "external_source"
     t.boolean "loan", default: false, null: false
     t.date "loan_ends_on"
     t.bigint "parent_athlete_contract_id"
@@ -33,6 +35,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_246000) do
     t.index ["athlete_id"], name: "index_athlete_contracts_on_athlete_id"
     t.index ["club_id", "squad_number", "current"], name: "idx_on_club_id_squad_number_current_5d43105888", unique: true, where: "(current AND (squad_number IS NOT NULL))"
     t.index ["club_id"], name: "index_athlete_contracts_on_club_id"
+    t.index ["external_source", "external_id"], name: "index_athlete_contracts_on_external_source_and_external_id", unique: true, where: "((external_source IS NOT NULL) AND (external_id IS NOT NULL))"
     t.index ["parent_athlete_contract_id"], name: "index_athlete_contracts_on_parent_athlete_contract_id"
   end
 
@@ -68,6 +71,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_246000) do
     t.integer "current_ability", default: 1, null: false
     t.integer "decisions", default: 1, null: false
     t.integer "dribbling", default: 1, null: false
+    t.string "external_id"
+    t.string "external_source"
     t.integer "finishing", default: 1, null: false
     t.string "first_name", null: false
     t.integer "first_touch", default: 1, null: false
@@ -99,6 +104,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_246000) do
     t.boolean "youth_academy_player", default: false, null: false
     t.bigint "youth_intake_id"
     t.index ["country_id"], name: "index_athletes_on_country_id"
+    t.index ["external_source", "external_id"], name: "index_athletes_on_external_source_and_external_id", unique: true, where: "((external_source IS NOT NULL) AND (external_id IS NOT NULL))"
     t.index ["youth_intake_id"], name: "index_athletes_on_youth_intake_id"
   end
 
@@ -150,6 +156,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_246000) do
     t.integer "academy_quality", default: 5, null: false
     t.bigint "country_id", null: false
     t.datetime "created_at", null: false
+    t.string "external_id"
+    t.string "external_source"
     t.integer "founded_year"
     t.boolean "international", default: false, null: false
     t.string "name", null: false
@@ -159,17 +167,32 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_246000) do
     t.datetime "updated_at", null: false
     t.index ["country_id", "name"], name: "index_clubs_on_country_id_and_name", unique: true
     t.index ["country_id"], name: "index_clubs_on_country_id"
+    t.index ["external_source", "external_id"], name: "index_clubs_on_external_source_and_external_id", unique: true, where: "((external_source IS NOT NULL) AND (external_id IS NOT NULL))"
   end
 
   create_table "countries", force: :cascade do |t|
     t.string "code", null: false
     t.datetime "created_at", null: false
+    t.string "external_id"
+    t.string "external_source"
     t.string "name", null: false
     t.integer "reputation", default: 1, null: false
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_countries_on_code", unique: true
+    t.index ["external_source", "external_id"], name: "index_countries_on_external_source_and_external_id", unique: true, where: "((external_source IS NOT NULL) AND (external_id IS NOT NULL))"
     t.index ["name"], name: "index_countries_on_name", unique: true
+  end
+
+  create_table "data_import_runs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "finished_at"
+    t.text "notes"
+    t.integer "records_processed", default: 0, null: false
+    t.string "source", null: false
+    t.datetime "started_at", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "fixtures", force: :cascade do |t|

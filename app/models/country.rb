@@ -14,4 +14,5 @@ class Country < ApplicationRecord
   validates :name, presence: true, uniqueness: true
   validates :code, presence: true, uniqueness: true
   validates :reputation, numericality: { only_integer: true, greater_than: 0 }
+  validates :external_id, uniqueness: { scope: :external_source }, allow_nil: true
 end

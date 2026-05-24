@@ -22,6 +22,7 @@ class YouthIntakeGenerator
       return intake if intake.athletes.any?
 
       count.times { |index| create_athlete!(intake, index) }
+      publish_news!(intake)
       intake
     end
   end
@@ -61,5 +62,15 @@ class YouthIntakeGenerator
 
     def attribute_defaults(value)
       Athlete::ATTRIBUTES.index_with { |attribute| attribute.to_s.in?(%w[pace stamina work_rate]) ? [ value + 1, 20 ].min : value }
+    end
+
+    def publish_news!(intake)
+      NewsPublisher.call(
+        category: :youth,
+        title: "#{club.name} announce #{season_year} youth intake",
+        body: "#{intake.athletes.count} prospects joined the academy.",
+        occurred_on: generated_on,
+        club:
+      )
     end
 end

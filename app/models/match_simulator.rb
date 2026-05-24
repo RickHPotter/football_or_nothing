@@ -24,6 +24,7 @@ class MatchSimulator
       update_athlete_stats(fixture.home_club)
       update_athlete_stats(fixture.away_club)
       update_standings(home_goals, away_goals)
+      publish_match_news!
       fixture.tournament_edition.in_progress! if fixture.tournament_edition.scheduled?
       TournamentFinalizer.call(fixture.tournament_edition)
     end
@@ -42,6 +43,25 @@ class MatchSimulator
         goals_for(home_strength, away_strength, 17),
         goals_for(away_strength, home_strength, 53)
       ]
+    end
+
+    def publish_match_news!
+      NewsPublisher.call(
+        category: :match,
+        title: "#{fixture.home_club.name} #{fixture.home_goals}-#{fixture.away_goals} #{fixture.away_club.name}",
+        body: "#{fixture.tournament_edition.name} round #{fixture.round}.",
+        occurred_on: fixture.scheduled_on,
+        club: fixture.home_club,
+        tournament_edition: fixture.tournament_edition
+      )
+      NewsPublisher.call(
+        category: :match,
+        title: "#{fixture.away_club.name} #{fixture.away_goals}-#{fixture.home_goals} #{fixture.home_club.name}",
+        body: "#{fixture.tournament_edition.name} round #{fixture.round}.",
+        occurred_on: fixture.scheduled_on,
+        club: fixture.away_club,
+        tournament_edition: fixture.tournament_edition
+      )
     end
 
     def club_strength(club)

@@ -8,6 +8,7 @@ class CareersController < ApplicationController
     @trophies = @manager&.trophies&.includes(:club, :tournament_edition)&.order(won_on: :desc) || []
     @manager_season_stats = @manager&.manager_season_stats&.includes(:club, :tournament_edition)&.order(created_at: :desc) || []
     @manager_totals = manager_totals(@manager_season_stats)
+    @news_items = news_items_for(@manager&.current_club)
     @available_clubs = available_clubs_for(@manager) if @manager&.unemployed?
     @rollover_candidate = @career.rollover_candidate if @current_contract && @next_fixture.nil?
   end
@@ -96,6 +97,15 @@ class CareersController < ApplicationController
         losses: stats.sum(&:losses),
         trophies: stats.sum(&:trophies)
       }
+    end
+
+    def news_items_for(club)
+      return NewsItem.none unless club
+
+      NewsItem.includes(:club, :athlete, :manager, :tournament_edition)
+        .where(club_id: [ nil, club.id ])
+        .recent
+        .limit(10)
     end
 
     def apply_training(from_date, to_date)

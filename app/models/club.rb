@@ -30,6 +30,7 @@ class Club < ApplicationRecord
   has_many :current_staff_contracts, -> { where(current: true) }, class_name: "StaffContract", inverse_of: :club
   has_many :current_staff_members, through: :current_staff_contracts, source: :staff_member
   has_many :youth_intakes, dependent: :destroy
+  has_many :news_items, dependent: :destroy
   has_many :incoming_transfers, class_name: "Transfer", foreign_key: :to_club_id, dependent: :restrict_with_exception, inverse_of: :to_club
   has_many :outgoing_transfers, class_name: "Transfer", foreign_key: :from_club_id, dependent: :restrict_with_exception, inverse_of: :from_club
   has_many :incoming_transfer_offers, class_name: "TransferOffer", foreign_key: :to_club_id, dependent: :restrict_with_exception, inverse_of: :to_club

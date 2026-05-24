@@ -10,6 +10,7 @@ class TournamentEdition < ApplicationRecord
   has_many :trophies, dependent: :destroy
   has_many :club_season_stats, dependent: :destroy
   has_many :manager_season_stats, dependent: :destroy
+  has_many :news_items, dependent: :destroy
 
   validates :season_year, :name, :starts_on, :ends_on, presence: true
   validates :season_year, uniqueness: { scope: :tournament_id }

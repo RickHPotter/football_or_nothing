@@ -17,6 +17,7 @@ class SeasonRollover
       ContractExpiryProcessor.call(cutoff_date: next_edition.starts_on)
       AiTransferPlanner.call(date: next_edition.starts_on - 1.day)
       LeagueScheduler.call(next_edition, clubs_to_carry_forward) if next_edition.fixtures.none?
+      publish_rollover_news!(next_edition)
       next_edition
     end
   end
@@ -43,5 +44,18 @@ class SeasonRollover
 
     def next_season_year
       tournament_edition.season_year + 1
+    end
+
+    def publish_rollover_news!(next_edition)
+      clubs_to_carry_forward.each do |club|
+        NewsPublisher.call(
+          category: :world,
+          title: "#{next_edition.name} schedule released",
+          body: "#{club.name} are preparing for the new season.",
+          occurred_on: next_edition.starts_on,
+          club:,
+          tournament_edition: next_edition
+        )
+      end
     end
 end

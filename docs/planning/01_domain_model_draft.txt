@@ -306,6 +306,14 @@ ManagerAchievement
 - Future RPG/career record.
 - Examples: promotion, avoided relegation, won derby, unbeaten run.
 
+NewsItem
+- Explains important world events to the player.
+- Current implementation supports categories for match, transfer, injury,
+  discipline, trophy, contract, youth, and world news.
+- Items can be linked to career, club, athlete, manager, and tournament edition.
+- Published by match simulation, transfers, tournament finalization, season
+  rollover, youth intake, and youth promotion.
+
 TournamentFinalizer
 - Service concept that closes a tournament edition when all fixtures are
   completed.

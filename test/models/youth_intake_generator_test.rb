@@ -6,7 +6,9 @@ class YouthIntakeGeneratorTest < ActiveSupport::TestCase
     club.update!(academy_quality: 10, reputation: 8)
 
     assert_difference "Athlete.count", 5 do
-      YouthIntakeGenerator.call(club:, season_year: 2026, generated_on: Date.new(2026, 1, 1))
+      assert_difference "NewsItem.youth.count", 1 do
+        YouthIntakeGenerator.call(club:, season_year: 2026, generated_on: Date.new(2026, 1, 1))
+      end
     end
 
     assert_no_difference "Athlete.count" do

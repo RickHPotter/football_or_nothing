@@ -21,11 +21,12 @@ class TournamentFinalizer
         create_club_season_stat(participation, position, winner)
         create_manager_season_stat(participation, position, winner)
       end
-      tournament_edition.trophies.find_or_create_by!(club: winner) do |trophy|
-        trophy.manager = winner.current_manager
-        trophy.name = tournament_edition.name
-        trophy.won_on = tournament_edition.ends_on
+      trophy = tournament_edition.trophies.find_or_create_by!(club: winner) do |record|
+        record.manager = winner.current_manager
+        record.name = tournament_edition.name
+        record.won_on = tournament_edition.ends_on
       end
+      publish_trophy_news!(winner, trophy)
       ProgressionApplier.call(tournament_edition)
     end
 
@@ -76,5 +77,17 @@ class TournamentFinalizer
       return 1 if position <= (tournament_edition.tournament_participations.count / 2.0).ceil
 
       0
+    end
+
+    def publish_trophy_news!(winner, trophy)
+      NewsPublisher.call(
+        category: :trophy,
+        title: "#{winner.name} win #{tournament_edition.name}",
+        body: "#{winner.name} finished top of the table and lifted the trophy.",
+        occurred_on: trophy.won_on,
+        club: winner,
+        manager: trophy.manager,
+        tournament_edition:
+      )
     end
 end

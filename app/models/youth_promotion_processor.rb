@@ -22,6 +22,7 @@ class YouthPromotionProcessor
         current: true
       )
       athlete.update!(youth_academy_player: false, academy_graduate: true)
+      publish_news!
       contract
     end
   end
@@ -39,5 +40,16 @@ class YouthPromotionProcessor
       AthleteContract.new(athlete:, club:, start_date: promotion_date, wage:).tap do |contract|
         contract.errors.add(attribute, message)
       end
+    end
+
+    def publish_news!
+      NewsPublisher.call(
+        category: :youth,
+        title: "#{athlete.first_name} #{athlete.last_name} promoted by #{club.name}",
+        body: "The academy graduate joined the senior squad.",
+        occurred_on: promotion_date,
+        club:,
+        athlete:
+      )
     end
 end

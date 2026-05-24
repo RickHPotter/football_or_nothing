@@ -155,6 +155,27 @@
       <aside class="game-side">
         <section class="panel">
           <div class="panel-header">
+            <h2>News</h2>
+          </div>
+          <div class="panel-body">
+            <% if @news_items.any? %>
+              <ul class="space-y-2">
+                <% @news_items.each do |item| %>
+                  <li>
+                    <span class="badge"><%= item.category.humanize %></span>
+                    <strong><%= item.title %></strong><br>
+                    <small><%= item.occurred_on %></small>
+                  </li>
+                <% end %>
+              </ul>
+            <% else %>
+              <p class="empty-state">No news yet.</p>
+            <% end %>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
             <h2>Current club</h2>
           </div>
           <div class="panel-body space-y-2">

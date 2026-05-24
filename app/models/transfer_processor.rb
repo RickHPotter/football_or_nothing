@@ -23,6 +23,7 @@ class TransferProcessor
       transfer = create_transfer!
       create_new_contract!
       apply_finances!
+      publish_news!(transfer)
       transfer
     end
   end
@@ -124,5 +125,16 @@ class TransferProcessor
       Transfer.new(athlete:, from_club:, to_club:, transfer_date:, fee:, wage:, transfer_type: resolved_transfer_type, loan_ends_on: loan_ends_on.presence).tap do |transfer|
         transfer.errors.add(attribute, message)
       end
+    end
+
+    def publish_news!(transfer)
+      NewsPublisher.call(
+        category: :transfer,
+        title: "#{athlete.first_name} #{athlete.last_name} joins #{to_club.name}",
+        body: "#{to_club.name} completed a #{transfer.transfer_type.humanize.downcase} move.",
+        occurred_on: transfer_date,
+        club: to_club,
+        athlete:
+      )
     end
 end

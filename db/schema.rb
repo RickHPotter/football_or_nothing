@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_22_244000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_22_245000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -301,6 +301,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_244000) do
     t.index ["fixture_id"], name: "index_match_states_on_fixture_id", unique: true
   end
 
+  create_table "news_items", force: :cascade do |t|
+    t.bigint "athlete_id"
+    t.text "body"
+    t.bigint "career_id"
+    t.integer "category", default: 0, null: false
+    t.bigint "club_id"
+    t.datetime "created_at", null: false
+    t.bigint "manager_id"
+    t.date "occurred_on", null: false
+    t.string "title", null: false
+    t.bigint "tournament_edition_id"
+    t.datetime "updated_at", null: false
+    t.index ["athlete_id"], name: "index_news_items_on_athlete_id"
+    t.index ["career_id"], name: "index_news_items_on_career_id"
+    t.index ["club_id"], name: "index_news_items_on_club_id"
+    t.index ["manager_id"], name: "index_news_items_on_manager_id"
+    t.index ["tournament_edition_id"], name: "index_news_items_on_tournament_edition_id"
+  end
+
   create_table "scout_reports", force: :cascade do |t|
     t.bigint "athlete_id", null: false
     t.bigint "club_id", null: false
@@ -571,6 +590,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_244000) do
   add_foreign_key "match_events", "clubs"
   add_foreign_key "match_events", "fixtures"
   add_foreign_key "match_states", "fixtures"
+  add_foreign_key "news_items", "athletes"
+  add_foreign_key "news_items", "careers"
+  add_foreign_key "news_items", "clubs"
+  add_foreign_key "news_items", "managers"
+  add_foreign_key "news_items", "tournament_editions"
   add_foreign_key "scout_reports", "athletes"
   add_foreign_key "scout_reports", "clubs"
   add_foreign_key "scout_reports", "scouting_assignments"

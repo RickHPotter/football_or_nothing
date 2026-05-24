@@ -22,13 +22,15 @@ class TransferProcessorTest < ActiveSupport::TestCase
     transfer = nil
 
     assert_difference "Transfer.count", 1 do
-      transfer = TransferProcessor.call(
-        athlete: @athlete,
-        to_club: @buyer,
-        transfer_date: Date.new(2026, 2, 1),
-        fee: 1_000,
-        wage: 100
-      )
+      assert_difference "NewsItem.transfer.count", 1 do
+        transfer = TransferProcessor.call(
+          athlete: @athlete,
+          to_club: @buyer,
+          transfer_date: Date.new(2026, 2, 1),
+          fee: 1_000,
+          wage: 100
+        )
+      end
     end
 
     assert transfer.permanent?

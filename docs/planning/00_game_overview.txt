@@ -143,7 +143,9 @@ Implemented:
   modifiers, and scouting-confidence modifiers.
 - Youth academy intakes with academy quality, generated prospects, and
   promotion into senior squad contracts.
+- News items for match results, transfers, trophies, season rollover, youth
+  intakes, and youth promotion, shown on career and club dashboards.
 
 Next major phase:
-News feed, followed by tactical simulation, international competitions,
-real-data import, and UI system polish.
+Tactical simulation, followed by international competitions, real-data import,
+and UI system polish.

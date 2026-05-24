@@ -3,6 +3,7 @@ class Career < ApplicationRecord
 
   belongs_to :user
   has_one :manager, dependent: :destroy
+  has_many :news_items, dependent: :destroy
 
   validates :name, presence: true
   validates :current_date, presence: true

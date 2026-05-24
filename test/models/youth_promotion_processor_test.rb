@@ -9,12 +9,15 @@ class YouthPromotionProcessorTest < ActiveSupport::TestCase
   end
 
   test "promotes academy prospect to senior squad" do
-    contract = YouthPromotionProcessor.call(
-      athlete: @athlete,
-      club: @club,
-      promotion_date: Date.new(2026, 1, 2),
-      wage: 100
-    )
+    contract = nil
+    assert_difference "NewsItem.youth.count", 1 do
+      contract = YouthPromotionProcessor.call(
+        athlete: @athlete,
+        club: @club,
+        promotion_date: Date.new(2026, 1, 2),
+        wage: 100
+      )
+    end
 
     assert contract.current?
     assert @athlete.reload.academy_graduate?

@@ -601,7 +601,7 @@ Deferred:
 
 Phase 20 - News Feed
 --------------------
-Status: planned.
+Status: implemented.
 
 Goal:
 Make the world feel alive and explain important events to the player.
@@ -619,7 +619,7 @@ Scope:
 - Career dashboard gets a news feed.
 - Club dashboard gets club-specific news.
 
-Likely model:
+Implemented model:
 - `NewsItem`
   - career/world scope
   - club optional
@@ -630,6 +630,16 @@ Likely model:
   - title
   - body
   - occurred_on
+
+Implemented behavior:
+- `NewsPublisher` creates idempotent news items.
+- Match simulation publishes match-result news for both clubs.
+- Transfer completion publishes transfer news.
+- Tournament finalization publishes trophy news.
+- Season rollover publishes next-season news for participating clubs.
+- Youth intake and youth promotion publish youth news.
+- Career dashboard shows a compact feed for the manager's current club.
+- Club dashboard shows recent club-specific news.
 
 Categories:
 - match
@@ -644,13 +654,14 @@ Categories:
 UI:
 - Career dashboard news feed.
 - Club dashboard club news.
-- Optional dedicated news page.
 
 Deferred:
 - Press conferences.
 - Media reputation.
 - Fan reaction.
 - Player morale reactions to media.
+- Optional dedicated news page.
+- Full career/world scoped feed across multiple clubs.
 
 
 Phase 21 - Tactical Simulation

@@ -155,6 +155,45 @@
 
     <section class="panel">
       <div class="panel-header">
+        <h2>Training</h2>
+        <span class="badge"><%= @training_plan.focus.humanize %></span>
+      </div>
+      <div class="panel-body space-y-3">
+        <%= form_with model: @training_plan, url: career_training_plan_path(@career), method: :patch, class: "space-y-3" do |form| %>
+          <div>
+            <%= form.label :focus, class: "stat-label" %>
+            <%= form.select :focus, TrainingPlan.defined_enums.fetch("focus").keys.map { |focus| [ focus.humanize, focus ] }, {}, class: "field-input" %>
+          </div>
+          <div>
+            <%= form.label :intensity, class: "stat-label" %>
+            <%= form.select :intensity, TrainingPlan.defined_enums.fetch("intensity").keys.map { |intensity| [ intensity.humanize, intensity ] }, {}, class: "field-input" %>
+          </div>
+          <%= form.submit "Update training", class: "btn" %>
+        <% end %>
+
+        <% if @training_results.any? %>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>Player</th><th>Gain</th></tr></thead>
+              <tbody>
+                <% @training_results.each do |result| %>
+                  <tr>
+                    <td><%= result.occurred_on %></td>
+                    <td><%= result.athlete.first_name %> <%= result.athlete.last_name %></td>
+                    <td><%= result.attribute_name.humanize %> <%= result.old_value %> to <%= result.new_value %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="empty-state">No training results recorded yet.</p>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
         <h2>Stadium</h2>
       </div>
       <div class="panel-body space-y-2">

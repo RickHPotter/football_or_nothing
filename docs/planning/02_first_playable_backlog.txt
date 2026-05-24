@@ -370,7 +370,7 @@ Deferred:
 
 Phase 16 - Training
 -------------------
-Status: planned.
+Status: implemented.
 
 Goal:
 Give the manager a recurring development lever for squad growth and condition.
@@ -388,19 +388,30 @@ Scope:
   rollover.
 - Training should affect attributes, condition, morale, and injury risk.
 
-Likely models:
+Implemented models:
 - `TrainingPlan`
   - club
   - manager
   - focus
   - intensity
   - active_from
-- Optional `TrainingResult`
+- `TrainingResult`
+  - training plan
+  - club
   - athlete
   - changed attribute
   - old value
   - new value
+  - condition change
   - occurred_on
+
+Implemented behavior:
+- Club dashboard exposes training focus and intensity controls.
+- Date advancement applies the active training plan to the current squad.
+- Training focus chooses the attribute group being developed.
+- Intensity changes condition pressure and growth speed.
+- Young/high-potential players benefit from development-oriented training.
+- Training results are stored and shown on the club dashboard.
 
 Rules:
 - High intensity improves faster but lowers condition.
@@ -410,14 +421,15 @@ Rules:
 
 UI:
 - Club dashboard training panel.
-- Athlete profile development history.
-- Career dashboard monthly training summary.
+- Club dashboard recent training result history.
 
 Deferred:
 - Staff modifiers.
 - Facilities.
 - Individual player training.
 - Tactical familiarity.
+- Athlete profile development history.
+- Career dashboard monthly training summary.
 
 
 Phase 17 - Scouting

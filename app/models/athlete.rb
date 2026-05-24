@@ -27,6 +27,7 @@ class Athlete < ApplicationRecord
   has_many :athlete_season_stats, dependent: :destroy
   has_many :transfers, dependent: :restrict_with_exception
   has_many :transfer_offers, dependent: :restrict_with_exception
+  has_many :training_results, dependent: :destroy
 
   validates :first_name, :last_name, presence: true
   validates :current_ability, :potential_ability, :reputation,
@@ -37,6 +38,12 @@ class Athlete < ApplicationRecord
 
   def available_on?(date)
     active? && availability_date_clear?(injury_until, date) && availability_date_clear?(suspended_until, date)
+  end
+
+  def age(on_date = Date.current)
+    return unless birthdate
+
+    on_date.year - birthdate.year - (on_date.yday < birthdate.yday ? 1 : 0)
   end
 
   private

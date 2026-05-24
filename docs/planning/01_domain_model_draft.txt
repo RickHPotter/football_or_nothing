@@ -224,11 +224,14 @@ TrainingPlan
 - Tracks focus, intensity, active dates, and possibly manager/staff ownership.
 - Early focuses: balanced, fitness, attacking, defending, technical, youth
   development.
+- Current implementation stores one active plan per club and applies it during
+  date advancement.
 
 TrainingResult
-- Optional history model for visible development changes.
-- Tracks athlete, changed attribute, old value, new value, and date.
-- Useful for explaining development instead of silently mutating attributes.
+- History model for visible development changes.
+- Tracks athlete, club, plan, changed attribute, old value, new value,
+  condition change, and date.
+- Current implementation shows recent results on the club dashboard.
 
 
 Scouting

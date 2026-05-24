@@ -16,7 +16,9 @@ class CareersController < ApplicationController
     fixture = @career.next_fixture
 
     if fixture
+      current_date = @career.current_date
       @career.update!(current_date: fixture.scheduled_on)
+      apply_training(current_date, fixture.scheduled_on)
       redirect_to career_fixture_path(@career, fixture), notice: "Advanced to match day."
     else
       redirect_to @career, alert: "No upcoming fixtures are scheduled."
@@ -93,5 +95,16 @@ class CareersController < ApplicationController
         losses: stats.sum(&:losses),
         trophies: stats.sum(&:trophies)
       }
+    end
+
+    def apply_training(from_date, to_date)
+      return unless @career.manager&.current_club
+
+      TrainingApplier.call(
+        club: @career.manager.current_club,
+        manager: @career.manager,
+        from_date:,
+        to_date:
+      )
     end
 end

@@ -16,6 +16,13 @@ class ClubsController < ApplicationController
     @trophies = @club.trophies.includes(:tournament_edition, :manager).order(won_on: :desc)
     @club_season_stats = @club.club_season_stats.includes(:tournament_edition).order(created_at: :desc)
     @top_scorers = top_scorers_for(@current_participation&.tournament_edition)
+    @training_plan = @club.training_plan || @club.build_training_plan(
+      manager: @career.manager,
+      focus: :balanced,
+      intensity: :normal,
+      active_from: @career.current_date
+    )
+    @training_results = @club.training_results.includes(:athlete).order(occurred_on: :desc, created_at: :desc).limit(6)
   end
 
   private

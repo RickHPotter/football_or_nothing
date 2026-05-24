@@ -133,7 +133,10 @@ Implemented:
 - AI squad movement with position-needs analysis, simple free-agent/permanent
   signings during transfer windows, and conservative contract renewals during
   season rollover.
+- Club training plans with focus/intensity controls, date-advance training
+  application, condition impact, attribute development, and recent result
+  history.
 
 Next major phase:
-Training, followed by scouting, staff, youth, news, tactical simulation,
-international competitions, real-data import, and UI system polish.
+Scouting, followed by staff, youth, news, tactical simulation, international
+competitions, real-data import, and UI system polish.

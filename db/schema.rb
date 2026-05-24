@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_22_240000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_22_241000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -368,6 +368,34 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_240000) do
     t.index ["country_id"], name: "index_tournaments_on_country_id"
   end
 
+  create_table "training_plans", force: :cascade do |t|
+    t.date "active_from", null: false
+    t.bigint "club_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "focus", default: 0, null: false
+    t.integer "intensity", default: 1, null: false
+    t.bigint "manager_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_id"], name: "index_training_plans_on_club_id", unique: true
+    t.index ["manager_id"], name: "index_training_plans_on_manager_id"
+  end
+
+  create_table "training_results", force: :cascade do |t|
+    t.bigint "athlete_id", null: false
+    t.string "attribute_name", null: false
+    t.bigint "club_id", null: false
+    t.integer "condition_change", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.integer "new_value", null: false
+    t.date "occurred_on", null: false
+    t.integer "old_value", null: false
+    t.bigint "training_plan_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["athlete_id"], name: "index_training_results_on_athlete_id"
+    t.index ["club_id"], name: "index_training_results_on_club_id"
+    t.index ["training_plan_id"], name: "index_training_results_on_training_plan_id"
+  end
+
   create_table "transfer_offers", force: :cascade do |t|
     t.bigint "athlete_id", null: false
     t.datetime "created_at", null: false
@@ -469,6 +497,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_240000) do
   add_foreign_key "tournament_participations", "clubs"
   add_foreign_key "tournament_participations", "tournament_editions"
   add_foreign_key "tournaments", "countries"
+  add_foreign_key "training_plans", "clubs"
+  add_foreign_key "training_plans", "managers"
+  add_foreign_key "training_results", "athletes"
+  add_foreign_key "training_results", "clubs"
+  add_foreign_key "training_results", "training_plans"
   add_foreign_key "transfer_offers", "athletes"
   add_foreign_key "transfer_offers", "clubs", column: "from_club_id"
   add_foreign_key "transfer_offers", "clubs", column: "to_club_id"

@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     post :advance, on: :member
     post :rollover, on: :member
     resource :club, only: :show
+    resource :training_plan, only: :update
     resources :athletes, only: :show
     resources :transfers, only: %i[index create] do
       post :complete_offer, on: :member

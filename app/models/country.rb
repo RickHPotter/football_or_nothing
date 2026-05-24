@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Country < ApplicationRecord
   enum :status, { active: 0, inactive: 1 }
 

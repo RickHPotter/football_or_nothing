@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class NewsPublisher
   def self.call(...)
     new(...).call
@@ -31,5 +33,6 @@ class NewsPublisher
   end
 
   private
-    attr_reader :category, :title, :body, :occurred_on, :career, :club, :athlete, :manager, :tournament_edition
+
+  attr_reader :category, :title, :body, :occurred_on, :career, :club, :athlete, :manager, :tournament_edition
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class StaffHiringProcessor
   def self.call(...)
     new(...).call
@@ -26,16 +28,17 @@ class StaffHiringProcessor
   end
 
   private
-    attr_reader :staff_member, :club, :start_date, :wage
 
-    def validate_hiring!
-      raise ActiveRecord::RecordInvalid, contract_with_error(:staff_member, "already works for this club") if staff_member.current_club == club
-      raise ActiveRecord::RecordInvalid, contract_with_error(:wage, "exceeds wage budget") if club.club_finance&.available_wage_budget.to_d < wage
-    end
+  attr_reader :staff_member, :club, :start_date, :wage
 
-    def contract_with_error(attribute, message)
-      StaffContract.new(staff_member:, club:, start_date:, wage:).tap do |contract|
-        contract.errors.add(attribute, message)
-      end
+  def validate_hiring!
+    raise ActiveRecord::RecordInvalid, contract_with_error(:staff_member, "already works for this club") if staff_member.current_club == club
+    raise ActiveRecord::RecordInvalid, contract_with_error(:wage, "exceeds wage budget") if club.club_finance&.available_wage_budget.to_d < wage
+  end
+
+  def contract_with_error(attribute, message)
+    StaffContract.new(staff_member:, club:, start_date:, wage:).tap do |contract|
+      contract.errors.add(attribute, message)
     end
+  end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class YouthIntake < ApplicationRecord
   belongs_to :club
   has_many :athletes, dependent: :nullify

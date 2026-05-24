@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Athlete < ApplicationRecord
   ATTRIBUTES = %i[
     finishing long_shots passing crossing dribbling technique first_touch
@@ -34,7 +36,7 @@ class Athlete < ApplicationRecord
 
   validates :first_name, :last_name, presence: true
   validates :current_ability, :potential_ability, :reputation,
-    numericality: { only_integer: true, in: 1..20 }
+            numericality: { only_integer: true, in: 1..20 }
   validates :morale, numericality: { only_integer: true, in: 0..100 }
   validates :condition, numericality: { only_integer: true, in: 0..100 }
   validates(*ATTRIBUTES, numericality: { only_integer: true, in: 1..20 })
@@ -50,7 +52,8 @@ class Athlete < ApplicationRecord
   end
 
   private
-    def availability_date_clear?(blocked_until, date)
-      blocked_until.nil? || blocked_until < date
-    end
+
+  def availability_date_clear?(blocked_until, date)
+    blocked_until.nil? || blocked_until < date
+  end
 end

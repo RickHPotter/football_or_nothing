@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Career < ApplicationRecord
   enum :status, { active: 0, retired: 1, archived: 2 }
 

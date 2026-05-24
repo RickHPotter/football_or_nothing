@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class LeagueSchedulerTest < ActiveSupport::TestCase
@@ -14,7 +16,7 @@ class LeagueSchedulerTest < ActiveSupport::TestCase
     end
 
     assert_equal clubs.sort, edition.clubs.order(:id).to_a
-    assert_equal [ clubs.first.id, clubs.second.id ], edition.fixtures.order(:round).first.then { |fixture| [ fixture.home_club_id, fixture.away_club_id ] }
-    assert_equal [ clubs.second.id, clubs.first.id ], edition.fixtures.order(:round).second.then { |fixture| [ fixture.home_club_id, fixture.away_club_id ] }
+    assert_equal([ clubs.first.id, clubs.second.id ], edition.fixtures.order(:round).first.then { |fixture| [ fixture.home_club_id, fixture.away_club_id ] })
+    assert_equal([ clubs.second.id, clubs.first.id ], edition.fixtures.order(:round).second.then { |fixture| [ fixture.home_club_id, fixture.away_club_id ] })
   end
 end

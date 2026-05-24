@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class LineupAthlete < ApplicationRecord
   enum :position, Athlete.positions
   enum :tactical_role, {
@@ -17,6 +19,6 @@ class LineupAthlete < ApplicationRecord
   validates :athlete_id, uniqueness: { scope: :lineup_id }
   validates :lineup_slot, uniqueness: { scope: :lineup_id }
   validates :substituted_on_minute, :substituted_off_minute,
-    numericality: { only_integer: true, in: 0..90 },
-    allow_nil: true
+            numericality: { only_integer: true, in: 0..90 },
+            allow_nil: true
 end

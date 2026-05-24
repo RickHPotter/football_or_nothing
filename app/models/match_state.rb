@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MatchState < ApplicationRecord
   enum :clock_status, { not_started: 0, running: 1, paused: 2, full_time: 3 }
 

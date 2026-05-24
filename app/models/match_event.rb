@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MatchEvent < ApplicationRecord
   enum :event_type, {
     goal: 0,

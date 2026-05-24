@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class FixturesControllerTest < ActionDispatch::IntegrationTest
@@ -140,29 +142,30 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
   end
 
   private
-    def add_squad_depth(club, count)
-      count.times do |index|
-        athlete = Athlete.create!(
-          country: club.country,
-          first_name: "Depth",
-          last_name: "Player #{index}",
-          position: :central_midfielder,
-          preferred_foot: :right,
-          current_ability: 5,
-          potential_ability: 5,
-          reputation: 1,
-          morale: 50,
-          condition: 100,
-          status: :active,
-          **Athlete::ATTRIBUTES.index_with { 5 }
-        )
-        club.athlete_contracts.create!(
-          athlete:,
-          start_date: Date.new(2026, 1, 1),
-          wage: 100,
-          status: :active,
-          current: true
-        )
-      end
+
+  def add_squad_depth(club, count)
+    count.times do |index|
+      athlete = Athlete.create!(
+        country: club.country,
+        first_name: "Depth",
+        last_name: "Player #{index}",
+        position: :central_midfielder,
+        preferred_foot: :right,
+        current_ability: 5,
+        potential_ability: 5,
+        reputation: 1,
+        morale: 50,
+        condition: 100,
+        status: :active,
+        **Athlete::ATTRIBUTES.index_with { 5 }
+      )
+      club.athlete_contracts.create!(
+        athlete:,
+        start_date: Date.new(2026, 1, 1),
+        wage: 100,
+        status: :active,
+        current: true
+      )
     end
+  end
 end

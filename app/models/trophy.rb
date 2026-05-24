@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Trophy < ApplicationRecord
   belongs_to :tournament_edition
   belongs_to :club

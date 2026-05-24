@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class YouthPromotionProcessor
   def self.call(...)
     new(...).call
@@ -28,28 +30,29 @@ class YouthPromotionProcessor
   end
 
   private
-    attr_reader :athlete, :club, :promotion_date, :wage
 
-    def validate_promotion!
-      raise ActiveRecord::RecordInvalid, contract_with_error(:athlete, "is already under contract") if athlete.current_club
-      raise ActiveRecord::RecordInvalid, contract_with_error(:athlete, "is not in this academy") unless athlete.youth_intake&.club == club
-      raise ActiveRecord::RecordInvalid, contract_with_error(:wage, "exceeds wage budget") if club.club_finance&.available_wage_budget.to_d < wage
-    end
+  attr_reader :athlete, :club, :promotion_date, :wage
 
-    def contract_with_error(attribute, message)
-      AthleteContract.new(athlete:, club:, start_date: promotion_date, wage:).tap do |contract|
-        contract.errors.add(attribute, message)
-      end
-    end
+  def validate_promotion!
+    raise ActiveRecord::RecordInvalid, contract_with_error(:athlete, "is already under contract") if athlete.current_club
+    raise ActiveRecord::RecordInvalid, contract_with_error(:athlete, "is not in this academy") unless athlete.youth_intake&.club == club
+    raise ActiveRecord::RecordInvalid, contract_with_error(:wage, "exceeds wage budget") if club.club_finance&.available_wage_budget.to_d < wage
+  end
 
-    def publish_news!
-      NewsPublisher.call(
-        category: :youth,
-        title: "#{athlete.first_name} #{athlete.last_name} promoted by #{club.name}",
-        body: "The academy graduate joined the senior squad.",
-        occurred_on: promotion_date,
-        club:,
-        athlete:
-      )
+  def contract_with_error(attribute, message)
+    AthleteContract.new(athlete:, club:, start_date: promotion_date, wage:).tap do |contract|
+      contract.errors.add(attribute, message)
     end
+  end
+
+  def publish_news!
+    NewsPublisher.call(
+      category: :youth,
+      title: "#{athlete.first_name} #{athlete.last_name} promoted by #{club.name}",
+      body: "The academy graduate joined the senior squad.",
+      occurred_on: promotion_date,
+      club:,
+      athlete:
+    )
+  end
 end

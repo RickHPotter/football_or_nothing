@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ManagerContractsController < ApplicationController
   before_action :set_career
   before_action :set_manager
@@ -24,22 +26,23 @@ class ManagerContractsController < ApplicationController
   end
 
   private
-    def set_career
-      @career = Current.user.careers.find(params.expect(:career_id))
-    end
 
-    def set_manager
-      @manager = @career.manager
-    end
+  def set_career
+    @career = Current.user.careers.find(params.expect(:career_id))
+  end
 
-    def available_clubs
-      Club.active
+  def set_manager
+    @manager = @career.manager
+  end
+
+  def available_clubs
+    Club.active
         .left_outer_joins(:current_manager_contract)
         .where(manager_contracts: { id: nil })
         .where(reputation: ..@manager.job_reputation_ceiling)
-    end
+  end
 
-    def starting_wage_for(club)
-      5_000 + (club.reputation * 1_000)
-    end
+  def starting_wage_for(club)
+    5_000 + (club.reputation * 1_000)
+  end
 end

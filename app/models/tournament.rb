@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Tournament < ApplicationRecord
   enum :scope, { domestic: 0, international: 1 }
   enum :format, { league: 0, cup: 1, mixed: 2 }

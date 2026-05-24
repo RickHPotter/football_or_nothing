@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TransferWindowPolicy
   PRESEASON_DAYS = 60
   POSTSEASON_DAYS = 30
@@ -16,19 +18,20 @@ class TransferWindowPolicy
   end
 
   private
-    attr_reader :club, :date
 
-    def relevant_editions
-      @relevant_editions ||= club
-        .tournament_editions
-        .where(season_year: [ date.year - 1, date.year, date.year + 1 ])
-        .to_a
-    end
+  attr_reader :club, :date
 
-    def open_for_edition?(edition)
-      preseason_window = (edition.starts_on - PRESEASON_DAYS.days)...edition.starts_on
-      postseason_window = edition.ends_on..(edition.ends_on + POSTSEASON_DAYS.days)
+  def relevant_editions
+    @relevant_editions ||= club
+                           .tournament_editions
+                           .where(season_year: [ date.year - 1, date.year, date.year + 1 ])
+                           .to_a
+  end
 
-      preseason_window.cover?(date) || postseason_window.cover?(date)
-    end
+  def open_for_edition?(edition)
+    preseason_window = (edition.starts_on - PRESEASON_DAYS.days)...edition.starts_on
+    postseason_window = edition.ends_on..(edition.ends_on + POSTSEASON_DAYS.days)
+
+    preseason_window.cover?(date) || postseason_window.cover?(date)
+  end
 end

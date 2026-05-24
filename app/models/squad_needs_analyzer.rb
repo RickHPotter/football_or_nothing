@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SquadNeedsAnalyzer
   POSITION_MINIMUMS = {
     "goalkeeper" => 2,
@@ -28,9 +30,10 @@ class SquadNeedsAnalyzer
   end
 
   private
-    attr_reader :club
 
-    def position_counts
-      @position_counts ||= club.current_athletes.group(:position).count
-    end
+  attr_reader :club
+
+  def position_counts
+    @position_counts ||= club.current_athletes.group(:position).count
+  end
 end

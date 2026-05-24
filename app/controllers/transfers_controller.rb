@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TransfersController < ApplicationController
   before_action :set_career
   before_action :set_club
@@ -32,8 +34,8 @@ class TransfersController < ApplicationController
     )
 
     redirect_to career_transfers_path(@career), notice: "Offer submitted."
-  rescue ActiveRecord::RecordInvalid => error
-    redirect_to career_transfers_path(@career), alert: error.record.errors.full_messages.to_sentence
+  rescue ActiveRecord::RecordInvalid => e
+    redirect_to career_transfers_path(@career), alert: e.record.errors.full_messages.to_sentence
   end
 
   def complete_offer
@@ -46,29 +48,30 @@ class TransfersController < ApplicationController
     TransferOfferProcessor.call(offer:, transfer_date: @career.current_date)
 
     redirect_to career_transfers_path(@career), notice: "Transfer completed."
-  rescue ActiveRecord::RecordInvalid => error
-    redirect_to career_transfers_path(@career), alert: error.record.errors.full_messages.to_sentence
+  rescue ActiveRecord::RecordInvalid => e
+    redirect_to career_transfers_path(@career), alert: e.record.errors.full_messages.to_sentence
   end
 
   private
-    def set_career
-      @career = Current.user.careers.includes(manager: { current_manager_contract: :club }).find(params.expect(:career_id))
-    end
 
-    def set_club
-      @club = @career.manager&.current_club
-      redirect_to @career, alert: "Take a job before opening the transfer market." unless @club
-    end
+  def set_career
+    @career = Current.user.careers.includes(manager: { current_manager_contract: :club }).find(params.expect(:career_id))
+  end
 
-    def market_athletes
-      Athlete
-        .includes(current_athlete_contract: [ :club ])
-        .where.not(id: @club.current_athletes.select(:id))
-        .order(reputation: :desc, current_ability: :desc, last_name: :asc)
-        .limit(30)
-    end
+  def set_club
+    @club = @career.manager&.current_club
+    redirect_to @career, alert: "Take a job before opening the transfer market." unless @club
+  end
 
-    def transfer_window_open?
-      TransferWindowPolicy.open?(club: @club, date: @career.current_date)
-    end
+  def market_athletes
+    Athlete
+      .includes(current_athlete_contract: [ :club ])
+      .where.not(id: @club.current_athletes.select(:id))
+      .order(reputation: :desc, current_ability: :desc, last_name: :asc)
+      .limit(30)
+  end
+
+  def transfer_window_open?
+    TransferWindowPolicy.open?(club: @club, date: @career.current_date)
+  end
 end

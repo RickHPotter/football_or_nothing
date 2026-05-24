@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class SeasonRolloverTest < ActiveSupport::TestCase
@@ -25,7 +27,7 @@ class SeasonRolloverTest < ActiveSupport::TestCase
     assert_equal Date.new(2027, 2, 1), next_edition.starts_on
     assert_equal Date.new(2027, 5, 3), next_edition.ends_on
     assert_equal [ clubs(:one), clubs(:two) ].sort, next_edition.clubs.order(:id).to_a
-    assert next_edition.tournament_participations.all? { |participation| participation.played.zero? }
+    assert(next_edition.tournament_participations.all? { |participation| participation.played.zero? })
     assert_equal 2, next_edition.fixtures.count
   end
 

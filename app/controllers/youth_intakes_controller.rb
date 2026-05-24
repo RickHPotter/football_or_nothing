@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class YouthIntakesController < ApplicationController
   before_action :set_career
   before_action :set_club
@@ -27,17 +29,18 @@ class YouthIntakesController < ApplicationController
     )
 
     redirect_to career_youth_intakes_path(@career), notice: "Player promoted to the senior squad."
-  rescue ActiveRecord::RecordInvalid => error
-    redirect_to career_youth_intakes_path(@career), alert: error.record.errors.full_messages.to_sentence
+  rescue ActiveRecord::RecordInvalid => e
+    redirect_to career_youth_intakes_path(@career), alert: e.record.errors.full_messages.to_sentence
   end
 
   private
-    def set_career
-      @career = Current.user.careers.includes(manager: { current_manager_contract: :club }).find(params.expect(:career_id))
-    end
 
-    def set_club
-      @club = @career.manager&.current_club
-      redirect_to @career, alert: "Take a job before using the youth academy." unless @club
-    end
+  def set_career
+    @career = Current.user.careers.includes(manager: { current_manager_contract: :club }).find(params.expect(:career_id))
+  end
+
+  def set_club
+    @club = @career.manager&.current_club
+    redirect_to @career, alert: "Take a job before using the youth academy." unless @club
+  end
 end

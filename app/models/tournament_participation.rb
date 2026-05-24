@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TournamentParticipation < ApplicationRecord
   enum :status, { active: 0, eliminated: 1, completed: 2 }
 
@@ -6,7 +8,7 @@ class TournamentParticipation < ApplicationRecord
 
   validates :club_id, uniqueness: { scope: :tournament_edition_id }
   validates :played, :wins, :draws, :losses, :goals_for, :goals_against, :points,
-    numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :prize_money, numericality: { greater_than_or_equal_to: 0 }
 
   def goal_difference

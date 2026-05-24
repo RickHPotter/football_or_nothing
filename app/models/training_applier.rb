@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TrainingApplier
   ATTRIBUTE_FOCUS = {
     "balanced" => %w[stamina technique teamwork],
@@ -41,79 +43,80 @@ class TrainingApplier
   end
 
   private
-    attr_reader :club, :manager, :from_date, :to_date
 
-    def current_plan
-      club.training_plan || club.create_training_plan!(
-        manager:,
-        focus: :balanced,
-        intensity: :normal,
-        active_from: from_date
+  attr_reader :club, :manager, :from_date, :to_date
+
+  def current_plan
+    club.training_plan || club.create_training_plan!(
+      manager:,
+      focus: :balanced,
+      intensity: :normal,
+      active_from: from_date
+    )
+  end
+
+  def apply_to_athlete(plan, athlete)
+    old_condition = athlete.condition
+    new_condition = (old_condition + condition_delta(plan)).clamp(0, 100)
+    attribute_name = attribute_for(plan, athlete)
+    old_value = athlete.public_send(attribute_name)
+    new_value = [ old_value + attribute_gain(plan, athlete), 20 ].min
+
+    athlete.update!(
+      condition: new_condition,
+      attribute_name => new_value,
+      current_ability: [ athlete.current_ability + ability_gain(plan, athlete), athlete.potential_ability ].min
+    )
+
+    return [] if old_value == new_value && old_condition == new_condition
+
+    [
+      TrainingResult.create!(
+        training_plan: plan,
+        club:,
+        athlete:,
+        occurred_on: to_date,
+        attribute_name:,
+        old_value:,
+        new_value:,
+        condition_change: new_condition - old_condition
       )
-    end
+    ]
+  end
 
-    def apply_to_athlete(plan, athlete)
-      old_condition = athlete.condition
-      new_condition = (old_condition + condition_delta(plan)).clamp(0, 100)
-      attribute_name = attribute_for(plan, athlete)
-      old_value = athlete.public_send(attribute_name)
-      new_value = [ old_value + attribute_gain(plan, athlete), 20 ].min
+  def attribute_for(plan, athlete)
+    attributes = ATTRIBUTE_FOCUS.fetch(plan.focus)
+    attributes[athlete.id % attributes.length]
+  end
 
-      athlete.update!(
-        condition: new_condition,
-        attribute_name => new_value,
-        current_ability: [ athlete.current_ability + ability_gain(plan, athlete), athlete.potential_ability ].min
-      )
+  def attribute_gain(plan, athlete)
+    return 0 unless growth_weeks.positive?
+    return 0 unless athlete.current_ability < athlete.potential_ability
 
-      return [] if old_value == new_value && old_condition == new_condition
+    base = INTENSITY_GROWTH.fetch(plan.intensity)
+    base += 1 if club.staff_rating(:coaching) >= 12
+    base += 1 if plan.youth_development? && athlete.age && athlete.age < 23
+    base += 1 if athlete.potential_ability - athlete.current_ability >= 5
+    base.positive? && growth_weeks >= 1 ? 1 : 0
+  end
 
-      [
-        TrainingResult.create!(
-          training_plan: plan,
-          club:,
-          athlete:,
-          occurred_on: to_date,
-          attribute_name:,
-          old_value:,
-          new_value:,
-          condition_change: new_condition - old_condition
-        )
-      ]
-    end
+  def ability_gain(plan, athlete)
+    return 0 unless attribute_gain(plan, athlete).positive?
 
-    def attribute_for(plan, athlete)
-      attributes = ATTRIBUTE_FOCUS.fetch(plan.focus)
-      attributes[athlete.id % attributes.length]
-    end
+    plan.high? && athlete.current_ability < athlete.potential_ability ? 1 : 0
+  end
 
-    def attribute_gain(plan, athlete)
-      return 0 unless growth_weeks.positive?
-      return 0 unless athlete.current_ability < athlete.potential_ability
+  def condition_delta(plan)
+    delta = INTENSITY_CONDITION.fetch(plan.intensity) * growth_weeks
+    delta += growth_weeks if club.staff_rating(:fitness) >= 12
+    delta
+  end
 
-      base = INTENSITY_GROWTH.fetch(plan.intensity)
-      base += 1 if club.staff_rating(:coaching) >= 12
-      base += 1 if plan.youth_development? && athlete.age && athlete.age < 23
-      base += 1 if athlete.potential_ability - athlete.current_ability >= 5
-      base.positive? && growth_weeks >= 1 ? 1 : 0
-    end
+  def growth_weeks
+    @growth_weeks ||= [ training_days / 7, 1 ].max
+  end
 
-    def ability_gain(plan, athlete)
-      return 0 unless attribute_gain(plan, athlete).positive?
-
-      plan.high? && athlete.current_ability < athlete.potential_ability ? 1 : 0
-    end
-
-    def condition_delta(plan)
-      delta = INTENSITY_CONDITION.fetch(plan.intensity) * growth_weeks
-      delta += growth_weeks if club.staff_rating(:fitness) >= 12
-      delta
-    end
-
-    def growth_weeks
-      @growth_weeks ||= [ training_days / 7, 1 ].max
-    end
-
-    def training_days
-      @training_days ||= (to_date - from_date).to_i
-    end
+  def training_days
+    @training_days ||= (to_date - from_date).to_i
+  end
 end

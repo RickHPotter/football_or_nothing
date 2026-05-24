@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RegistrationsController < ApplicationController
   allow_unauthenticated_access only: %i[new create]
 
@@ -17,7 +19,8 @@ class RegistrationsController < ApplicationController
   end
 
   private
-    def registration_params
-      params.expect(user: %i[email_address password password_confirmation])
-    end
+
+  def registration_params
+    params.expect(user: %i[email_address password password_confirmation])
+  end
 end

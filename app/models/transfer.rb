@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Transfer < ApplicationRecord
   enum :transfer_type, { permanent: 0, free_transfer: 1, loan: 2 }
   enum :status, { completed: 0, failed: 1 }
@@ -12,7 +14,8 @@ class Transfer < ApplicationRecord
   validate :from_and_to_clubs_must_differ
 
   private
-    def from_and_to_clubs_must_differ
-      errors.add(:to_club, "must differ from selling club") if from_club_id.present? && from_club_id == to_club_id
-    end
+
+  def from_and_to_clubs_must_differ
+    errors.add(:to_club, "must differ from selling club") if from_club_id.present? && from_club_id == to_club_id
+  end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Manager < ApplicationRecord
   enum :status, { active: 0, unemployed: 1, retired: 2 }
 

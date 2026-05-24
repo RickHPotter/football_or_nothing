@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CareersController < ApplicationController
   before_action :set_career, only: %i[show advance rollover]
 
@@ -62,66 +64,67 @@ class CareersController < ApplicationController
   end
 
   private
-    def set_career
-      @career = Current.user.careers.includes(manager: [ :country, { current_manager_contract: { club: :club_finance } } ]).find(params[:id])
-    end
 
-    def default_career_attributes
-      { name: "Manager Career", current_date: Date.new(2026, 1, 1) }
-    end
+  def set_career
+    @career = Current.user.careers.includes(manager: [ :country, { current_manager_contract: { club: :club_finance } } ]).find(params[:id])
+  end
 
-    def career_params
-      params.expect(career: %i[name current_date])
-    end
+  def default_career_attributes
+    { name: "Manager Career", current_date: Date.new(2026, 1, 1) }
+  end
 
-    def manager_params
-      params.expect(manager: %i[first_name last_name birthdate country_id])
-    end
+  def career_params
+    params.expect(career: %i[name current_date])
+  end
 
-    def available_clubs_for(manager)
-      return Club.none unless manager
+  def manager_params
+    params.expect(manager: %i[first_name last_name birthdate country_id])
+  end
 
-      Club.active
+  def available_clubs_for(manager)
+    return Club.none unless manager
+
+    Club.active
         .includes(:country, :club_finance)
         .left_outer_joins(:current_manager_contract)
         .where(manager_contracts: { id: nil })
         .where(reputation: ..manager.job_reputation_ceiling)
         .order(:reputation, :name)
-    end
+  end
 
-    def manager_totals(stats)
-      {
-        matches: stats.sum(&:matches),
-        wins: stats.sum(&:wins),
-        draws: stats.sum(&:draws),
-        losses: stats.sum(&:losses),
-        trophies: stats.sum(&:trophies)
-      }
-    end
+  def manager_totals(stats)
+    {
+      matches: stats.sum(&:matches),
+      wins: stats.sum(&:wins),
+      draws: stats.sum(&:draws),
+      losses: stats.sum(&:losses),
+      trophies: stats.sum(&:trophies)
+    }
+  end
 
-    def news_items_for(club)
-      return NewsItem.none unless club
+  def news_items_for(club)
+    return NewsItem.none unless club
 
-      NewsItem.includes(:club, :athlete, :manager, :tournament_edition)
-        .where(club_id: [ nil, club.id ])
-        .recent
-        .limit(10)
-    end
+    NewsItem.includes(:club, :athlete, :manager, :tournament_edition)
+            .where(club_id: [ nil, club.id ])
+            .recent
+            .limit(10)
+  end
 
-    def apply_training(from_date, to_date)
-      return unless @career.manager&.current_club
+  def apply_training(from_date, to_date)
+    return unless @career.manager&.current_club
 
-      TrainingApplier.call(
-        club: @career.manager.current_club,
-        manager: @career.manager,
-        from_date:,
-        to_date:
-      )
-    end
+    TrainingApplier.call(
+      club: @career.manager.current_club,
+      manager: @career.manager,
+      from_date:,
+      to_date:
+    )
+  end
 
-    def process_scouting(date)
-      return unless @career.manager&.current_club
+  def process_scouting(date)
+    return unless @career.manager&.current_club
 
-      ScoutingAssignmentProcessor.call(club: @career.manager.current_club, date:)
-    end
+    ScoutingAssignmentProcessor.call(club: @career.manager.current_club, date:)
+  end
 end

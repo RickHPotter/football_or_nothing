@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Fixture < ApplicationRecord
   enum :status, { scheduled: 0, in_progress: 1, completed: 2, postponed: 3, cancelled: 4 }
 
@@ -42,32 +44,33 @@ class Fixture < ApplicationRecord
   end
 
   private
-    def ensure_lineup_for!(club)
-      lineup = lineups.find_or_create_by!(club:) do |record|
-        record.formation = "4-4-2"
-        record.mentality = :balanced
-      end
-      return if lineup.lineup_athletes.exists?
 
-      athletes_for_lineup(club).each_with_index do |athlete, index|
-        lineup.lineup_athletes.create!(
-          athlete:,
-          position: athlete.position,
-          tactical_role: :standard,
-          lineup_slot: index + 1,
-          starter: index < 11
-        )
-      end
+  def ensure_lineup_for!(club)
+    lineup = lineups.find_or_create_by!(club:) do |record|
+      record.formation = "4-4-2"
+      record.mentality = :balanced
     end
+    return if lineup.lineup_athletes.exists?
 
-    def athletes_for_lineup(club)
-      athletes = club.current_athletes.order(position: :asc, current_ability: :desc, id: :asc).to_a
-      athletes = club.athletes.order(position: :asc, current_ability: :desc, id: :asc).to_a if athletes.empty?
-      available_athletes = athletes.select { |athlete| athlete.available_on?(scheduled_on) }
-      (available_athletes.presence || athletes).first(18)
+    athletes_for_lineup(club).each_with_index do |athlete, index|
+      lineup.lineup_athletes.create!(
+        athlete:,
+        position: athlete.position,
+        tactical_role: :standard,
+        lineup_slot: index + 1,
+        starter: index < 11
+      )
     end
+  end
 
-    def clubs_must_differ
-      errors.add(:away_club, "must differ from home club") if home_club_id == away_club_id
-    end
+  def athletes_for_lineup(club)
+    athletes = club.current_athletes.order(position: :asc, current_ability: :desc, id: :asc).to_a
+    athletes = club.athletes.order(position: :asc, current_ability: :desc, id: :asc).to_a if athletes.empty?
+    available_athletes = athletes.select { |athlete| athlete.available_on?(scheduled_on) }
+    (available_athletes.presence || athletes).first(18)
+  end
+
+  def clubs_must_differ
+    errors.add(:away_club, "must differ from home club") if home_club_id == away_club_id
+  end
 end

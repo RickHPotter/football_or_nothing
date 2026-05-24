@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ManagerContract < ApplicationRecord
   enum :role, { head_coach: 0, caretaker: 1, assistant: 2 }
   enum :status, { active: 0, expired: 1, terminated: 2 }

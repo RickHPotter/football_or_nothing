@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Stadium < ApplicationRecord
   enum :ownership, { club_owned: 0, rented: 1, municipal: 2, shared: 3 }
 

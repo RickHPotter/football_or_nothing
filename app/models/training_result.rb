@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TrainingResult < ApplicationRecord
   belongs_to :training_plan
   belongs_to :club

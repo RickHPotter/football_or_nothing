@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FixturesController < ApplicationController
   before_action :set_career
   before_action :set_club
@@ -86,35 +88,37 @@ class FixturesController < ApplicationController
   end
 
   private
-    def set_career
-      @career = Current.user.careers.includes(manager: { current_manager_contract: :club }).find(params.expect(:career_id))
-    end
 
-    def set_club
-      @club = @career.manager&.current_club
-      redirect_to @career, alert: "Take a job before opening fixtures." unless @club
-    end
+  def set_career
+    @career = Current.user.careers.includes(manager: { current_manager_contract: :club }).find(params.expect(:career_id))
+  end
 
-    def set_fixture
-      @fixture = Fixture.includes(:home_club, :away_club, :stadium, :match_events, tournament_edition: [ :tournament, { tournament_participations: :club } ]).find(params.expect(:id))
-      raise ActiveRecord::RecordNotFound unless @fixture.involves?(@club)
-    end
+  def set_club
+    @club = @career.manager&.current_club
+    redirect_to @career, alert: "Take a job before opening fixtures." unless @club
+  end
 
-    def ensure_match_setup
-      @fixture.ensure_match_setup! unless @fixture.completed?
-    end
+  def set_fixture
+    @fixture = Fixture.includes(:home_club, :away_club, :stadium, :match_events,
+                                tournament_edition: [ :tournament, { tournament_participations: :club } ]).find(params.expect(:id))
+    raise ActiveRecord::RecordNotFound unless @fixture.involves?(@club)
+  end
 
-    def tactics_params
-      params.expect(lineup: %i[formation mentality])
-    end
+  def ensure_match_setup
+    @fixture.ensure_match_setup! unless @fixture.completed?
+  end
 
-    def increment_substitution_count!
-      match_state = @fixture.match_state
+  def tactics_params
+    params.expect(lineup: %i[formation mentality])
+  end
 
-      if @fixture.home_club_id == @club.id
-        match_state.increment!(:home_substitutions)
-      else
-        match_state.increment!(:away_substitutions)
-      end
+  def increment_substitution_count!
+    match_state = @fixture.match_state
+
+    if @fixture.home_club_id == @club.id
+      match_state.increment!(:home_substitutions)
+    else
+      match_state.increment!(:away_substitutions)
     end
+  end
 end

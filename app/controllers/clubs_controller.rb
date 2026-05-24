@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ClubsController < ApplicationController
   before_action :set_career
   before_action :set_club
@@ -7,10 +9,10 @@ class ClubsController < ApplicationController
     @stadium = @club.stadiums.order(:created_at).first
     @contracts = @club.current_athlete_contracts.includes(athlete: :country).order(:squad_number)
     @fixtures = Fixture
-      .includes(:tournament_edition, :home_club, :away_club)
-      .where("home_club_id = :club_id OR away_club_id = :club_id", club_id: @club.id)
-      .order(:scheduled_on, :kickoff_minute, :round)
-      .limit(10)
+                .includes(:tournament_edition, :home_club, :away_club)
+                .where("home_club_id = :club_id OR away_club_id = :club_id", club_id: @club.id)
+                .order(:scheduled_on, :kickoff_minute, :round)
+                .limit(10)
     @current_participation = @club.tournament_participations.includes(:tournament_edition).order(created_at: :desc).first
     @standings = @current_participation&.tournament_edition&.standings || []
     @trophies = @club.trophies.includes(:tournament_edition, :manager).order(won_on: :desc)
@@ -28,23 +30,24 @@ class ClubsController < ApplicationController
   end
 
   private
-    def set_career
-      @career = Current.user.careers.includes(manager: { current_manager_contract: :club }).find(params.expect(:career_id))
-    end
 
-    def set_club
-      @club = @career.manager&.current_club
-      redirect_to @career, alert: "Take a job before opening a club dashboard." unless @club
-    end
+  def set_career
+    @career = Current.user.careers.includes(manager: { current_manager_contract: :club }).find(params.expect(:career_id))
+  end
 
-    def top_scorers_for(tournament_edition)
-      return [] unless tournament_edition
+  def set_club
+    @club = @career.manager&.current_club
+    redirect_to @career, alert: "Take a job before opening a club dashboard." unless @club
+  end
 
-      @club.athlete_season_stats
-        .includes(:athlete)
-        .where(tournament_edition:)
-        .where("goals > 0")
-        .order(goals: :desc, appearances: :asc)
-        .limit(5)
-    end
+  def top_scorers_for(tournament_edition)
+    return [] unless tournament_edition
+
+    @club.athlete_season_stats
+         .includes(:athlete)
+         .where(tournament_edition:)
+         .where("goals > 0")
+         .order(goals: :desc, appearances: :asc)
+         .limit(5)
+  end
 end

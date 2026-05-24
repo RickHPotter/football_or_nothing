@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TransferOfferProcessor
   def self.call(...)
     new(...).call
@@ -29,9 +31,10 @@ class TransferOfferProcessor
   end
 
   private
-    attr_reader :offer, :transfer_date
 
-    def offer_with_error(attribute, message)
-      offer.tap { |record| record.errors.add(attribute, message) }
-    end
+  attr_reader :offer, :transfer_date
+
+  def offer_with_error(attribute, message)
+    offer.tap { |record| record.errors.add(attribute, message) }
+  end
 end

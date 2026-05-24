@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Lineup < ApplicationRecord
   enum :mentality, { defensive: 0, balanced: 1, attacking: 2 }
   enum :status, { draft: 0, confirmed: 1 }
@@ -22,7 +24,8 @@ class Lineup < ApplicationRecord
   end
 
   private
-    def club_must_play_fixture
-      errors.add(:club, "must play fixture") if fixture && !fixture.involves?(club)
-    end
+
+  def club_must_play_fixture
+    errors.add(:club, "must play fixture") if fixture && !fixture.involves?(club)
+  end
 end

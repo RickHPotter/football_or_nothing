@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class MatchSimulatorTest < ActiveSupport::TestCase
@@ -39,7 +41,9 @@ class MatchSimulatorTest < ActiveSupport::TestCase
     assert @fixture.match_events.where.not(event_type: :goal).any?
     assert_equal 1, participation_for(@fixture.home_club).played
     assert_equal 1, participation_for(@fixture.away_club).played
-    assert @fixture.home_club.current_athletes.all? { |athlete| athlete.athlete_season_stats.exists?(club: @fixture.home_club, tournament_edition: @fixture.tournament_edition, appearances: 1) }
+    assert(@fixture.home_club.current_athletes.all? do |athlete|
+      athlete.athlete_season_stats.exists?(club: @fixture.home_club, tournament_edition: @fixture.tournament_edition, appearances: 1)
+    end)
   end
 
   test "increments scorer goals in athlete season stats" do
@@ -103,7 +107,8 @@ class MatchSimulatorTest < ActiveSupport::TestCase
   end
 
   private
-    def participation_for(club)
-      @fixture.tournament_edition.tournament_participations.find_by!(club:)
-    end
+
+  def participation_for(club)
+    @fixture.tournament_edition.tournament_participations.find_by!(club:)
+  end
 end

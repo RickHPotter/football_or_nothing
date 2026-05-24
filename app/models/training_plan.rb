@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TrainingPlan < ApplicationRecord
   enum :focus, {
     balanced: 0,

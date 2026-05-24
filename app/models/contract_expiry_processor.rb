@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ContractExpiryProcessor
   def self.call(...)
     new(...).call
@@ -14,5 +16,6 @@ class ContractExpiryProcessor
   end
 
   private
-    attr_reader :cutoff_date
+
+  attr_reader :cutoff_date
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class LoanExpiryProcessor
   def self.call(...)
     new(...).call
@@ -19,19 +21,20 @@ class LoanExpiryProcessor
   end
 
   private
-    attr_reader :cutoff_date
 
-    def expire_loan!(loan_contract)
-      AthleteContract.transaction do
-        parent_contract = loan_contract.parent_athlete_contract
+  attr_reader :cutoff_date
 
-        loan_contract.update!(
-          current: false,
-          status: :expired,
-          end_date: loan_contract.loan_ends_on
-        )
+  def expire_loan!(loan_contract)
+    AthleteContract.transaction do
+      parent_contract = loan_contract.parent_athlete_contract
 
-        parent_contract&.update!(current: true, status: :active)
-      end
+      loan_contract.update!(
+        current: false,
+        status: :expired,
+        end_date: loan_contract.loan_ends_on
+      )
+
+      parent_contract&.update!(current: true, status: :active)
     end
+  end
 end

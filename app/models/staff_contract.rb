@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class StaffContract < ApplicationRecord
   enum :status, { active: 0, expired: 1, terminated: 2 }
 

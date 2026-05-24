@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class NewsItem < ApplicationRecord
   enum :category, {
     match: 0,

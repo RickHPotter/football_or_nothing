@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TournamentEdition < ApplicationRecord
   enum :status, { scheduled: 0, in_progress: 1, completed: 2, archived: 3 }
 

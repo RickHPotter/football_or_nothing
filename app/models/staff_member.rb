@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class StaffMember < ApplicationRecord
   ATTRIBUTES = %i[
     coaching fitness scouting judging_ability judging_potential physiotherapy

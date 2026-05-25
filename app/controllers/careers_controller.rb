@@ -14,8 +14,9 @@ class CareersController < ApplicationController
     @international_editions = international_editions
     if @manager&.unemployed?
       @job_countries = Country.active.order(:name)
-      @job_country = Country.find_by(id: params[:country_id])
+      @job_country = job_country_for(@manager)
       @available_clubs = available_clubs_for(@manager, country: @job_country)
+      @club_divisions = club_divisions_for(@available_clubs)
     end
     @rollover_candidate = @career.rollover_candidate if @current_contract && @next_fixture.nil?
   end
@@ -97,6 +98,23 @@ class CareersController < ApplicationController
 
     clubs.order(:reputation, :name)
          .limit(80)
+  end
+
+  def job_country_for(manager)
+    return Country.find_by(id: params[:country_id]) if params[:country_id].present?
+
+    manager.country
+  end
+
+  def club_divisions_for(clubs)
+    latest_participations = TournamentParticipation
+                            .includes(tournament_edition: :tournament)
+                            .where(club_id: clubs.map(&:id))
+                            .sort_by { |participation| [ -participation.tournament_edition.season_year, participation.tournament_edition.name ] }
+
+    latest_participations.each_with_object({}) do |participation, divisions|
+      divisions[participation.club_id] ||= participation.tournament_edition
+    end
   end
 
   def international_editions

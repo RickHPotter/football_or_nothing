@@ -241,7 +241,7 @@
         <%= form_with url: career_path(@career), method: :get, class: "mb-3 grid gap-2 sm:grid-cols-[1fr_auto]" do |form| %>
           <div>
             <%= form.label :country_id, "Country" %>
-            <%= form.collection_select :country_id, @job_countries, :id, :name, { include_blank: "All countries", selected: @job_country&.id }, class: "field-input" %>
+            <%= form.collection_select :country_id, @job_countries, :id, :name, { selected: @job_country&.id }, class: "field-input" %>
           </div>
           <div class="self-end">
             <%= form.submit "Filter jobs", class: "btn" %>
@@ -256,6 +256,7 @@
                   <th></th>
                   <th>Club</th>
                   <th>Country</th>
+                  <th>Division</th>
                   <th>Reputation</th>
                   <th>Transfer budget</th>
                   <th></th>
@@ -273,6 +274,14 @@
                     </td>
                     <td><%= link_to club.name, career_browse_club_path(@career, club) %></td>
                     <td><%= link_to club.country.name, career_country_path(@career, club.country) %></td>
+                    <td>
+                      <% if (division = @club_divisions[club.id]) %>
+                        <%= link_to division.tournament.name, career_tournament_path(@career, division.tournament) %><br>
+                        <small><%= division.season_year %></small>
+                      <% else %>
+                        -
+                      <% end %>
+                    </td>
                     <td><span class="badge"><%= club.reputation %></span></td>
                     <td><%= number_to_currency(club.club_finance&.transfer_budget || 0) %></td>
                     <td>

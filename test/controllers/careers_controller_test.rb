@@ -64,7 +64,22 @@ class CareersControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h2", "Available jobs"
+    assert_select "select[name='country_id'] option[selected='selected']", countries(:one).name
+    assert_select "th", "Division"
+    assert_select "td", /#{tournaments(:one).name}/
     assert_select "button", "Take job"
+  end
+
+  test "show filters available jobs by selected country" do
+    sign_out
+    sign_in_as(users(:one))
+
+    get career_path(careers(:one), country_id: countries(:two).id)
+
+    assert_response :success
+    assert_select "select[name='country_id'] option[selected='selected']", countries(:two).name
+    assert_select "td", text: clubs(:two).name
+    assert_select "td", text: clubs(:one).name, count: 0
   end
 
   test "show links current club when manager has job" do

@@ -26,6 +26,8 @@ The pack does not provide data in the same shape as the game database. Ratings a
 
 Unknown filename suffixes fall back to the synthetic `Brasfoot Pack` country. This keeps imports running while we expand the suffix map.
 
+Files with a `.ban` extension but a non-Java-serialization header are skipped by the importer. This has already appeared in real packs, so a single malformed file should not abort the whole import.
+
 ## Caveat
 
 Use this for local/private bootstrapping unless the specific pack license allows redistribution. Commit the importer, not imported real-world pack data.

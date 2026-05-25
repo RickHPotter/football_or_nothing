@@ -92,8 +92,9 @@ module DataImport
       def call
         DataImportRun.transaction do
           import_run
-          files.each { |file| import_team(TeamFileParser.call(file)) }
+          files.each { |file| import_file(file) }
           import_run.complete!(records_processed: imported_records_count)
+          import_run.update!(notes: "Skipped files: #{skipped_files.join(", ")}") if skipped_files.any?
         end
       rescue StandardError => error
         import_run.fail!(notes: error.message) if import_run&.persisted? && import_run.running?
@@ -119,6 +120,17 @@ module DataImport
         end
       end
 
+      def import_file(file)
+        unless java_serialization_file?(file)
+          skipped_files << "#{file.basename}: unsupported serialization header"
+          return
+        end
+
+        import_team(TeamFileParser.call(file))
+      rescue ArgumentError => error
+        skipped_files << "#{file.basename}: #{error.message}"
+      end
+
       def import_team(team)
         resolved_country = country_for(team)
         club = import_club(team, resolved_country)
@@ -141,7 +153,10 @@ module DataImport
 
       def import_stadium(team, club, resolved_country)
         name = team.stadium_name.presence || "#{club.name} Ground"
-        club.stadiums.find_or_create_by!(name:) do |stadium|
+        existing_stadium = resolved_country.stadiums.find_by(name:)
+        return existing_stadium if existing_stadium&.club == club
+
+        club.stadiums.find_or_create_by!(name: stadium_name_for(name, club, resolved_country)) do |stadium|
           stadium.country = resolved_country
           stadium.city = team.city.presence || resolved_country.name
           stadium.capacity = capacity_for(club)
@@ -196,6 +211,10 @@ module DataImport
         end
       end
 
+      def java_serialization_file?(file)
+        file.binread(4) == "\xAC\xED\x00\x05".b
+      end
+
       def imported_records_count
         Club.where(external_source: source).count + Athlete.where(external_source: source).count
       end
@@ -226,9 +245,25 @@ module DataImport
         DEFAULT_START_DATE.prev_year(age.to_i).change(month: 7, day: 1)
       end
 
+      def stadium_name_for(name, club, resolved_country)
+        return name unless resolved_country.stadiums.exists?(name:)
+
+        candidate = "#{name} (#{club.short_name})"
+        suffix = 2
+        while resolved_country.stadiums.exists?(name: candidate)
+          candidate = "#{name} (#{club.short_name} #{suffix})"
+          suffix += 1
+        end
+        candidate
+      end
+
       def country_for(team)
         resolved_name, resolved_code = COUNTRIES_BY_SUFFIX.fetch(team.external_id.to_s.split("_").last, [ country_name, country_code ])
         import_country(resolved_name, resolved_code)
+      end
+
+      def skipped_files
+        @skipped_files ||= []
       end
     end
   end

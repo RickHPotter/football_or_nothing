@@ -65,6 +65,10 @@ module DataImport
         "ven" => [ "Venezuela", "VEN" ]
       }.freeze
 
+      BRAZIL_STATE_SUFFIXES = %w[
+        ac al am ap ba ce df es go ma mg ms mt pa pb pe pi pr rj rn ro rr rs sc se sp to
+      ].freeze
+
       ATTRIBUTE_BUCKETS = {
         goalkeeper: %i[positioning jumping decisions composure],
         center_back: %i[tackling marking heading strength positioning],
@@ -139,7 +143,8 @@ module DataImport
       end
 
       def import_club(team, resolved_country)
-        Club.find_by(external_source: source, external_id: team.external_id) || resolved_country.clubs.find_or_initialize_by(name: team.name).tap do |club|
+        (Club.find_by(external_source: source, external_id: team.external_id) || resolved_country.clubs.find_or_initialize_by(name: team.name)).tap do |club|
+          club.country = resolved_country
           club.short_name = team.short_name.to_s.first(12).presence || team.name.first(12)
           club.external_source ||= source
           club.external_id ||= team.external_id
@@ -153,6 +158,7 @@ module DataImport
 
       def import_stadium(team, club, resolved_country)
         name = team.stadium_name.presence || "#{club.name} Ground"
+        club.stadiums.where.not(country: resolved_country).find_each { |stadium| stadium.update!(country: resolved_country) }
         existing_stadium = resolved_country.stadiums.find_by(name:)
         return existing_stadium if existing_stadium&.club == club
 
@@ -206,6 +212,8 @@ module DataImport
 
       def files
         @files ||= begin
+          return [ path ] if path.file?
+
           selected = Pathname.glob(path.join("*.ban").to_s).sort
           limit ? selected.first(limit) : selected
         end
@@ -258,8 +266,16 @@ module DataImport
       end
 
       def country_for(team)
-        resolved_name, resolved_code = COUNTRIES_BY_SUFFIX.fetch(team.external_id.to_s.split("_").last, [ country_name, country_code ])
+        resolved_name, resolved_code = COUNTRIES_BY_SUFFIX.fetch(country_suffix_for(team.external_id), [ country_name, country_code ])
         import_country(resolved_name, resolved_code)
+      end
+
+      def country_suffix_for(external_id)
+        normalized_id = external_id.to_s.downcase
+        explicit_suffix = normalized_id.split("_").last
+        return explicit_suffix if COUNTRIES_BY_SUFFIX.key?(explicit_suffix)
+
+        BRAZIL_STATE_SUFFIXES.find { |suffix| normalized_id.end_with?(suffix) }
       end
 
       def skipped_files

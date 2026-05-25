@@ -20,4 +20,16 @@ namespace :brasfoot do
     puts "[brasfoot] imported #{Club.where(external_source: source).count} clubs"
     puts "[brasfoot] imported #{Athlete.where(external_source: source).count} athletes"
   end
+
+  desc "Import one Brasfoot .ban file. Usage: bin/rails brasfoot:file[/path/to/flarj.ban]"
+  task :file, [ :path ] => :environment do |_task, args|
+    path = args[:path] || ENV.fetch("BRASFOOT_FILE")
+    source = ENV.fetch("BRASFOOT_SOURCE", DataImport::Brasfoot::PackImporter::DEFAULT_SOURCE)
+
+    DataImport::Brasfoot::PackImporter.call(path:, source:)
+    club = Club.find_by!(external_source: source, external_id: Pathname(path).basename(".ban").to_s)
+
+    puts "[brasfoot] imported #{club.name} (#{club.country.name})"
+    puts "[brasfoot] athletes #{club.current_athletes.count}"
+  end
 end

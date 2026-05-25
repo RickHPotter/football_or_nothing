@@ -6,7 +6,7 @@ module DataImport
       DEFAULT_TEAMS_PATH = Pathname("/media/lovelace/01D8A2DEE1DFF560/REAL BRASFOOT 2026/teams")
 
       PlannedDivision = Struct.new(:division, :teams, keyword_init: true)
-      PlannedTeam = Struct.new(:external_id, :name, :ranking_fields, keyword_init: true)
+      PlannedTeam = Struct.new(:external_id, :name, :source, :ranking_fields, keyword_init: true)
 
       def self.call(...)
         new(...).call
@@ -15,6 +15,7 @@ module DataImport
       def initialize(config_path:, teams_path: DEFAULT_TEAMS_PATH)
         @config = LeagueConfigParser.call(config_path)
         @teams_path = Pathname(teams_path)
+        @source = PackImporter::DEFAULT_SOURCE
       end
 
       def call
@@ -55,6 +56,7 @@ module DataImport
           PlannedTeam.new(
             external_id: team.external_id,
             name: team.name,
+            source: @source,
             ranking_fields: fields.slice("b", "c", "g", "i", "id", "n", "o")
           )
         rescue ArgumentError

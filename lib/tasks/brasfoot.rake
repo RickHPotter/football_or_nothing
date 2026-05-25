@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 namespace :brasfoot do
-  desc "Import Brasfoot .ban team files. Usage: BRASFOOT_TEAMS_PATH=/path/to/teams bin/rails brasfoot:import"
+  DEFAULT_PACK_PATH = "/media/lovelace/01D8A2DEE1DFF560/REAL BRASFOOT 2026"
+
+  desc "Import Brasfoot .ban team files and configured leagues. Usage: BRASFOOT_PACK_PATH=/path/to/pack bin/rails brasfoot:import"
   task import: :environment do
-    path = ENV.fetch("BRASFOOT_TEAMS_PATH", "/media/lovelace/01D8A2DEE1DFF560/REAL BRASFOOT 2026/teams")
+    pack_path = Pathname(ENV.fetch("BRASFOOT_PACK_PATH", DEFAULT_PACK_PATH))
+    path = ENV.fetch("BRASFOOT_TEAMS_PATH", pack_path.join("teams").to_s)
     limit = ENV["BRASFOOT_LIMIT"]
     source = ENV.fetch("BRASFOOT_SOURCE", DataImport::Brasfoot::PackImporter::DEFAULT_SOURCE)
     country_name = ENV.fetch("BRASFOOT_COUNTRY_NAME", DataImport::Brasfoot::PackImporter::DEFAULT_COUNTRY_NAME)
@@ -19,6 +22,19 @@ namespace :brasfoot do
 
     puts "[brasfoot] imported #{Club.where(external_source: source).count} clubs"
     puts "[brasfoot] imported #{Athlete.where(external_source: source).count} athletes"
+
+    unless ActiveModel::Type::Boolean.new.cast(ENV.fetch("BRASFOOT_SKIP_LEAGUES", false))
+      league_configs(pack_path).each do |config_path|
+        editions = DataImport::Brasfoot::LeagueImporter.call(
+          config_path:,
+          teams_path: path,
+          club_source: source,
+          season_year: ENV.fetch("BRASFOOT_SEASON_YEAR", DataImport::Brasfoot::LeagueImporter::DEFAULT_SEASON_YEAR)
+        )
+
+        puts "[brasfoot] imported league #{config_path.basename}: #{editions.map(&:name).join(", ")}"
+      end
+    end
   end
 
   desc "Import one Brasfoot .ban file. Usage: bin/rails brasfoot:file[/path/to/flarj.ban]"
@@ -97,5 +113,29 @@ namespace :brasfoot do
         ].join(" | ")
       end
     end
+  end
+
+  desc "Import one Brasfoot league config. Usage: bin/rails brasfoot:import_league[/path/to/BRA.cfg]"
+  task :import_league, [ :path ] => :environment do |_task, args|
+    path = args[:path] || ENV.fetch("BRASFOOT_CONFIG")
+    teams_path = ENV.fetch("BRASFOOT_TEAMS_PATH", Pathname(path).dirname.join("..", "teams").cleanpath.to_s)
+    source = ENV.fetch("BRASFOOT_SOURCE", DataImport::Brasfoot::PackImporter::DEFAULT_SOURCE)
+    season_year = ENV.fetch("BRASFOOT_SEASON_YEAR", DataImport::Brasfoot::LeagueImporter::DEFAULT_SEASON_YEAR)
+
+    editions = DataImport::Brasfoot::LeagueImporter.call(
+      config_path: path,
+      teams_path:,
+      club_source: source,
+      season_year:
+    )
+
+    editions.each do |edition|
+      puts "[brasfoot] imported #{edition.name}: #{edition.clubs.count} clubs, #{edition.fixtures.count} fixtures"
+    end
+  end
+
+  def league_configs(pack_path)
+    selected = ENV.fetch("BRASFOOT_LEAGUE_CONFIGS", "BRA.cfg").split(",").map(&:strip).reject(&:blank?)
+    selected.map { |file_name| pack_path.join("conf_ligas_nacionais", file_name) }.select(&:exist?)
   end
 end

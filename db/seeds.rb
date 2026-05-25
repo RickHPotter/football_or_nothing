@@ -2,4 +2,5 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 #
-WorldGenerator.call
+# WorldGenerator.call
+User.create(email_address: "rick@mail.com", password: "161616", password_confirmation: "161616")

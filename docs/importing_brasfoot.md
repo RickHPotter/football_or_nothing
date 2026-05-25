@@ -5,7 +5,7 @@ Brasfoot team files are serialized Java objects with a `.ban` extension. The imp
 ## Import
 
 ```bash
-BRASFOOT_TEAMS_PATH="/media/lovelace/01D8A2DEE1DFF560/REAL BRASFOOT 2026/teams" bin/rails brasfoot:import
+BRASFOOT_PACK_PATH="/media/lovelace/01D8A2DEE1DFF560/REAL BRASFOOT 2026" bin/rails brasfoot:import
 ```
 
 The master import loads teams first, then club visual assets, then configured national and state leagues. By default it imports every `.cfg` from `conf_ligas_nacionais` and every `.ces` from `conf_estadual`; pass `BRASFOOT_LEAGUE_CONFIGS=BRA.cfg,ING.cfg,RJ.ces` to limit the set, `BRASFOOT_SKIP_ASSETS=true` to skip PNG attachments, or `BRASFOOT_SKIP_LEAGUES=true` to import only teams/assets.
@@ -49,6 +49,8 @@ The national `.cfg` and state `.ces` files define competition formats. They do n
 The pack does not provide data in the same shape as the game database. Ratings and positions are normalized into the current 1-20 athlete attribute model, and all imported pack records use `external_source = "brasfoot_pack"` by default.
 
 Unknown filename suffixes fall back to the synthetic `Brasfoot Pack` country. This keeps imports running while we expand the suffix map.
+
+League config country codes are normalized separately from team filename suffixes. For example, Brasfoot national configs such as `ALE.cfg`, `ING.cfg`, `HOL.cfg`, and `EUA.cfg` are imported under the existing `GER`, `ENG`, `NED`, and `USA` country records. If a config points to a country that has not been created by team import, league import creates a minimal active country record so the master import can continue.
 
 Files with a `.ban` extension but a non-Java-serialization header are skipped by the importer. This has already appeared in real packs, so a single malformed file should not abort the whole import.
 

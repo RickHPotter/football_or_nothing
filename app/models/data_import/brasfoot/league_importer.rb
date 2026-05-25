@@ -6,6 +6,26 @@ module DataImport
       DEFAULT_SOURCE = "brasfoot_league"
       DEFAULT_SEASON_YEAR = 2026
       DEFAULT_STARTS_ON = Date.new(2026, 5, 1)
+      CONFIG_COUNTRIES = PackImporter::COUNTRIES_BY_SUFFIX.merge(
+        "afg" => [ "Afghanistan", "AFG" ],
+        "afs" => [ "South Africa", "ZAF" ],
+        "ars" => [ "Saudi Arabia", "KSA" ],
+        "aus" => [ "Australia", "AUS" ],
+        "aze" => [ "Azerbaijan", "AZE" ],
+        "bul" => [ "Bulgaria", "BUL" ],
+        "cat" => [ "Qatar", "QAT" ],
+        "crs" => [ "Costa Rica", "CRC" ],
+        "din" => [ "Denmark", "DEN" ],
+        "emi" => [ "United Arab Emirates", "UAE" ],
+        "equ" => [ "Ecuador", "ECU" ],
+        "hun" => [ "Hungary", "HUN" ],
+        "mal" => [ "Malaysia", "MAS" ],
+        "mar" => [ "Morocco", "MAR" ],
+        "rtc" => [ "Czech Republic", "CZE" ],
+        "ser" => [ "Serbia", "SRB" ],
+        "tai" => [ "Thailand", "THA" ],
+        "ucr" => [ "Ukraine", "UKR" ]
+      ).freeze
 
       def self.call(...)
         new(...).call
@@ -94,14 +114,29 @@ module DataImport
       end
 
       def country
-        @country ||= Country.find_by!(code: country_code)
+        @country ||= Country.find_or_initialize_by(code: country_code).tap do |record|
+          record.name ||= country_name
+          record.external_source ||= source
+          record.external_id ||= country_code
+          record.reputation ||= 5
+          record.status ||= :active
+          record.save!
+        end
       end
 
       def country_code
-        return "BRA" if config.kind == :state
-        return "BRA" if config.divisions.first&.raw_fields&.fetch("pais") == PackImporter::BRAZIL_COUNTRY_ID
+        country_identity.last
+      end
 
-        config.name
+      def country_name
+        country_identity.first
+      end
+
+      def country_identity
+        return [ "Brazil", "BRA" ] if config.kind == :state
+        return [ "Brazil", "BRA" ] if config.divisions.first&.raw_fields&.fetch("pais", nil) == PackImporter::BRAZIL_COUNTRY_ID
+
+        CONFIG_COUNTRIES.fetch(config.name.downcase, [ config.name, config.name ])
       end
 
       def planned_divisions

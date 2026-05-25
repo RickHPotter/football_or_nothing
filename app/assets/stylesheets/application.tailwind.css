@@ -185,6 +185,14 @@
     @apply border border-dashed border-board-200 bg-board-50 p-3 text-board-700;
   }
 
+  .club-crest-sm {
+    @apply h-8 w-8 object-contain;
+  }
+
+  .club-crest-lg {
+    @apply h-14 w-14 object-contain;
+  }
+
   .form-stack {
     @apply grid gap-3;
   }

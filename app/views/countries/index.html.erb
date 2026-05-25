@@ -1,0 +1,45 @@
+<section class="game-header">
+  <div class="game-title-row">
+    <div>
+      <h1>Countries</h1>
+      <p class="game-subtitle">Imported and generated football nations in this career world.</p>
+    </div>
+    <div class="btn-row">
+      <%= link_to "Clubs", career_browse_clubs_path(@career), class: "btn" %>
+      <%= link_to "Tournaments", career_tournaments_path(@career), class: "btn btn-secondary" %>
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-header">
+    <h2>Country List</h2>
+    <span class="badge"><%= @countries.count %></span>
+  </div>
+  <div class="panel-body">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Country</th>
+            <th>Code</th>
+            <th>Reputation</th>
+            <th>Clubs</th>
+            <th>Tournaments</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @countries.each do |country| %>
+            <tr>
+              <td><%= link_to country.name, career_country_path(@career, country) %></td>
+              <td><span class="badge"><%= country.code %></span></td>
+              <td><%= country.reputation %></td>
+              <td><%= @club_counts.fetch(country.id, 0) %></td>
+              <td><%= @tournament_counts.fetch(country.id, 0) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

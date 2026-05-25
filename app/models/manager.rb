@@ -23,10 +23,8 @@ class Manager < ApplicationRecord
     reputation + 5
   end
 
-  def eligible_for_club?(_club)
-    true
-
-    # club.reputation <= job_reputation_ceiling && (!club.international? || eligible_for_international_job?)
+  def eligible_for_club?(club)
+    club.reputation <= job_reputation_ceiling && (!club.international? || eligible_for_international_job?)
   end
 
   def eligible_for_international_job?

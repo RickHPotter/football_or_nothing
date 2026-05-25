@@ -161,8 +161,10 @@ Implemented:
 - Brasfoot import audit reporting for imported counts, fallback-country clubs,
   missing stadiums/assets, contract gaps, duplicate names, and suspicious league
   fixture counts.
+- Imported-world browsing for countries, clubs, tournaments, standings,
+  fixtures, squads, club assets, and reputation-gated job actions.
 
 Next major phase:
-The first playable backlog through Phase 26 is complete at initial depth. Next
-work should be Phase 27: gameplay bridge and frontend exposure for imported
-data.
+The first playable backlog through Phase 27 is complete at initial depth. Next
+work should come from Phase 26 audit cleanup, Phase 27 deferred browsing depth,
+or a new planning pass.

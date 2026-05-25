@@ -42,6 +42,9 @@
               <%= game_nav_link "Home", root_path %>
               <% if nav_career %>
                 <%= game_nav_link "Career", career_path(nav_career) %>
+                <%= game_nav_link "Countries", career_countries_path(nav_career) %>
+                <%= game_nav_link "Clubs", career_browse_clubs_path(nav_career) %>
+                <%= game_nav_link "Tournaments", career_tournaments_path(nav_career) %>
                 <% if nav_career.manager&.current_club %>
                   <%= game_nav_link "Club", career_club_path(nav_career) %>
                   <%= game_nav_link "Transfers", career_transfers_path(nav_career) %>

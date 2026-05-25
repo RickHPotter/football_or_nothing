@@ -25,6 +25,9 @@ Rails.application.routes.draw do
       post :substitute, on: :member
     end
     resources :manager_contracts, only: :create
+    resources :countries, only: %i[index show]
+    resources :clubs, only: %i[index show], as: :browse_clubs
+    resources :tournaments, only: %i[index show]
   end
   resources :passwords, param: :token
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

@@ -231,17 +231,29 @@
         </section>
       </aside>
     </div>
-  <% else %>
+    <% else %>
     <section class="panel">
       <div class="panel-header">
         <h2>Available jobs</h2>
+        <%= link_to "Browse all clubs", career_browse_clubs_path(@career), class: "btn btn-secondary" %>
       </div>
       <div class="panel-body">
+        <%= form_with url: career_path(@career), method: :get, class: "mb-3 grid gap-2 sm:grid-cols-[1fr_auto]" do |form| %>
+          <div>
+            <%= form.label :country_id, "Country" %>
+            <%= form.collection_select :country_id, @job_countries, :id, :name, { include_blank: "All countries", selected: @job_country&.id }, class: "field-input" %>
+          </div>
+          <div class="self-end">
+            <%= form.submit "Filter jobs", class: "btn" %>
+          </div>
+        <% end %>
+
         <% if @available_clubs.any? %>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
+                  <th></th>
                   <th>Club</th>
                   <th>Country</th>
                   <th>Reputation</th>
@@ -252,8 +264,15 @@
               <tbody>
                 <% @available_clubs.each do |club| %>
                   <tr>
-                    <td><%= club.name %></td>
-                    <td><%= club.country.name %></td>
+                    <td>
+                      <% if club.crest.attached? %>
+                        <%= image_tag club.crest, class: "club-crest-sm", alt: "#{club.name} crest" %>
+                      <% else %>
+                        -
+                      <% end %>
+                    </td>
+                    <td><%= link_to club.name, career_browse_club_path(@career, club) %></td>
+                    <td><%= link_to club.country.name, career_country_path(@career, club.country) %></td>
                     <td><span class="badge"><%= club.reputation %></span></td>
                     <td><%= number_to_currency(club.club_finance&.transfer_budget || 0) %></td>
                     <td>

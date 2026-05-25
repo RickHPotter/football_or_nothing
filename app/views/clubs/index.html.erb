@@ -1,0 +1,83 @@
+<section class="game-header">
+  <div class="game-title-row">
+    <div>
+      <h1>Clubs</h1>
+      <p class="game-subtitle">Browse imported and generated clubs, squads, and job eligibility.</p>
+    </div>
+    <%= link_to "Countries", career_countries_path(@career), class: "btn btn-secondary" %>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-header">
+    <h2>Filters</h2>
+  </div>
+  <div class="panel-body">
+    <%= form_with url: career_browse_clubs_path(@career), method: :get, class: "grid gap-2 sm:grid-cols-[1fr_auto_auto]" do |form| %>
+      <div>
+        <%= form.label :country_id, "Country" %>
+        <%= form.collection_select :country_id, @countries, :id, :name, { include_blank: "All countries", selected: @country&.id }, class: "field-input" %>
+      </div>
+      <label class="flex items-end gap-2 pb-2">
+        <%= check_box_tag :international, "1", ActiveModel::Type::Boolean.new.cast(params[:international]), class: "mt-0 w-auto" %>
+        International
+      </label>
+      <div class="self-end">
+        <%= form.submit "Apply", class: "btn" %>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-header">
+    <h2>Club List</h2>
+    <span class="badge"><%= @clubs.size %></span>
+  </div>
+  <div class="panel-body">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Club</th>
+            <th>Country</th>
+            <th>Rep</th>
+            <th>Squad</th>
+            <th>Budget</th>
+            <th>Job</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @clubs.each do |club| %>
+            <tr>
+              <td>
+                <% if club.crest.attached? %>
+                  <%= image_tag club.crest, class: "club-crest-sm", alt: "#{club.name} crest" %>
+                <% else %>
+                  -
+                <% end %>
+              </td>
+              <td><%= link_to club.name, career_browse_club_path(@career, club) %></td>
+              <td><%= link_to club.country.name, career_country_path(@career, club.country) %></td>
+              <td><span class="badge"><%= club.reputation %></span></td>
+              <td><%= club.current_athlete_contracts.count %></td>
+              <td><%= number_to_currency(club.club_finance&.transfer_budget || 0) %></td>
+              <td>
+                <% if @manager&.unemployed? && @eligible_club_ids.include?(club.id) %>
+                  <%= button_to "Take job", career_manager_contracts_path(@career), params: { club_id: club.id } %>
+                <% elsif club.current_manager_contract %>
+                  <span class="badge">Filled</span>
+                <% elsif @manager&.unemployed? %>
+                  <span class="badge badge-warn">Locked</span>
+                <% else %>
+                  -
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

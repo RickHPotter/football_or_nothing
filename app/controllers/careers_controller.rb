@@ -12,7 +12,11 @@ class CareersController < ApplicationController
     @manager_totals = manager_totals(@manager_season_stats)
     @news_items = news_items_for(@manager&.current_club)
     @international_editions = international_editions
-    @available_clubs = available_clubs_for(@manager) if @manager&.unemployed?
+    if @manager&.unemployed?
+      @job_countries = Country.active.order(:name)
+      @job_country = Country.find_by(id: params[:country_id])
+      @available_clubs = available_clubs_for(@manager, country: @job_country)
+    end
     @rollover_candidate = @career.rollover_candidate if @current_contract && @next_fixture.nil?
   end
 
@@ -82,26 +86,28 @@ class CareersController < ApplicationController
     params.expect(manager: %i[first_name last_name birthdate country_id])
   end
 
-  def available_clubs_for(manager)
+  def available_clubs_for(manager, country: nil)
     return Club.none unless manager
 
-      Club.active
-        .includes(:country, :club_finance)
-        .left_outer_joins(:current_manager_contract)
-        .where(manager_contracts: { id: nil })
-        .where(reputation: ..manager.job_reputation_ceiling)
-        .order(:reputation, :name)
-        .select { |club| manager.eligible_for_club?(club) }
-    end
+    clubs = Club.active
+                .includes(:country, :club_finance, crest_attachment: :blob)
+                .left_outer_joins(:current_manager_contract)
+                .where(manager_contracts: { id: nil })
+    clubs = clubs.where(country:) if country
 
-    def international_editions
-      TournamentEdition
-        .includes(:tournament, :champion)
-        .joins(:tournament)
-        .where(tournaments: { scope: Tournament.scopes[:international] })
-        .order(starts_on: :desc)
-        .limit(5)
-    end
+    clubs.order(:reputation, :name)
+         .limit(80)
+         .select { |club| manager.eligible_for_club?(club) }
+  end
+
+  def international_editions
+    TournamentEdition
+      .includes(:tournament, :champion)
+      .joins(:tournament)
+      .where(tournaments: { scope: Tournament.scopes[:international] })
+      .order(starts_on: :desc)
+      .limit(5)
+  end
 
   def manager_totals(stats)
     {

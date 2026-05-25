@@ -44,8 +44,7 @@ Implemented Phase Documents
 
 Current Continuation Point
 --------------------------
-Phases 1 through 26 are implemented at first-playable depth. Phase 27 is the
-next planned continuation phase.
+Phases 1 through 27 are implemented at first-playable depth.
 
-The next implementation target is Phase 27: connecting imported data to
-gameplay and frontend browsing.
+The next implementation target should be chosen from Phase 27 deferred items,
+import cleanup from the Phase 26 audit report, or the next planning pass.

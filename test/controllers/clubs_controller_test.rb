@@ -31,6 +31,26 @@ class ClubsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a", "#{athletes(:one).first_name} #{athletes(:one).last_name}"
   end
 
+  test "index lists browseable clubs and job eligibility" do
+    manager_contracts(:one).update!(current: false)
+    @career.manager.update!(status: :unemployed, reputation: 1)
+
+    get career_browse_clubs_path(@career)
+
+    assert_response :success
+    assert_select "h1", "Clubs"
+    assert_select "a", @club.name
+    assert_select "button", "Take job"
+  end
+
+  test "show can browse a specific club" do
+    get career_browse_club_path(@career, clubs(:two))
+
+    assert_response :success
+    assert_select "h1", clubs(:two).name
+    assert_select "a", "All clubs"
+  end
+
   test "show redirects unemployed manager back to career" do
     manager_contracts(:one).update!(current: false)
 

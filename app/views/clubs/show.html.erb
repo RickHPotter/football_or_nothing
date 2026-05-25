@@ -1,11 +1,21 @@
 <section class="game-header">
   <div class="game-title-row">
     <div>
-      <h1><%= @club.name %></h1>
+      <div class="flex items-center gap-3">
+        <% if @club.crest.attached? %>
+          <%= image_tag @club.crest, class: "club-crest-lg", alt: "#{@club.name} crest" %>
+        <% end %>
+        <h1><%= @club.name %></h1>
+      </div>
       <p class="game-subtitle"><%= @club.country.name %> · Founded <%= @club.founded_year || "Unknown" %></p>
     </div>
     <div class="btn-row">
-      <%= link_to "Transfer market", career_transfers_path(@career), class: "btn" %>
+      <% if @manageable %>
+        <%= link_to "Transfer market", career_transfers_path(@career), class: "btn" %>
+      <% elsif @career.manager&.unemployed? && @career.manager.eligible_for_club?(@club) && !@club.current_manager_contract %>
+        <%= button_to "Take job", career_manager_contracts_path(@career), params: { club_id: @club.id } %>
+      <% end %>
+      <%= link_to "All clubs", career_browse_clubs_path(@career), class: "btn btn-secondary" %>
       <%= link_to "Back to career", career_path(@career), class: "btn btn-secondary" %>
     </div>
   </div>
@@ -153,60 +163,64 @@
       </div>
     </section>
 
-    <section class="panel">
-      <div class="panel-header">
-        <h2>Training</h2>
-        <span class="badge"><%= @training_plan.focus.humanize %></span>
-      </div>
-      <div class="panel-body space-y-3">
-        <%= form_with model: @training_plan, url: career_training_plan_path(@career), method: :patch, class: "space-y-3" do |form| %>
-          <div>
-            <%= form.label :focus, class: "stat-label" %>
-            <%= form.select :focus, TrainingPlan.defined_enums.fetch("focus").keys.map { |focus| [ focus.humanize, focus ] }, {}, class: "field-input" %>
-          </div>
-          <div>
-            <%= form.label :intensity, class: "stat-label" %>
-            <%= form.select :intensity, TrainingPlan.defined_enums.fetch("intensity").keys.map { |intensity| [ intensity.humanize, intensity ] }, {}, class: "field-input" %>
-          </div>
-          <%= form.submit "Update training", class: "btn" %>
-        <% end %>
+    <% if @manageable %>
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Training</h2>
+          <span class="badge"><%= @training_plan.focus.humanize %></span>
+        </div>
+        <div class="panel-body space-y-3">
+          <%= form_with model: @training_plan, url: career_training_plan_path(@career), method: :patch, class: "space-y-3" do |form| %>
+            <div>
+              <%= form.label :focus, class: "stat-label" %>
+              <%= form.select :focus, TrainingPlan.defined_enums.fetch("focus").keys.map { |focus| [ focus.humanize, focus ] }, {}, class: "field-input" %>
+            </div>
+            <div>
+              <%= form.label :intensity, class: "stat-label" %>
+              <%= form.select :intensity, TrainingPlan.defined_enums.fetch("intensity").keys.map { |intensity| [ intensity.humanize, intensity ] }, {}, class: "field-input" %>
+            </div>
+            <%= form.submit "Update training", class: "btn" %>
+          <% end %>
 
-        <% if @training_results.any? %>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Date</th><th>Player</th><th>Gain</th></tr></thead>
-              <tbody>
-                <% @training_results.each do |result| %>
-                  <tr>
-                    <td><%= result.occurred_on %></td>
-                    <td><%= result.athlete.first_name %> <%= result.athlete.last_name %></td>
-                    <td><%= result.attribute_name.humanize %> <%= result.old_value %> to <%= result.new_value %></td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
-          </div>
-        <% else %>
-          <p class="empty-state">No training results recorded yet.</p>
-        <% end %>
-      </div>
-    </section>
+          <% if @training_results.any? %>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Date</th><th>Player</th><th>Gain</th></tr></thead>
+                <tbody>
+                  <% @training_results.each do |result| %>
+                    <tr>
+                      <td><%= result.occurred_on %></td>
+                      <td><%= result.athlete.first_name %> <%= result.athlete.last_name %></td>
+                      <td><%= result.attribute_name.humanize %> <%= result.old_value %> to <%= result.new_value %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <p class="empty-state">No training results recorded yet.</p>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
 
-    <section class="panel">
-      <div class="panel-header">
-        <h2>Youth Academy</h2>
-        <span class="badge">Q<%= @club.academy_quality %></span>
-      </div>
-      <div class="panel-body space-y-2">
-        <% if @latest_youth_intake %>
-          <p><span class="stat-label">Latest intake</span><br><strong><%= @latest_youth_intake.season_year %></strong></p>
-          <p><span class="stat-label">Prospects</span><br><%= @latest_youth_intake.athletes.count %></p>
-        <% else %>
-          <p class="empty-state">No academy intake generated yet.</p>
-        <% end %>
-        <%= link_to "Open academy", career_youth_intakes_path(@career), class: "btn btn-secondary" %>
-      </div>
-    </section>
+    <% if @manageable %>
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Youth Academy</h2>
+          <span class="badge">Q<%= @club.academy_quality %></span>
+        </div>
+        <div class="panel-body space-y-2">
+          <% if @latest_youth_intake %>
+            <p><span class="stat-label">Latest intake</span><br><strong><%= @latest_youth_intake.season_year %></strong></p>
+            <p><span class="stat-label">Prospects</span><br><%= @latest_youth_intake.athletes.count %></p>
+          <% else %>
+            <p class="empty-state">No academy intake generated yet.</p>
+          <% end %>
+          <%= link_to "Open academy", career_youth_intakes_path(@career), class: "btn btn-secondary" %>
+        </div>
+      </section>
+    <% end %>
 
     <section class="panel">
       <div class="panel-header">

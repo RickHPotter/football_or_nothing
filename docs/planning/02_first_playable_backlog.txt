@@ -891,18 +891,23 @@ Deferred:
 
 Phase 27 - Gameplay Bridge and Frontend Exposure
 ------------------------------------------------
-Status: planned.
+Status: implemented at first browsing depth.
 
 Goal:
 Make imported data playable and visible in the manager career loop.
 
-Scope:
-- Mark imported leagues as playable or non-playable.
-- Connect imported clubs to manager job generation.
-- Gate imported club and international jobs by manager reputation.
-- Add country, club, tournament, edition, fixture, and squad browsing screens.
-- Show imported club assets in the UI.
-- Add job-market filters for imported data.
+Implemented:
+- Added career-scoped country, club, and tournament browsing.
+- Connected imported clubs to the unemployed job market.
+- Restored reputation and international-job eligibility gates.
+- Added country filtering to the career job market.
+- Added club assets to imported club lists and club pages.
+- Exposed standings and fixtures from imported tournament editions.
+
+Deferred:
+- Persisted playable/non-playable league flags.
+- Competition-specific job-market filters.
+- Deeper imported-club finance balancing.
 
 
 Recommended Order After Phase 24

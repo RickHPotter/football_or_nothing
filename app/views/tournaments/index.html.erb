@@ -1,0 +1,52 @@
+<section class="game-header">
+  <div class="game-title-row">
+    <div>
+      <h1>Tournaments</h1>
+      <p class="game-subtitle">Domestic and international competitions in the imported world.</p>
+    </div>
+    <%= link_to "Countries", career_countries_path(@career), class: "btn btn-secondary" %>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-header">
+    <h2>Filters</h2>
+  </div>
+  <div class="panel-body">
+    <%= form_with url: career_tournaments_path(@career), method: :get, class: "grid gap-2 sm:grid-cols-[1fr_auto]" do |form| %>
+      <div>
+        <%= form.label :country_id, "Country" %>
+        <%= form.collection_select :country_id, @countries, :id, :name, { include_blank: "All countries", selected: @country&.id }, class: "field-input" %>
+      </div>
+      <div class="self-end">
+        <%= form.submit "Apply", class: "btn" %>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-header">
+    <h2>Competition List</h2>
+    <span class="badge"><%= @tournaments.size %></span>
+  </div>
+  <div class="panel-body">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tournament</th><th>Country</th><th>Scope</th><th>Format</th><th>Editions</th><th>Status</th></tr></thead>
+        <tbody>
+          <% @tournaments.each do |tournament| %>
+            <tr>
+              <td><%= link_to tournament.name, career_tournament_path(@career, tournament) %></td>
+              <td><%= link_to tournament.country.name, career_country_path(@career, tournament.country) %></td>
+              <td><span class="badge"><%= tournament.scope.humanize %></span></td>
+              <td><%= tournament.format.humanize %></td>
+              <td><%= tournament.tournament_editions.size %></td>
+              <td><%= tournament.status.humanize %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

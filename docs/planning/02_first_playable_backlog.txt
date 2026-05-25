@@ -870,13 +870,13 @@ Deferred:
 
 Phase 26 - Import Audit and Data Normalization
 ----------------------------------------------
-Status: planned.
+Status: implemented at audit-report depth.
 
 Goal:
 Audit and normalize the imported Brasfoot world before building more gameplay
 on top of it.
 
-Scope:
+Implemented:
 - Add `brasfoot:audit`.
 - Report imported record counts and country distribution.
 - Detect clubs without stadiums or assets.
@@ -884,6 +884,8 @@ Scope:
 - Detect duplicate club/stadium names.
 - Detect suspicious tournament editions and fixture counts.
 - Detect fallback-country records.
+
+Deferred:
 - Improve country mapping and tournament naming from real audit output.
 
 

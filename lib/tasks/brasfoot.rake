@@ -149,6 +149,15 @@ namespace :brasfoot do
     puts "[brasfoot] imported club visual assets"
   end
 
+  desc "Audit imported Brasfoot data. Usage: bin/rails brasfoot:audit"
+  task audit: :environment do
+    source = ENV.fetch("BRASFOOT_SOURCE", DataImport::Brasfoot::PackImporter::DEFAULT_SOURCE)
+    league_source = ENV.fetch("BRASFOOT_LEAGUE_SOURCE", DataImport::Brasfoot::LeagueImporter::DEFAULT_SOURCE)
+    limit = ENV.fetch("BRASFOOT_AUDIT_LIMIT", DataImport::Brasfoot::AuditReport::DEFAULT_LIMIT)
+
+    puts DataImport::Brasfoot::AuditReport.call(source:, league_source:, limit:).to_text
+  end
+
   def league_configs(pack_path)
     configured = ENV.fetch("BRASFOOT_LEAGUE_CONFIGS", nil)
     return all_league_configs(pack_path) if configured.blank? || configured == "all"

@@ -3,7 +3,7 @@ Phase 26 - Import Audit and Data Normalization
 
 Status
 ------
-Planned.
+Implemented at audit-report depth.
 
 
 Goal
@@ -12,25 +12,26 @@ Audit the imported Brasfoot world and add cleanup tools before gameplay relies
 heavily on imported data.
 
 
-Planned Scope
--------------
-- Add a Brasfoot audit report service.
-- Add a readable `bin/rails brasfoot:audit` task.
-- Report total imported countries, clubs, athletes, contracts, tournaments,
-  editions, participations, fixtures, and assets.
-- Report clubs by country and athletes by country.
-- Detect clubs without stadiums.
-- Detect clubs without crests or shirts.
-- Detect athletes without current contracts.
-- Detect duplicate club names by country.
-- Detect duplicate stadium names by country.
-- Detect tournaments without editions.
-- Detect editions with too few clubs.
-- Detect suspicious fixture counts.
-- Detect countries still using fallback `Brasfoot Pack`.
-- Improve country/config mappings from audit results.
-- Improve tournament naming where Brasfoot config names are too generic.
-- Add cleanup helpers for common safe normalizations.
+Implemented
+-----------
+- `DataImport::Brasfoot::AuditReport`.
+- Readable `bin/rails brasfoot:audit` task.
+- Summary counts for imported countries, clubs, athletes, contracts, stadiums,
+  tournaments, editions, participations, fixtures, club assets, and fallback
+  country clubs.
+- Issue buckets for:
+  - fallback-country clubs
+  - clubs without stadiums
+  - clubs without crests
+  - clubs without home shirts
+  - athletes without current contracts
+  - duplicate club names by country
+  - duplicate stadium names by country
+  - tournaments without editions
+  - editions without clubs
+  - suspicious fixture counts
+- Configurable source, league source, and output limit through environment
+  variables.
 
 
 Expected Files
@@ -50,8 +51,15 @@ Acceptance
 - Re-running normalization does not duplicate records.
 
 
+Tests
+-----
+Covered by `DataImport::Brasfoot::AuditReportTest`.
+
+
 Deferred
 --------
 - Browser-based import dashboard.
 - Automated destructive cleanup.
 - Perfect real-world validation against external databases.
+- Automatic normalization tasks. Country and tournament cleanup should be
+  guided by the audit output first.

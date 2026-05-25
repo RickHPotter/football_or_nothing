@@ -158,8 +158,11 @@ Implemented:
 - Brasfoot pack import for local `.ban`, `.cfg`, `.ces`, and PNG asset files,
   including clubs, athletes, contracts, stadiums, visual assets, league
   editions, participations, and generated fixtures.
+- Brasfoot import audit reporting for imported counts, fallback-country clubs,
+  missing stadiums/assets, contract gaps, duplicate names, and suspicious league
+  fixture counts.
 
 Next major phase:
-The first playable backlog through Phase 25 is complete at initial depth. Next
-work should be Phase 26: import audit and data normalization, followed by Phase
-27: gameplay bridge and frontend exposure for imported data.
+The first playable backlog through Phase 26 is complete at initial depth. Next
+work should be Phase 27: gameplay bridge and frontend exposure for imported
+data.

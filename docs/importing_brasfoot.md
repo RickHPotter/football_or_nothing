@@ -32,9 +32,13 @@ bin/rails brasfoot:debug_team["/media/lovelace/01D8A2DEE1DFF560/REAL BRASFOOT 20
 bin/rails brasfoot:plan_memberships["/media/lovelace/01D8A2DEE1DFF560/REAL BRASFOOT 2026/conf_ligas_nacionais/BRA.cfg"]
 bin/rails brasfoot:import_league["/media/lovelace/01D8A2DEE1DFF560/REAL BRASFOOT 2026/conf_ligas_nacionais/BRA.cfg"]
 bin/rails brasfoot:assets
+bin/rails brasfoot:audit
 ```
 
 PNG files from `teams/escudos`, `teams/escudosMini`, `teams/camisas`, `teams/camisas2`, and `teams/camisas3` are attached to clubs with Active Storage.
+
+The audit task prints summary counts and a bounded list of data-quality issues.
+Use `BRASFOOT_AUDIT_LIMIT=50` to show more examples per issue bucket.
 
 The national `.cfg` and state `.ces` files define competition formats. They do not appear to contain readable team names; team-to-division assignment appears to be derived from numeric team metadata or Brasfoot's own sorting rules.
 

@@ -20,6 +20,7 @@ Main Files
 - `app/models/data_import/clubs_importer.rb`
 - `app/models/data_import/athletes_importer.rb`
 - `app/models/data_import/contracts_importer.rb`
+- `app/models/data_import/open_football_competition_importer.rb`
 
 
 Data Model
@@ -51,8 +52,27 @@ Implemented importers:
 - clubs
 - athletes
 - contracts
+- OpenFootball competition payloads
 
 Generated data can continue to exist without external identity fields.
+
+
+OpenFootball Import
+-------------------
+`DataImport::OpenFootballCompetitionImporter` accepts OpenFootball-style JSON
+payloads with season and match data.
+
+It creates or updates:
+- country
+- domestic tournament
+- tournament edition
+- clubs
+- stadium fallbacks
+- tournament participations
+- fixtures
+- completed fixture scores when `score.ft` exists
+
+The importer is idempotent for repeated payload imports.
 
 
 Tests
@@ -64,7 +84,8 @@ contract relationship mapping.
 Deferred
 --------
 - Import UI.
-- CSV/JSON file adapters.
+- File/folder runner for downloaded OpenFootball repositories.
+- CSV adapters.
 - Automated scraping.
 - Licensing checks.
 - Conflict-resolution UI.

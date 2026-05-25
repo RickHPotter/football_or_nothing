@@ -376,6 +376,8 @@ DataImport
 - Maps external records into the same domain models instead of creating a
   parallel real-data schema.
 - Current importers support countries, clubs, athletes, and athlete contracts.
+- Current OpenFootball importer supports competition JSON payloads, creating
+  tournaments, editions, clubs, participations, fixtures, and completed scores.
 - Uses `external_source` and `external_id` for idempotency.
 
 DataImportRun

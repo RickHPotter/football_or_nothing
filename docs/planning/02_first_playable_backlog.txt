@@ -769,12 +769,15 @@ Implemented services:
 - `DataImport::ClubsImporter`
 - `DataImport::AthletesImporter`
 - `DataImport::ContractsImporter`
+- `DataImport::OpenFootballCompetitionImporter`
 
 Implemented model additions:
 - `external_source` and `external_id` on countries, clubs, athletes, and
   athlete contracts.
 - `DataImportRun`.
 - Unique external identity indexes.
+- OpenFootball-style competition payload import for tournaments, editions,
+  clubs, participations, fixtures, and completed scores.
 
 Rules:
 - Generated and imported data can coexist.

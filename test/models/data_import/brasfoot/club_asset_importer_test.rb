@@ -25,6 +25,26 @@ module DataImport
         FileUtils.rm_rf(teams_path) if teams_path
       end
 
+      test "reattaches matching asset when stored file is missing" do
+        club = clubs(:one)
+        club.update!(external_source: "brasfoot_pack", external_id: "alpha")
+        teams_path = Rails.root.join("tmp", "brasfoot_asset_importer_missing_file_test")
+        FileUtils.mkdir_p(teams_path.join("escudos"))
+        File.binwrite(teams_path.join("escudos", "alpha.png"), png_bytes)
+
+        ClubAssetImporter.call(teams_path:)
+        missing_blob = club.reload.crest.blob
+        missing_blob.service.delete(missing_blob.key)
+
+        ClubAssetImporter.call(teams_path:)
+
+        assert club.reload.crest.attached?
+        assert_not_equal missing_blob.id, club.crest.blob.id
+        assert_nothing_raised { club.crest.blob.open { |file| assert file.size.positive? } }
+      ensure
+        FileUtils.rm_rf(teams_path) if teams_path
+      end
+
       private
 
       def png_bytes

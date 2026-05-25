@@ -57,7 +57,9 @@ module DataImport
 
       def attach_asset(club, attachment_name, path)
         attachment = club.public_send(attachment_name)
-        return if attachment.attached? && attachment.filename.to_s == path.basename.to_s
+        return if attachment.attached? && attachment.filename.to_s == path.basename.to_s && asset_available?(attachment)
+
+        attachment.detach if attachment.attached?
 
         attachment.attach(
           io: File.open(path, "rb"),
@@ -65,6 +67,12 @@ module DataImport
           content_type: "image/png"
         )
         @imported_count += 1
+      end
+
+      def asset_available?(attachment)
+        attachment.blob.open { |_| true }
+      rescue ActiveStorage::FileNotFoundError
+        false
       end
 
       def club_for(path)

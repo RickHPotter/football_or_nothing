@@ -21,7 +21,7 @@ module DataImport
         team = TeamFileParser.call(team_path)
         TeamReport.new(
           team:,
-          country_suffix: country_suffix_for(team.external_id),
+          country_suffix: country_suffix_for(team),
           national_config: parse_if_present(national_config_path(team)),
           state_config: parse_if_present(state_config_path(team)),
           candidate_national_division: candidate_national_division(team),
@@ -50,16 +50,16 @@ module DataImport
       end
 
       def state_config_path(team)
-        suffix = country_suffix_for(team.external_id)
+        suffix = state_suffix_for(team)
         return unless brazil_state_suffix?(suffix)
 
         pack_path.join("conf_estadual", "#{suffix.upcase}.ces")
       end
 
       def national_config_code_for(external_id)
-        suffix = country_suffix_for(external_id)
-        return "BRA" if brazil_state_suffix?(suffix)
+        return "BRA" if team_country_id == PackImporter::BRAZIL_COUNTRY_ID
 
+        suffix = country_suffix_from_external_id(external_id)
         suffix
       end
 
@@ -71,8 +71,22 @@ module DataImport
         team.raw_fields["o"]
       end
 
-      def country_suffix_for(external_id)
+      def country_suffix_for(team)
+        return state_suffix_for(team) if team.raw_fields["a"] == PackImporter::BRAZIL_COUNTRY_ID
+
+        country_suffix_from_external_id(team.external_id)
+      end
+
+      def country_suffix_from_external_id(external_id)
         PackImporter.new(path: team_path).send(:country_suffix_for, external_id)
+      end
+
+      def state_suffix_for(team)
+        PackImporter.new(path: team_path).send(:brazil_state_suffix_for, team.external_id)
+      end
+
+      def team_country_id
+        @team_country_id ||= TeamFileParser.call(team_path).raw_fields["a"]
       end
 
       def brazil_state_suffix?(suffix)

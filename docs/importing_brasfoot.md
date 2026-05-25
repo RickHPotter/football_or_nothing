@@ -25,6 +25,7 @@ To inspect tournament config files and a team's likely tournament fields:
 ```bash
 bin/rails brasfoot:league_config["/media/lovelace/01D8A2DEE1DFF560/REAL BRASFOOT 2026/conf_ligas_nacionais/BRA.cfg"]
 bin/rails brasfoot:debug_team["/media/lovelace/01D8A2DEE1DFF560/REAL BRASFOOT 2026/teams/flarj.ban"]
+bin/rails brasfoot:plan_memberships["/media/lovelace/01D8A2DEE1DFF560/REAL BRASFOOT 2026/conf_ligas_nacionais/BRA.cfg"]
 ```
 
 The national `.cfg` and state `.ces` files define competition formats. They do not appear to contain readable team names; team-to-division assignment appears to be derived from numeric team metadata or Brasfoot's own sorting rules.

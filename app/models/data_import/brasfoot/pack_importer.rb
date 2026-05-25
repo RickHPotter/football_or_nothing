@@ -68,6 +68,7 @@ module DataImport
       BRAZIL_STATE_SUFFIXES = %w[
         ac al am ap ba ce df es go ma mg ms mt pa pb pe pi pr rj rn ro rr rs sc se sp to
       ].freeze
+      BRAZIL_COUNTRY_ID = 29
 
       ATTRIBUTE_BUCKETS = {
         goalkeeper: %i[positioning jumping decisions composure],
@@ -266,14 +267,28 @@ module DataImport
       end
 
       def country_for(team)
-        resolved_name, resolved_code = COUNTRIES_BY_SUFFIX.fetch(country_suffix_for(team.external_id), [ country_name, country_code ])
+        resolved_name, resolved_code = country_identity_for(team)
         import_country(resolved_name, resolved_code)
+      end
+
+      def country_identity_for(team)
+        return COUNTRIES_BY_SUFFIX.fetch("bra") if team.raw_fields["a"] == BRAZIL_COUNTRY_ID
+
+        COUNTRIES_BY_SUFFIX.fetch(country_suffix_for(team.external_id), [ country_name, country_code ])
       end
 
       def country_suffix_for(external_id)
         normalized_id = external_id.to_s.downcase
         explicit_suffix = normalized_id.split("_").last
         return explicit_suffix if COUNTRIES_BY_SUFFIX.key?(explicit_suffix)
+
+        nil
+      end
+
+      def brazil_state_suffix_for(external_id)
+        normalized_id = external_id.to_s.downcase
+        explicit_suffix = normalized_id.split("_").last
+        return explicit_suffix if BRAZIL_STATE_SUFFIXES.include?(explicit_suffix)
 
         BRAZIL_STATE_SUFFIXES.find { |suffix| normalized_id.end_with?(suffix) }
       end

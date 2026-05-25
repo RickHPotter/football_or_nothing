@@ -75,4 +75,27 @@ namespace :brasfoot do
       end
     end
   end
+
+  desc "Print proposed team membership for one Brasfoot league config. Usage: bin/rails brasfoot:plan_memberships[/path/to/BRA.cfg]"
+  task :plan_memberships, [ :path ] => :environment do |_task, args|
+    path = args[:path] || ENV.fetch("BRASFOOT_CONFIG")
+    teams_path = ENV.fetch("BRASFOOT_TEAMS_PATH", "/media/lovelace/01D8A2DEE1DFF560/REAL BRASFOOT 2026/teams")
+    plan = DataImport::Brasfoot::LeagueMembershipPlanner.call(config_path: path, teams_path:)
+
+    plan.each do |planned_division|
+      puts "[brasfoot] #{planned_division.division.name}"
+      planned_division.teams.each_with_index do |team, index|
+        fields = team.ranking_fields
+        puts [
+          index + 1,
+          team.external_id,
+          team.name,
+          "n=#{fields["n"]}",
+          "c=#{fields["c"]}",
+          "o=#{fields["o"]}",
+          "g=#{fields["g"]}"
+        ].join(" | ")
+      end
+    end
+  end
 end

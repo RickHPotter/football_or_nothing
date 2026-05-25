@@ -238,10 +238,14 @@
         <%= link_to "Browse all clubs", career_browse_clubs_path(@career), class: "btn btn-secondary" %>
       </div>
       <div class="panel-body">
-        <%= form_with url: career_path(@career), method: :get, class: "mb-3 grid gap-2 sm:grid-cols-[1fr_auto]" do |form| %>
+        <%= form_with url: career_path(@career), method: :get, class: "mb-3 grid gap-2 sm:grid-cols-[1fr_1fr_auto]" do |form| %>
           <div>
             <%= form.label :country_id, "Country" %>
             <%= form.collection_select :country_id, @job_countries, :id, :name, { selected: @job_country&.id }, class: "field-input" %>
+          </div>
+          <div>
+            <%= form.label :division_id, "Division" %>
+            <%= form.collection_select :division_id, @job_divisions, :id, :name, { selected: @job_division&.id }, class: "field-input" %>
           </div>
           <div class="self-end">
             <%= form.submit "Filter jobs", class: "btn" %>

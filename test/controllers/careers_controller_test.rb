@@ -59,14 +59,31 @@ class CareersControllerTest < ActionDispatch::IntegrationTest
   test "show offers jobs to unemployed manager" do
     sign_out
     sign_in_as(users(:one))
+    regional_tournament = countries(:one).tournaments.create!(
+      name: "Campeonato BR Division 1",
+      short_name: "BRD",
+      scope: :domestic,
+      format: :league,
+      status: :active
+    )
+    regional_edition = regional_tournament.tournament_editions.create!(
+      season_year: 2027,
+      name: "Campeonato BR Division 1 2027",
+      starts_on: Date.new(2027, 1, 1),
+      ends_on: Date.new(2027, 5, 1),
+      status: :scheduled
+    )
+    regional_edition.tournament_participations.create!(club: clubs(:one))
 
     get career_path(careers(:one))
 
     assert_response :success
     assert_select "h2", "Available jobs"
     assert_select "select[name='country_id'] option[selected='selected']", countries(:one).name
+    assert_select "select[name='division_id'] option[selected='selected']", tournament_editions(:one).name
     assert_select "th", "Division"
     assert_select "td", /#{tournaments(:one).name}/
+    assert_select "td", text: /#{regional_tournament.name}/, count: 0
     assert_select "button", "Take job"
   end
 
@@ -78,8 +95,36 @@ class CareersControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "select[name='country_id'] option[selected='selected']", countries(:two).name
+    assert_select "select[name='division_id'] option[selected='selected']", tournament_editions(:two).name
     assert_select "td", text: clubs(:two).name
     assert_select "td", text: clubs(:one).name, count: 0
+  end
+
+  test "show filters available jobs by selected division" do
+    sign_out
+    sign_in_as(users(:one))
+    tournament = countries(:one).tournaments.create!(
+      name: "Brasilia Second Division",
+      short_name: "BSD",
+      scope: :domestic,
+      format: :league,
+      status: :active
+    )
+    edition = tournament.tournament_editions.create!(
+      season_year: 2026,
+      name: "Brasilia Second Division 2026",
+      starts_on: Date.new(2026, 2, 1),
+      ends_on: Date.new(2026, 5, 1),
+      status: :scheduled
+    )
+    edition.tournament_participations.create!(club: clubs(:one))
+
+    get career_path(careers(:one), country_id: countries(:one).id, division_id: edition.id)
+
+    assert_response :success
+    assert_select "select[name='division_id'] option[selected='selected']", edition.name
+    assert_select "td", text: /#{tournament.name}/
+    assert_select "button", "Take job"
   end
 
   test "show links current club when manager has job" do

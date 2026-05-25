@@ -15,8 +15,10 @@ class CareersController < ApplicationController
     if @manager&.unemployed?
       @job_countries = Country.active.order(:name)
       @job_country = job_country_for(@manager)
-      @available_clubs = available_clubs_for(@manager, country: @job_country)
-      @club_divisions = club_divisions_for(@available_clubs)
+      @job_divisions = job_divisions_for(@job_country)
+      @job_division = job_division_for(@job_divisions)
+      @available_clubs = available_clubs_for(@manager, country: @job_country, division: @job_division)
+      @club_divisions = club_divisions_for(@available_clubs, @job_division)
     end
     @rollover_candidate = @career.rollover_candidate if @current_contract && @next_fixture.nil?
   end
@@ -87,7 +89,7 @@ class CareersController < ApplicationController
     params.expect(manager: %i[first_name last_name birthdate country_id])
   end
 
-  def available_clubs_for(manager, country: nil)
+  def available_clubs_for(manager, country: nil, division: nil)
     return Club.none unless manager
 
     clubs = Club.active
@@ -95,6 +97,7 @@ class CareersController < ApplicationController
                 .left_outer_joins(:current_manager_contract)
                 .where(manager_contracts: { id: nil })
     clubs = clubs.where(country:) if country
+    clubs = clubs.where(id: division.clubs.select(:id)) if division
 
     clubs.order(:reputation, :name)
          .limit(80)
@@ -106,15 +109,27 @@ class CareersController < ApplicationController
     manager.country
   end
 
-  def club_divisions_for(clubs)
-    latest_participations = TournamentParticipation
-                            .includes(tournament_edition: :tournament)
-                            .where(club_id: clubs.map(&:id))
-                            .sort_by { |participation| [ -participation.tournament_edition.season_year, participation.tournament_edition.name ] }
+  def job_divisions_for(country)
+    return TournamentEdition.none unless country
 
-    latest_participations.each_with_object({}) do |participation, divisions|
-      divisions[participation.club_id] ||= participation.tournament_edition
-    end
+    TournamentEdition
+      .includes(:tournament)
+      .joins(:tournament)
+      .where(tournaments: { country_id: country.id, scope: Tournament.scopes[:domestic], format: Tournament.formats[:league] })
+      .where.not("tournaments.name LIKE ?", "Campeonato % Division %")
+      .order(season_year: :desc, name: :asc)
+  end
+
+  def job_division_for(divisions)
+    return divisions.find_by(id: params[:division_id]) if params[:division_id].present?
+
+    divisions.first
+  end
+
+  def club_divisions_for(clubs, selected_division)
+    return clubs.each_with_object({}) { |club, divisions| divisions[club.id] = selected_division } if selected_division
+
+    {}
   end
 
   def international_editions

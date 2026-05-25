@@ -155,7 +155,11 @@ Implemented:
   and idempotent importers for countries, clubs, athletes, and contracts.
 - Initial UI system polish with reusable helper methods, a shared panel partial,
   and active navigation state.
+- Brasfoot pack import for local `.ban`, `.cfg`, `.ces`, and PNG asset files,
+  including clubs, athletes, contracts, stadiums, visual assets, league
+  editions, participations, and generated fixtures.
 
 Next major phase:
-The first playable backlog through Phase 24 is complete at initial depth. Next
-work should come from a new planning pass or deferred-depth priorities.
+The first playable backlog through Phase 25 is complete at initial depth. Next
+work should be Phase 26: import audit and data normalization, followed by Phase
+27: gameplay bridge and frontend exposure for imported data.

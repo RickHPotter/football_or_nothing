@@ -12,6 +12,19 @@ now, what was verified, and what was deliberately deferred.
 
 Implemented Phase Documents
 ---------------------------
+- `01_foundation.md`
+- `02_club_management_skeleton.md`
+- `03_tournament_skeleton.md`
+- `04_match_simulation_v1.md`
+- `05_history.md`
+- `06_transfer_skeleton.md`
+- `07_rpg_progression.md`
+- `08_season_rollover.md`
+- `09_frontend_playable_ui_pass.md`
+- `10_match_event_depth.md`
+- `11_transfer_offers.md`
+- `12_windows_and_contract_expiry.md`
+- `13_squad_availability.md`
 - `14_loans.md`
 - `15_ai_squad_movement.md`
 - `16_training.md`
@@ -23,13 +36,17 @@ Implemented Phase Documents
 - `22_international_competitions.md`
 - `23_data_import_foundation.md`
 - `24_ui_system_polish.md`
+- `25_brasfoot_pack_import.md`
+- `26_import_audit_data_normalization.md`
+- `27_gameplay_bridge_frontend_exposure.md`
 - `phase_status_audit.md`
 
 
 Current Continuation Point
 --------------------------
-Phases 14 through 24 are implemented at first-playable depth.
+Phases 1 through 25 are implemented at first-playable depth. Phases 26 and 27
+are planned continuation phases.
 
-The first playable backlog through Phase 24 is implemented at first-playable
-depth. The next work should be chosen from deferred depth, bug fixing, or a new
-planning pass.
+The next implementation target is Phase 26: import audit and data
+normalization. Phase 27 follows by connecting imported data to gameplay and
+frontend browsing.

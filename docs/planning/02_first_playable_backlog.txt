@@ -844,19 +844,70 @@ Deferred:
 - Mobile-specific layout pass.
 
 
-Recommended Order After Phase 13
+Phase 25 - Brasfoot Pack Import
+-------------------------------
+Status: implemented.
+
+Goal:
+Import a local Brasfoot pack as a practical real-world-like data source.
+
+Implemented:
+- Java serialization reader for Brasfoot `.ban`, `.cfg`, and `.ces` files.
+- Team parser and pack importer for clubs, stadiums, athletes, and contracts.
+- Active Storage import for crests, mini crests, and shirts.
+- National and Brazilian state league config parsing.
+- League membership planning from decoded team metadata.
+- Tournament, edition, participation, and fixture creation for imported league
+  configs.
+- Country/config-code normalization for known Brasfoot codes.
+- Master `brasfoot:import` task for teams, assets, and leagues.
+
+Deferred:
+- Full country-code coverage for every pack code.
+- Import audit and normalization tooling.
+- Browser UI for imported data.
+
+
+Phase 26 - Import Audit and Data Normalization
+----------------------------------------------
+Status: planned.
+
+Goal:
+Audit and normalize the imported Brasfoot world before building more gameplay
+on top of it.
+
+Scope:
+- Add `brasfoot:audit`.
+- Report imported record counts and country distribution.
+- Detect clubs without stadiums or assets.
+- Detect athletes without current contracts.
+- Detect duplicate club/stadium names.
+- Detect suspicious tournament editions and fixture counts.
+- Detect fallback-country records.
+- Improve country mapping and tournament naming from real audit output.
+
+
+Phase 27 - Gameplay Bridge and Frontend Exposure
+------------------------------------------------
+Status: planned.
+
+Goal:
+Make imported data playable and visible in the manager career loop.
+
+Scope:
+- Mark imported leagues as playable or non-playable.
+- Connect imported clubs to manager job generation.
+- Gate imported club and international jobs by manager reputation.
+- Add country, club, tournament, edition, fixture, and squad browsing screens.
+- Show imported club assets in the UI.
+- Add job-market filters for imported data.
+
+
+Recommended Order After Phase 24
 --------------------------------
-1. Phase 14 - Loans
-2. Phase 15 - AI squad movement
-3. Phase 16 - Training
-4. Phase 17 - Scouting
-5. Phase 18 - Staff
-6. Phase 19 - Youth academy
-7. Phase 20 - News feed
-8. Phase 21 - Tactical simulation
-9. Phase 22 - International competitions
-10. Phase 23 - Data import foundation
-11. Phase 24 - UI system polish
+1. Phase 25 - Brasfoot pack import
+2. Phase 26 - Import audit and data normalization
+3. Phase 27 - Gameplay bridge and frontend exposure
 
 
 Important Deferrals

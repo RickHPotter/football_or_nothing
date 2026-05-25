@@ -12,7 +12,7 @@
     <div class="btn-row">
       <% if @manageable %>
         <%= link_to "Transfer market", career_transfers_path(@career), class: "btn" %>
-      <% elsif @career.manager&.unemployed? && @career.manager.eligible_for_club?(@club) && !@club.current_manager_contract %>
+      <% elsif @career.manager&.unemployed? && !@club.current_manager_contract %>
         <%= button_to "Take job", career_manager_contracts_path(@career), params: { club_id: @club.id } %>
       <% end %>
       <%= link_to "All clubs", career_browse_clubs_path(@career), class: "btn btn-secondary" %>

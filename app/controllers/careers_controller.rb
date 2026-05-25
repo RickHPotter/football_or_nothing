@@ -97,7 +97,6 @@ class CareersController < ApplicationController
 
     clubs.order(:reputation, :name)
          .limit(80)
-         .select { |club| manager.eligible_for_club?(club) }
   end
 
   def international_editions

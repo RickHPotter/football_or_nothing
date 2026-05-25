@@ -76,8 +76,6 @@ class ClubsController < ApplicationController
     return [] unless @manager&.unemployed?
 
     unavailable_ids = ManagerContract.where(current: true).pluck(:club_id)
-    clubs.reject { |club| unavailable_ids.include?(club.id) }
-         .select { |club| @manager.eligible_for_club?(club) }
-         .map(&:id)
+    clubs.reject { |club| unavailable_ids.include?(club.id) }.map(&:id)
   end
 end

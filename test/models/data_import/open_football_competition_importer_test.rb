@@ -64,5 +64,19 @@ module DataImport
         )
       end
     end
+
+    test "uses provided season year when payload has no season" do
+      edition = OpenFootballCompetitionImporter.call(
+        source: "openfootball:worldcup",
+        payload: payload.except(:season),
+        country_name: "World",
+        country_code: "WRL",
+        competition_name: "World Cup",
+        season_year: 2026
+      )
+
+      assert_equal 2026, edition.season_year
+      assert_equal "World Cup 2026", edition.name
+    end
   end
 end

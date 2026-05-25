@@ -21,6 +21,8 @@ Main Files
 - `app/models/data_import/athletes_importer.rb`
 - `app/models/data_import/contracts_importer.rb`
 - `app/models/data_import/open_football_competition_importer.rb`
+- `lib/tasks/openfootball.rake`
+- `docs/importing_openfootball.md`
 
 
 Data Model
@@ -73,6 +75,11 @@ It creates or updates:
 - completed fixture scores when `score.ft` exists
 
 The importer is idempotent for repeated payload imports.
+
+Rake tasks:
+- `bin/rails openfootball:master`
+- `bin/rails openfootball:url[...]`
+- `bin/rails openfootball:file[...]`
 
 
 Tests

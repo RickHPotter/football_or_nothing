@@ -8,13 +8,14 @@ module DataImport
       new(...).call
     end
 
-    def initialize(source:, payload:, country_name:, country_code:, competition_name: nil, short_name: nil)
+    def initialize(source:, payload:, country_name:, country_code:, competition_name: nil, short_name: nil, season_year: nil)
       @source = source
       @payload = payload.deep_symbolize_keys
       @country_name = country_name
       @country_code = country_code
       @competition_name = competition_name
       @short_name = short_name
+      @provided_season_year = season_year
     end
 
     def call
@@ -34,7 +35,7 @@ module DataImport
 
     private
 
-    attr_reader :source, :payload, :country_name, :country_code, :competition_name, :short_name
+    attr_reader :source, :payload, :country_name, :country_code, :competition_name, :short_name, :provided_season_year
 
     def import_run
       @import_run ||= DataImportRun.create!(source:, started_at: Time.current)
@@ -93,8 +94,8 @@ module DataImport
 
     def apply_score(fixture, score)
       if score.present?
-        fixture.home_goals = score.fetch(:ft).fetch(0)
-        fixture.away_goals = score.fetch(:ft).fetch(1)
+        fixture.home_goals = final_score(score).fetch(0)
+        fixture.away_goals = final_score(score).fetch(1)
         fixture.status = :completed
       else
         fixture.status = :scheduled
@@ -142,7 +143,11 @@ module DataImport
     end
 
     def season_year
-      @season_year ||= payload[:season].to_s[/\d{4}/].to_i
+      @season_year ||= provided_season_year.presence || payload[:season].to_s[/\d{4}/]&.to_i || match_dates.min.year
+    end
+
+    def final_score(score)
+      score.fetch(:ft, score)
     end
 
     def match_dates

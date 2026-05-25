@@ -1,0 +1,235 @@
+# frozen_string_literal: true
+
+module DataImport
+  module Brasfoot
+    class PackImporter
+      DEFAULT_SOURCE = "brasfoot_pack"
+      DEFAULT_COUNTRY_CODE = "BFP"
+      DEFAULT_COUNTRY_NAME = "Brasfoot Pack"
+      DEFAULT_START_DATE = Date.new(2026, 1, 1)
+
+      COUNTRIES_BY_SUFFIX = {
+        "ale" => [ "Germany", "GER" ],
+        "arg" => [ "Argentina", "ARG" ],
+        "aut" => [ "Austria", "AUT" ],
+        "bel" => [ "Belgium", "BEL" ],
+        "bra" => [ "Brazil", "BRA" ],
+        "br" => [ "Brazil", "BRA" ],
+        "ce" => [ "Brazil", "BRA" ],
+        "cg" => [ "Brazil", "BRA" ],
+        "go" => [ "Brazil", "BRA" ],
+        "ma" => [ "Brazil", "BRA" ],
+        "mg" => [ "Brazil", "BRA" ],
+        "mt" => [ "Brazil", "BRA" ],
+        "pa" => [ "Brazil", "BRA" ],
+        "pb" => [ "Brazil", "BRA" ],
+        "pe" => [ "Brazil", "BRA" ],
+        "pr" => [ "Brazil", "BRA" ],
+        "rj" => [ "Brazil", "BRA" ],
+        "rn" => [ "Brazil", "BRA" ],
+        "rs" => [ "Brazil", "BRA" ],
+        "sc" => [ "Brazil", "BRA" ],
+        "se" => [ "Brazil", "BRA" ],
+        "sp" => [ "Brazil", "BRA" ],
+        "bol" => [ "Bolivia", "BOL" ],
+        "chi" => [ "Chile", "CHI" ],
+        "chn" => [ "China", "CHN" ],
+        "col" => [ "Colombia", "COL" ],
+        "cro" => [ "Croatia", "CRO" ],
+        "den" => [ "Denmark", "DEN" ],
+        "egi" => [ "Egypt", "EGY" ],
+        "eng" => [ "England", "ENG" ],
+        "ing" => [ "England", "ENG" ],
+        "esc" => [ "Scotland", "SCO" ],
+        "esp" => [ "Spain", "ESP" ],
+        "eua" => [ "United States", "USA" ],
+        "fr" => [ "France", "FRA" ],
+        "fra" => [ "France", "FRA" ],
+        "gre" => [ "Greece", "GRE" ],
+        "hol" => [ "Netherlands", "NED" ],
+        "ita" => [ "Italy", "ITA" ],
+        "it" => [ "Italy", "ITA" ],
+        "jap" => [ "Japan", "JPN" ],
+        "mex" => [ "Mexico", "MEX" ],
+        "nor" => [ "Norway", "NOR" ],
+        "par" => [ "Paraguay", "PAR" ],
+        "per" => [ "Peru", "PER" ],
+        "por" => [ "Portugal", "POR" ],
+        "pt" => [ "Portugal", "POR" ],
+        "rus" => [ "Russia", "RUS" ],
+        "srb" => [ "Serbia", "SRB" ],
+        "sue" => [ "Sweden", "SWE" ],
+        "sui" => [ "Switzerland", "SUI" ],
+        "tur" => [ "Turkey", "TUR" ],
+        "uru" => [ "Uruguay", "URU" ],
+        "ven" => [ "Venezuela", "VEN" ]
+      }.freeze
+
+      ATTRIBUTE_BUCKETS = {
+        goalkeeper: %i[positioning jumping decisions composure],
+        center_back: %i[tackling marking heading strength positioning],
+        full_back: %i[pace acceleration tackling crossing stamina],
+        defensive_midfielder: %i[tackling marking passing teamwork strength],
+        central_midfielder: %i[passing technique first_touch decisions teamwork],
+        attacking_midfielder: %i[passing technique dribbling first_touch composure],
+        winger: %i[pace acceleration dribbling crossing technique],
+        striker: %i[finishing heading pace composure strength]
+      }.freeze
+
+      def self.call(...)
+        new(...).call
+      end
+
+      def initialize(path:, source: DEFAULT_SOURCE, country_name: DEFAULT_COUNTRY_NAME, country_code: DEFAULT_COUNTRY_CODE,
+                     limit: nil)
+        @path = Pathname(path)
+        @source = source
+        @country_name = country_name
+        @country_code = country_code
+        @limit = limit&.to_i
+      end
+
+      def call
+        DataImportRun.transaction do
+          import_run
+          files.each { |file| import_team(TeamFileParser.call(file)) }
+          import_run.complete!(records_processed: imported_records_count)
+        end
+      rescue StandardError => error
+        import_run.fail!(notes: error.message) if import_run&.persisted? && import_run.running?
+        raise
+      end
+
+      private
+
+      attr_reader :path, :source, :country_name, :country_code, :limit
+
+      def import_run
+        @import_run ||= DataImportRun.create!(source:, started_at: Time.current)
+      end
+
+      def import_country(resolved_name, resolved_code)
+        Country.find_or_initialize_by(code: resolved_code).tap do |country|
+          country.name = resolved_name
+          country.external_source ||= source
+          country.external_id ||= resolved_code
+          country.reputation = 5
+          country.status = :active
+          country.save!
+        end
+      end
+
+      def import_team(team)
+        resolved_country = country_for(team)
+        club = import_club(team, resolved_country)
+        import_stadium(team, club, resolved_country)
+        team.players.each { |player| import_player(player, club, resolved_country) }
+      end
+
+      def import_club(team, resolved_country)
+        Club.find_by(external_source: source, external_id: team.external_id) || resolved_country.clubs.find_or_initialize_by(name: team.name).tap do |club|
+          club.short_name = team.short_name.to_s.first(12).presence || team.name.first(12)
+          club.external_source ||= source
+          club.external_id ||= team.external_id
+          club.reputation = reputation_from(team.players)
+          club.academy_quality = 8
+          club.status = :active
+          club.save!
+          club.create_club_finance! unless club.club_finance
+        end
+      end
+
+      def import_stadium(team, club, resolved_country)
+        name = team.stadium_name.presence || "#{club.name} Ground"
+        club.stadiums.find_or_create_by!(name:) do |stadium|
+          stadium.country = resolved_country
+          stadium.city = team.city.presence || resolved_country.name
+          stadium.capacity = capacity_for(club)
+          stadium.pitch_quality = 10
+          stadium.ownership = :club_owned
+        end
+      end
+
+      def import_player(player, club, resolved_country)
+        athlete = Athlete.find_or_initialize_by(external_source: source, external_id: player.external_id)
+        first_name, last_name = split_name(player.name)
+        athlete.country = resolved_country
+        athlete.first_name = first_name
+        athlete.last_name = last_name
+        athlete.position = player.position
+        athlete.birthdate = birthdate_for(player.age)
+        athlete.current_ability = player.current_ability
+        athlete.potential_ability = player.potential_ability
+        athlete.reputation = [ player.current_ability, 20 ].min
+        athlete.preferred_foot = :right
+        athlete.morale = 50
+        athlete.condition = 100
+        assign_attributes(athlete, player)
+        athlete.save!
+        ensure_contract(athlete, club, player)
+      end
+
+      def ensure_contract(athlete, club, player)
+        contract = AthleteContract.find_or_initialize_by(
+          external_source: source,
+          external_id: "contract:#{player.external_id}"
+        )
+        contract.athlete = athlete
+        contract.club = club
+        contract.start_date = DEFAULT_START_DATE
+        contract.end_date = DEFAULT_START_DATE.next_year(3)
+        contract.current = true
+        contract.wage = wage_for(player.current_ability)
+        contract.save!
+      end
+
+      def assign_attributes(athlete, player)
+        base = player.current_ability.clamp(1, 20)
+        Athlete::ATTRIBUTES.each { |attribute| athlete.public_send("#{attribute}=", [ base - 2, 1 ].max) }
+        ATTRIBUTE_BUCKETS.fetch(player.position).each { |attribute| athlete.public_send("#{attribute}=", base) }
+      end
+
+      def files
+        @files ||= begin
+          selected = Pathname.glob(path.join("*.ban").to_s).sort
+          limit ? selected.first(limit) : selected
+        end
+      end
+
+      def imported_records_count
+        Club.where(external_source: source).count + Athlete.where(external_source: source).count
+      end
+
+      def reputation_from(players)
+        average = players.map(&:current_ability).then { |ratings| ratings.sum.fdiv([ ratings.size, 1 ].max) }
+        average.round.clamp(1, 20)
+      end
+
+      def capacity_for(club)
+        (club.reputation * 2_500).clamp(5_000, 80_000)
+      end
+
+      def wage_for(rating)
+        rating * 1_000
+      end
+
+      def split_name(name)
+        parts = name.squish.split
+        return [ parts.first, parts.first ] if parts.one?
+
+        [ parts[0...-1].join(" "), parts.last ]
+      end
+
+      def birthdate_for(age)
+        return unless age.to_i.positive?
+
+        DEFAULT_START_DATE.prev_year(age.to_i).change(month: 7, day: 1)
+      end
+
+      def country_for(team)
+        resolved_name, resolved_code = COUNTRIES_BY_SUFFIX.fetch(team.external_id.to_s.split("_").last, [ country_name, country_code ])
+        import_country(resolved_name, resolved_code)
+      end
+    end
+  end
+end

@@ -108,7 +108,7 @@ namespace :openfootball do
       entries.concat(worldcup_json_entries) if datasets.include?("worldcup_json")
       entries.concat(champions_league_entries) if datasets.include?("champions_league")
       entries.concat(south_america_entries) if datasets.include?("south_america")
-      entries.uniq { |entry| [ entry.key, entry.url ] }
+      entries.uniq(&:url)
     end
 
     def football_json_entries

@@ -69,6 +69,11 @@ bin/rails 'openfootball:file[tmp/openfootball/england/2023-24/en.1.json,England,
 Notes
 -----
 - Imports are idempotent by source and external identity.
+- Countries are reused by country code across related dataset source keys. This
+  means `football_json:england...` and `england:...` both resolve to the same
+  England record instead of creating duplicates.
+- Clubs are reused by country/name across related dataset source keys.
+- The master task deduplicates exact duplicate URLs before importing.
 - `football.json` and `worldcup.json` are JSON-first and are the safest sources.
 - Some OpenFootball repositories, such as `champions-league`,
   `south-america`, and `internationals`, are primarily Football.TXT sources.

@@ -42,9 +42,11 @@ module DataImport
     end
 
     def import_country
-      @country ||= Country.find_or_initialize_by(external_source: source, external_id: country_code).tap do |country|
+      @country ||= (Country.find_by(external_source: source, external_id: country_code) || Country.find_or_initialize_by(code: country_code)).tap do |country|
         country.name = country_name
         country.code = country_code
+        country.external_source ||= source
+        country.external_id ||= country_code
         country.reputation ||= 8
         country.status = :active
         country.save!
@@ -104,8 +106,10 @@ module DataImport
 
     def club_for(name)
       club_external_id = "club:#{name.parameterize}"
-      country.clubs.find_or_initialize_by(external_source: source, external_id: club_external_id).tap do |club|
+      (country.clubs.find_by(external_source: source, external_id: club_external_id) || country.clubs.find_or_initialize_by(name:)).tap do |club|
         club.name = name
+        club.external_source ||= source
+        club.external_id ||= club_external_id
         club.short_name = name.split.map { |word| word.first.upcase }.join.first(6)
         club.reputation ||= 5
         club.status = :active

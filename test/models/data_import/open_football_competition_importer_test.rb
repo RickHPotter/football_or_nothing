@@ -78,5 +78,23 @@ module DataImport
       assert_equal 2026, edition.season_year
       assert_equal "World Cup 2026", edition.name
     end
+
+    test "reuses country and clubs across source keys" do
+      OpenFootballCompetitionImporter.call(
+        source: "football_json:england-premier-league:2023-24",
+        payload:,
+        country_name: "England",
+        country_code: "ENG"
+      )
+
+      assert_no_difference [ "Country.count", "Club.count", "Fixture.count" ] do
+        OpenFootballCompetitionImporter.call(
+          source: "england:england-premier-league:2023-24",
+          payload:,
+          country_name: "England",
+          country_code: "ENG"
+        )
+      end
+    end
   end
 end

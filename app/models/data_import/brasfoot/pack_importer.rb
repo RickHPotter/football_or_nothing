@@ -159,7 +159,7 @@ module DataImport
 
       def import_stadium(team, club, resolved_country)
         name = team.stadium_name.presence || "#{club.name} Ground"
-        club.stadiums.where.not(country: resolved_country).find_each { |stadium| stadium.update!(country: resolved_country) }
+        relocate_stadiums_to_country(club, resolved_country)
         existing_stadium = resolved_country.stadiums.find_by(name:)
         return existing_stadium if existing_stadium&.club == club
 
@@ -169,6 +169,15 @@ module DataImport
           stadium.capacity = capacity_for(club)
           stadium.pitch_quality = 10
           stadium.ownership = :club_owned
+        end
+      end
+
+      def relocate_stadiums_to_country(club, resolved_country)
+        club.stadiums.where.not(country: resolved_country).find_each do |stadium|
+          stadium.update!(
+            country: resolved_country,
+            name: stadium_name_for(stadium.name, club, resolved_country, excluding: stadium)
+          )
         end
       end
 
@@ -254,12 +263,14 @@ module DataImport
         DEFAULT_START_DATE.prev_year(age.to_i).change(month: 7, day: 1)
       end
 
-      def stadium_name_for(name, club, resolved_country)
-        return name unless resolved_country.stadiums.exists?(name:)
+      def stadium_name_for(name, club, resolved_country, excluding: nil)
+        stadiums = resolved_country.stadiums
+        stadiums = stadiums.where.not(id: excluding.id) if excluding
+        return name unless stadiums.exists?(name:)
 
         candidate = "#{name} (#{club.short_name})"
         suffix = 2
-        while resolved_country.stadiums.exists?(name: candidate)
+        while stadiums.exists?(name: candidate)
           candidate = "#{name} (#{club.short_name} #{suffix})"
           suffix += 1
         end

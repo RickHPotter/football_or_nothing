@@ -24,7 +24,7 @@ module DataImport
         config.divisions.map do |division|
           PlannedDivision.new(
             division:,
-            teams: remaining_teams.shift(division.team_count.to_i)
+            teams: remaining_teams.shift(team_count_for(division, remaining_teams))
           )
         end
       end
@@ -51,7 +51,7 @@ module DataImport
 
           team = TeamFileParser.call(path)
           fields = team.raw_fields
-          next unless fields["a"] == country_id
+          next unless team_matches_config?(fields)
 
           PlannedTeam.new(
             external_id: team.external_id,
@@ -66,6 +66,25 @@ module DataImport
 
       def country_id
         @country_id ||= config.divisions.first&.raw_fields&.fetch("pais")
+      end
+
+      def state_id
+        @state_id ||= config.divisions.first&.raw_fields&.fetch("id")
+      end
+
+      def team_matches_config?(fields)
+        case config.kind
+        when :national then fields["a"] == country_id
+        when :state then fields["a"] == PackImporter::BRAZIL_COUNTRY_ID && fields["b"] == state_id
+        else false
+        end
+      end
+
+      def team_count_for(division, remaining_teams)
+        return division.team_count.to_i if division.team_count.to_i.positive?
+        return remaining_teams.length if config.kind == :state && division.division.to_i == 1
+
+        0
       end
 
       def java_serialization_file?(path)

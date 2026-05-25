@@ -8,9 +8,9 @@ Brasfoot team files are serialized Java objects with a `.ban` extension. The imp
 BRASFOOT_TEAMS_PATH="/media/lovelace/01D8A2DEE1DFF560/REAL BRASFOOT 2026/teams" bin/rails brasfoot:import
 ```
 
-The master import loads teams first, then configured national leagues. By default it imports `BRA.cfg`; pass `BRASFOOT_LEAGUE_CONFIGS=BRA.cfg,ING.cfg,ESP.cfg` to add more, or `BRASFOOT_SKIP_LEAGUES=true` to import only teams.
+The master import loads teams first, then club visual assets, then configured national and state leagues. By default it imports every `.cfg` from `conf_ligas_nacionais` and every `.ces` from `conf_estadual`; pass `BRASFOOT_LEAGUE_CONFIGS=BRA.cfg,ING.cfg,RJ.ces` to limit the set, `BRASFOOT_SKIP_ASSETS=true` to skip PNG attachments, or `BRASFOOT_SKIP_LEAGUES=true` to import only teams/assets.
 
-League imports create one domestic league tournament per division, an edition for `BRASFOOT_SEASON_YEAR` (`2026` by default), participations from the planned membership order, and double round-robin fixtures through `LeagueScheduler`.
+League imports create one domestic league tournament per division, an edition for `BRASFOOT_SEASON_YEAR` (`2026` by default), participations from the planned membership order, and double round-robin fixtures through `LeagueScheduler`. State `.ces` files currently import matching state teams into the first division because the decoded state config does not include a clear team-count field per division.
 
 For a smoke test:
 
@@ -31,7 +31,10 @@ bin/rails brasfoot:league_config["/media/lovelace/01D8A2DEE1DFF560/REAL BRASFOOT
 bin/rails brasfoot:debug_team["/media/lovelace/01D8A2DEE1DFF560/REAL BRASFOOT 2026/teams/flarj.ban"]
 bin/rails brasfoot:plan_memberships["/media/lovelace/01D8A2DEE1DFF560/REAL BRASFOOT 2026/conf_ligas_nacionais/BRA.cfg"]
 bin/rails brasfoot:import_league["/media/lovelace/01D8A2DEE1DFF560/REAL BRASFOOT 2026/conf_ligas_nacionais/BRA.cfg"]
+bin/rails brasfoot:assets
 ```
+
+PNG files from `teams/escudos`, `teams/escudosMini`, `teams/camisas`, `teams/camisas2`, and `teams/camisas3` are attached to clubs with Active Storage.
 
 The national `.cfg` and state `.ces` files define competition formats. They do not appear to contain readable team names; team-to-division assignment appears to be derived from numeric team metadata or Brasfoot's own sorting rules.
 

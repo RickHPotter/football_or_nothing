@@ -3,6 +3,12 @@
 class Club < ApplicationRecord
   enum :status, { active: 0, inactive: 1, extinct: 2 }
 
+  has_one_attached :crest
+  has_one_attached :mini_crest
+  has_one_attached :home_shirt
+  has_one_attached :away_shirt
+  has_one_attached :third_shirt
+
   belongs_to :country
   has_one :club_finance, dependent: :destroy
   has_one :training_plan, dependent: :destroy

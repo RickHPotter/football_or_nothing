@@ -23,6 +23,11 @@ namespace :brasfoot do
     puts "[brasfoot] imported #{Club.where(external_source: source).count} clubs"
     puts "[brasfoot] imported #{Athlete.where(external_source: source).count} athletes"
 
+    unless ActiveModel::Type::Boolean.new.cast(ENV.fetch("BRASFOOT_SKIP_ASSETS", false))
+      DataImport::Brasfoot::ClubAssetImporter.call(teams_path: path, club_source: source)
+      puts "[brasfoot] imported club visual assets"
+    end
+
     unless ActiveModel::Type::Boolean.new.cast(ENV.fetch("BRASFOOT_SKIP_LEAGUES", false))
       league_configs(pack_path).each do |config_path|
         editions = DataImport::Brasfoot::LeagueImporter.call(
@@ -134,8 +139,30 @@ namespace :brasfoot do
     end
   end
 
+  desc "Import Brasfoot club visual assets from teams subdirectories"
+  task assets: :environment do
+    pack_path = Pathname(ENV.fetch("BRASFOOT_PACK_PATH", DEFAULT_PACK_PATH))
+    teams_path = ENV.fetch("BRASFOOT_TEAMS_PATH", pack_path.join("teams").to_s)
+    source = ENV.fetch("BRASFOOT_SOURCE", DataImport::Brasfoot::PackImporter::DEFAULT_SOURCE)
+
+    DataImport::Brasfoot::ClubAssetImporter.call(teams_path:, club_source: source)
+    puts "[brasfoot] imported club visual assets"
+  end
+
   def league_configs(pack_path)
-    selected = ENV.fetch("BRASFOOT_LEAGUE_CONFIGS", "BRA.cfg").split(",").map(&:strip).reject(&:blank?)
-    selected.map { |file_name| pack_path.join("conf_ligas_nacionais", file_name) }.select(&:exist?)
+    configured = ENV.fetch("BRASFOOT_LEAGUE_CONFIGS", nil)
+    return all_league_configs(pack_path) if configured.blank? || configured == "all"
+
+    configured.split(",").map(&:strip).reject(&:blank?).flat_map do |file_name|
+      [
+        pack_path.join("conf_ligas_nacionais", file_name),
+        pack_path.join("conf_estadual", file_name)
+      ]
+    end.select(&:exist?)
+  end
+
+  def all_league_configs(pack_path)
+    Pathname.glob(pack_path.join("conf_ligas_nacionais", "*.cfg").to_s).sort +
+      Pathname.glob(pack_path.join("conf_estadual", "*.ces").to_s).sort
   end
 end

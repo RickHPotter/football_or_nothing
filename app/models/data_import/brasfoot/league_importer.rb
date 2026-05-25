@@ -51,8 +51,8 @@ module DataImport
       end
 
       def tournament_for(division)
-        country.tournaments.find_or_initialize_by(name: division.name).tap do |tournament|
-          tournament.short_name = short_name_for(division.name)
+        country.tournaments.find_or_initialize_by(name: tournament_name_for(division)).tap do |tournament|
+          tournament.short_name = short_name_for(tournament.name)
           tournament.scope = :domestic
           tournament.format = :league
           tournament.status = :active
@@ -62,7 +62,7 @@ module DataImport
 
       def edition_for(tournament, division, club_count)
         tournament.tournament_editions.find_or_initialize_by(season_year:).tap do |edition|
-          edition.name = "#{division.name} #{season_year}"
+          edition.name = "#{tournament.name} #{season_year}"
           edition.starts_on = DEFAULT_STARTS_ON + (division.division.to_i - 1).weeks
           edition.ends_on = edition.starts_on + (((club_count - 1) * 2) - 1).weeks
           edition.status = :scheduled
@@ -98,6 +98,7 @@ module DataImport
       end
 
       def country_code
+        return "BRA" if config.kind == :state
         return "BRA" if config.divisions.first&.raw_fields&.fetch("pais") == PackImporter::BRAZIL_COUNTRY_ID
 
         config.name
@@ -113,6 +114,12 @@ module DataImport
 
       def short_name_for(name)
         name.split.map { |word| word.first.upcase }.join.first(12)
+      end
+
+      def tournament_name_for(division)
+        return division.name unless config.kind == :state
+
+        "Campeonato #{config.name} Division #{division.division}"
       end
 
       def imported_record_count(editions)

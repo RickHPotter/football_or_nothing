@@ -160,7 +160,9 @@ module DataImport
       def read_array
         descriptor = read_content
         length = read_u4
-        register_handle(Array.new(length) { read_content }.tap { |array| array.define_singleton_method(:java_class_name) { descriptor.class_name } })
+        register_handle(Array.new(length) { read_array_value(descriptor.class_name) }.tap do |array|
+          array.define_singleton_method(:java_class_name) { descriptor.class_name }
+        end)
       end
 
       def read_enum
@@ -181,6 +183,22 @@ module DataImport
         when "L", "[" then read_content
         else
           raise ArgumentError, "Unsupported Java field type #{type.inspect}"
+        end
+      end
+
+      def read_array_value(class_name)
+        case class_name[1]
+        when "B" then read_i1
+        when "C" then read_u2
+        when "D" then read_f8
+        when "F" then read_f4
+        when "I" then read_i4
+        when "J" then read_i8
+        when "S" then read_i2
+        when "Z" then read_u1 != 0
+        when "L", "[" then read_content
+        else
+          raise ArgumentError, "Unsupported Java array class #{class_name.inspect}"
         end
       end
 

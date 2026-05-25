@@ -11,6 +11,11 @@ module DataImport
         assert_equal "hello", JavaSerializationReader.read(bytes)
       end
 
+      test "reads serialized Java primitive integer arrays" do
+        bytes = [ "aced0005757200025b494dba602676eab2a5020000787000000003000000010000000200000003" ].pack("H*")
+
+        assert_equal [ 1, 2, 3 ], JavaSerializationReader.read(bytes)
+      end
     end
   end
 end

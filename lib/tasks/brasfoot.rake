@@ -32,4 +32,47 @@ namespace :brasfoot do
     puts "[brasfoot] imported #{club.name} (#{club.country.name})"
     puts "[brasfoot] athletes #{club.current_athletes.count}"
   end
+
+  desc "Print one Brasfoot league config. Usage: bin/rails brasfoot:league_config[/path/to/BRA.cfg]"
+  task :league_config, [ :path ] => :environment do |_task, args|
+    path = args[:path] || ENV.fetch("BRASFOOT_CONFIG")
+    config = DataImport::Brasfoot::LeagueConfigParser.call(path)
+
+    puts "[brasfoot] #{config.kind} config #{config.name}"
+    config.divisions.each do |division|
+      puts [
+        "division=#{division.division}",
+        "name=#{division.name}",
+        "teams=#{division.team_count}",
+        "relegated=#{division.relegated_count}",
+        "format=#{division.format}"
+      ].join(" | ")
+    end
+  end
+
+  desc "Inspect one Brasfoot team against nearby tournament configs. Usage: bin/rails brasfoot:debug_team[/path/to/flarj.ban]"
+  task :debug_team, [ :path ] => :environment do |_task, args|
+    path = args[:path] || ENV.fetch("BRASFOOT_FILE")
+    report = DataImport::Brasfoot::TeamTournamentProbe.call(team_path: path)
+
+    puts "[brasfoot] team=#{report.team.name} file=#{report.team.external_id}"
+    puts "[brasfoot] suffix=#{report.country_suffix}"
+    puts "[brasfoot] candidate national division field n=#{report.candidate_national_division}"
+    puts "[brasfoot] candidate state division field o=#{report.candidate_state_division}"
+    puts "[brasfoot] raw team fields=#{report.raw_team_fields.inspect}"
+
+    if report.national_config
+      puts "[brasfoot] national config=#{report.national_config.name}"
+      report.national_config.divisions.each do |division|
+        puts "  - #{division.name}: division=#{division.division}, teams=#{division.team_count}"
+      end
+    end
+
+    if report.state_config
+      puts "[brasfoot] state config=#{report.state_config.name}"
+      report.state_config.divisions.each do |division|
+        puts "  - #{division.name}: division=#{division.division}, teams=#{division.team_count}"
+      end
+    end
+  end
 end

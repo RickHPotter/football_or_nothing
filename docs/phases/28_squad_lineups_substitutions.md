@@ -4,8 +4,8 @@ Phase 28 - Squad Lineups and Substitutions
 Status
 ------
 In progress. Core lineup generation, pre-match controls, substitution guards,
-slot persistence, and manual swaps are implemented. Simulation impact is being
-expanded through position-fit penalties.
+slot persistence, manual swaps, simulation position-fit penalties, and tactical
+role effects are implemented.
 
 
 Goal
@@ -38,6 +38,7 @@ Completed Slices
   layout work.
 - Slice 4: manual pre-kickoff lineup swaps that preserve formation slots.
 - Slice 5: position-fit penalties in match strength calculation.
+- Slice 6: tactical role controls and tactical role strength modifiers.
 
 
 Implemented
@@ -64,6 +65,11 @@ Implemented
 - Match strength now penalizes athletes used outside their natural position.
 - Goalkeeper/outfield mismatches receive the strongest position-fit penalty.
 - Adjacent role coverage receives only a light penalty.
+- Fixture lineups display each athlete's tactical role.
+- Managers can change selected athlete tactical roles before kickoff.
+- Tactical roles modify match strength: `attack` improves attack while reducing
+  defense, `defend` improves defense while reducing attack, and `support`
+  lightly improves control.
 - Substituted-off players cannot re-enter as unused bench players.
 - Substituted-on players remain eligible to be substituted off later.
 - Invalid substitution attempts redirect with a clear alert.
@@ -96,10 +102,12 @@ Covered by fixture setup and fixture controller tests:
 - manual lineup swaps move players between slots before kickoff
 - manual lineup swaps are blocked after kickoff
 - awkward position usage lowers attack, defense, and control strength
+- tactical role changes are allowed before kickoff and blocked after kickoff
+- invalid tactical roles are rejected
+- tactical roles influence attack and defense strength
 
 
 Deferred
 --------
 - Formation-specific visual layout.
 - AI substitution planner during live clock advancement.
-- Tactical role depth beyond the current standard role.

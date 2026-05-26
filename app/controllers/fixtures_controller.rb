@@ -5,7 +5,7 @@ class FixturesController < ApplicationController
   before_action :set_club
   before_action :set_fixture
   before_action :ensure_match_setup,
-                only: %i[show simulate start pause resume advance_clock tactics regenerate_lineup swap_lineup_athletes substitute]
+                only: %i[show simulate start pause resume advance_clock tactics regenerate_lineup swap_lineup_athletes update_lineup_role substitute]
 
   def show
     @standings = @fixture.tournament_edition.standings
@@ -97,6 +97,25 @@ class FixturesController < ApplicationController
     redirect_to career_fixture_path(@career, @fixture), notice: "Lineup updated."
   rescue ActiveRecord::RecordNotFound
     redirect_to career_fixture_path(@career, @fixture), alert: "Choose two players from your lineup."
+  end
+
+  def update_lineup_role
+    unless @fixture.match_state.not_started?
+      redirect_to career_fixture_path(@career, @fixture), alert: "Tactical roles can only be changed before kickoff."
+      return
+    end
+
+    tactical_role = params.expect(:tactical_role)
+    unless LineupAthlete.tactical_roles.key?(tactical_role)
+      redirect_to career_fixture_path(@career, @fixture), alert: "Choose a valid tactical role."
+      return
+    end
+
+    @fixture.lineup_for(@club).lineup_athletes.find(params.expect(:lineup_athlete_id)).update!(tactical_role:)
+
+    redirect_to career_fixture_path(@career, @fixture), notice: "Tactical role updated."
+  rescue ActiveRecord::RecordNotFound
+    redirect_to career_fixture_path(@career, @fixture), alert: "Choose one player from your lineup."
   end
 
   def substitute

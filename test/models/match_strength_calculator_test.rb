@@ -55,6 +55,23 @@ class MatchStrengthCalculatorTest < ActiveSupport::TestCase
     assert_operator awkward[:control], :<, natural[:control]
   end
 
+  test "tactical roles influence team strength" do
+    rebuild_balanced_lineup
+    lineup = @fixture.lineup_for(@club)
+    balanced = MatchStrengthCalculator.call(fixture: @fixture, club: @club)
+
+    lineup.starters.update_all(tactical_role: LineupAthlete.tactical_roles[:attack])
+    attacking_roles = MatchStrengthCalculator.call(fixture: @fixture, club: @club)
+
+    lineup.starters.update_all(tactical_role: LineupAthlete.tactical_roles[:defend])
+    defending_roles = MatchStrengthCalculator.call(fixture: @fixture, club: @club)
+
+    assert_operator attacking_roles[:attack], :>, balanced[:attack]
+    assert_operator attacking_roles[:defense], :<, balanced[:defense]
+    assert_operator defending_roles[:defense], :>, balanced[:defense]
+    assert_operator defending_roles[:attack], :<, balanced[:attack]
+  end
+
   private
 
   def rebuild_balanced_lineup

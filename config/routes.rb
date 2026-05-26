@@ -24,6 +24,7 @@ Rails.application.routes.draw do
       patch :tactics, on: :member
       post :regenerate_lineup, on: :member
       patch :swap_lineup_athletes, on: :member
+      patch :update_lineup_role, on: :member
       post :substitute, on: :member
     end
     resources :manager_contracts, only: :create

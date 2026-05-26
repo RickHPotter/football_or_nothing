@@ -69,6 +69,7 @@
                       <%= lineup_athlete.athlete.first_name %> <%= lineup_athlete.athlete.last_name %>
                       <span class="badge"><%= lineup_athlete.lineup_slot_label %></span>
                       <span class="badge"><%= lineup_athlete.position.humanize %></span>
+                      <span class="badge"><%= lineup_athlete.tactical_role.humanize %></span>
                       <% if lineup_athlete.substituted_on_minute %>
                         <span class="badge badge-good">on <%= lineup_athlete.substituted_on_minute %>'</span>
                       <% end %>
@@ -87,6 +88,7 @@
                       <%= lineup_athlete.athlete.first_name %> <%= lineup_athlete.athlete.last_name %>
                       <span class="badge"><%= lineup_athlete.lineup_slot_label %></span>
                       <span class="badge"><%= lineup_athlete.position.humanize %></span>
+                      <span class="badge"><%= lineup_athlete.tactical_role.humanize %></span>
                       <% if lineup_athlete.substituted_off_minute %>
                         <span class="badge badge-warn">off <%= lineup_athlete.substituted_off_minute %>'</span>
                       <% end %>
@@ -219,6 +221,18 @@
                   <%= form.select(:to_lineup_athlete_id, lineup_options) %>
                 </div>
                 <%= form.submit "Swap players" %>
+              <% end %>
+
+              <%= form_with url: update_lineup_role_career_fixture_path(@career, @fixture), method: :patch, class: "form-stack mt-4" do |form| %>
+                <div>
+                  <%= form.label :lineup_athlete_id, "Player role" %>
+                  <%= form.select(:lineup_athlete_id, lineup_options) %>
+                </div>
+                <div>
+                  <%= form.label :tactical_role %>
+                  <%= form.select(:tactical_role, LineupAthlete.tactical_roles.keys.map { |role| [ role.humanize, role ] }) %>
+                </div>
+                <%= form.submit "Set role" %>
               <% end %>
             <% end %>
           <% end %>

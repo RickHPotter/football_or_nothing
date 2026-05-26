@@ -89,6 +89,55 @@ class FixtureLineupControlsTest < ActionDispatch::IntegrationTest
     assert_not substitute.reload.starter?
   end
 
+  test "updates managed lineup athlete tactical role before kickoff" do
+    add_balanced_squad_depth(@career.manager.current_club)
+    get career_fixture_path(@career, @fixture)
+    lineup = @fixture.reload.lineup_for(@career.manager.current_club)
+    starter = lineup.starters.first
+
+    patch update_lineup_role_career_fixture_path(@career, @fixture), params: {
+      lineup_athlete_id: starter.id,
+      tactical_role: "attack"
+    }
+
+    assert_redirected_to career_fixture_path(@career, @fixture)
+    assert_equal "Tactical role updated.", flash[:notice]
+    assert starter.reload.attack?
+  end
+
+  test "does not update managed lineup athlete tactical role after kickoff" do
+    add_balanced_squad_depth(@career.manager.current_club)
+    get career_fixture_path(@career, @fixture)
+    lineup = @fixture.reload.lineup_for(@career.manager.current_club)
+    starter = lineup.starters.first
+
+    post start_career_fixture_path(@career, @fixture)
+    patch update_lineup_role_career_fixture_path(@career, @fixture), params: {
+      lineup_athlete_id: starter.id,
+      tactical_role: "attack"
+    }
+
+    assert_redirected_to career_fixture_path(@career, @fixture)
+    assert_equal "Tactical roles can only be changed before kickoff.", flash[:alert]
+    assert starter.reload.standard?
+  end
+
+  test "rejects invalid tactical role" do
+    add_balanced_squad_depth(@career.manager.current_club)
+    get career_fixture_path(@career, @fixture)
+    lineup = @fixture.reload.lineup_for(@career.manager.current_club)
+    starter = lineup.starters.first
+
+    patch update_lineup_role_career_fixture_path(@career, @fixture), params: {
+      lineup_athlete_id: starter.id,
+      tactical_role: "free_roam"
+    }
+
+    assert_redirected_to career_fixture_path(@career, @fixture)
+    assert_equal "Choose a valid tactical role.", flash[:alert]
+    assert starter.reload.standard?
+  end
+
   test "records substitution for managed club" do
     add_balanced_squad_depth(@career.manager.current_club)
     get career_fixture_path(@career, @fixture)

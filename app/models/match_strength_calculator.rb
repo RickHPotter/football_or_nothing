@@ -12,6 +12,24 @@ class MatchStrengthCalculator
     "balanced" => 0.0,
     "attacking" => -1.0
   }.freeze
+  ROLE_ATTACK = {
+    "standard" => 0.0,
+    "defend" => -0.4,
+    "support" => 0.2,
+    "attack" => 0.55
+  }.freeze
+  ROLE_DEFENSE = {
+    "standard" => 0.0,
+    "defend" => 0.55,
+    "support" => 0.2,
+    "attack" => -0.4
+  }.freeze
+  ROLE_CONTROL = {
+    "standard" => 0.0,
+    "defend" => 0.0,
+    "support" => 0.35,
+    "attack" => 0.1
+  }.freeze
   POSITION_FALLBACKS = {
     "center_back" => %w[full_back defensive_midfielder],
     "full_back" => %w[center_back defensive_midfielder winger],
@@ -48,6 +66,7 @@ class MatchStrengthCalculator
     attribute_average(%i[finishing passing dribbling technique composure]) +
       club.reputation +
       mentality_attack +
+      tactical_role_modifier(ROLE_ATTACK) +
       condition_modifier -
       position_fit_penalty -
       dismissal_penalty -
@@ -59,6 +78,7 @@ class MatchStrengthCalculator
     attribute_average(%i[tackling marking positioning strength decisions]) +
       club.reputation +
       mentality_defense +
+      tactical_role_modifier(ROLE_DEFENSE) +
       condition_modifier -
       position_fit_penalty -
       dismissal_penalty -
@@ -69,6 +89,7 @@ class MatchStrengthCalculator
   def control_strength
     attribute_average(%i[passing first_touch teamwork work_rate decisions]) +
       mentality_attack.fdiv(2) +
+      tactical_role_modifier(ROLE_CONTROL) +
       condition_modifier -
       position_fit_penalty +
       substitution_bonus
@@ -140,6 +161,12 @@ class MatchStrengthCalculator
     return 0.6 if POSITION_FALLBACKS.fetch(slot_position, []).include?(athlete_position)
 
     1.4
+  end
+
+  def tactical_role_modifier(weights)
+    return 0 if lineup_starters.empty?
+
+    lineup_starters.sum { |lineup_athlete| weights.fetch(lineup_athlete.tactical_role) }.fdiv(lineup_starters.length)
   end
 
   def mentality_attack

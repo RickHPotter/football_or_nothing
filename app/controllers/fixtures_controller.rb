@@ -59,6 +59,7 @@ class FixturesController < ApplicationController
       @fixture.match_state.full_time!
       redirect_to career_fixture_path(@career, @fixture), notice: "Full time."
     else
+      AiSubstitutionPlanner.call(fixture: @fixture, club: opponent_club, minute: next_minute)
       redirect_to career_fixture_path(@career, @fixture), notice: "Advanced to #{next_minute}'."
     end
   end
@@ -163,6 +164,10 @@ class FixturesController < ApplicationController
 
   def tactics_params
     params.expect(lineup: %i[formation mentality])
+  end
+
+  def opponent_club
+    @opponent_club ||= @fixture.home_club_id == @club.id ? @fixture.away_club : @fixture.home_club
   end
 
   def increment_substitution_count!

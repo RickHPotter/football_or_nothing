@@ -201,4 +201,28 @@
   .form-stack {
     @apply grid gap-3;
   }
+
+  .formation-pitch {
+    @apply grid gap-3 border border-pitch-800 bg-pitch-700 p-3 shadow-line;
+  }
+
+  .formation-row {
+    @apply grid items-stretch gap-2;
+  }
+
+  .formation-player {
+    @apply min-w-0 border border-pitch-900 bg-white/95 px-2 py-1.5 text-center text-xs shadow-line;
+  }
+
+  .formation-player strong {
+    @apply block truncate text-sm text-board-900;
+  }
+
+  .formation-player small {
+    @apply block truncate font-semibold text-board-700;
+  }
+
+  .formation-slot {
+    @apply mx-auto mb-1 flex h-6 w-8 items-center justify-center border border-pitch-800 bg-pitch-50 text-xs font-black text-pitch-900;
+  }
 }

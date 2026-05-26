@@ -3,9 +3,10 @@ Phase 28 - Squad Lineups and Substitutions
 
 Status
 ------
-In progress. Core lineup generation, pre-match controls, substitution guards,
-slot persistence, manual swaps, simulation position-fit penalties, and tactical
-role effects are implemented.
+Complete. Core lineup generation, pre-match controls, substitution guards, slot
+persistence, manual swaps, simulation position-fit penalties, tactical role
+effects, formation-specific lineup display, and live-clock AI substitutions are
+implemented.
 
 
 Goal
@@ -17,16 +18,21 @@ rules from treating previously substituted players as unused bench options.
 Main Files
 ----------
 - `app/models/lineup_template.rb`
+- `app/models/lineup_board.rb`
 - `app/models/lineup_builder.rb`
 - `app/models/lineup_swapper.rb`
+- `app/models/ai_substitution_planner.rb`
 - `app/models/match_strength_calculator.rb`
 - `app/models/fixture.rb`
 - `app/controllers/fixtures_controller.rb`
 - `test/models/fixture_match_setup_test.rb`
+- `test/models/lineup_board_test.rb`
+- `test/models/ai_substitution_planner_test.rb`
 - `test/models/lineup_swapper_test.rb`
 - `test/models/match_strength_calculator_test.rb`
 - `test/controllers/fixtures_controller_test.rb`
 - `test/controllers/fixture_lineup_controls_test.rb`
+- `test/controllers/fixture_live_clock_test.rb`
 
 
 Completed Slices
@@ -39,6 +45,8 @@ Completed Slices
 - Slice 4: manual pre-kickoff lineup swaps that preserve formation slots.
 - Slice 5: position-fit penalties in match strength calculation.
 - Slice 6: tactical role controls and tactical role strength modifiers.
+- Slice 7: formation-specific visual lineup layout.
+- Slice 8: live-clock AI substitution planner for the opponent.
 
 
 Implemented
@@ -66,10 +74,15 @@ Implemented
 - Goalkeeper/outfield mismatches receive the strongest position-fit penalty.
 - Adjacent role coverage receives only a light penalty.
 - Fixture lineups display each athlete's tactical role.
+- Fixture lineups render starters on a formation-specific pitch board.
 - Managers can change selected athlete tactical roles before kickoff.
 - Tactical roles modify match strength: `attack` improves attack while reducing
   defense, `defend` improves defense while reducing attack, and `support`
   lightly improves control.
+- During live clock advancement, the opposing club can make AI substitutions
+  from the 60th minute onward.
+- AI substitutions preserve the incoming player's assigned formation slot,
+  update substitution counters, and create timeline substitution events.
 - Substituted-off players cannot re-enter as unused bench players.
 - Substituted-on players remain eligible to be substituted off later.
 - Invalid substitution attempts redirect with a clear alert.
@@ -105,9 +118,16 @@ Covered by fixture setup and fixture controller tests:
 - tactical role changes are allowed before kickoff and blocked after kickoff
 - invalid tactical roles are rejected
 - tactical roles influence attack and defense strength
+- formation boards group starters into formation rows
+- AI substitutions are skipped before the 60th minute
+- AI substitutions update lineup state, substitution counters, and timeline
+  events after the threshold
+- live clock advancement triggers the opponent AI substitution planner
 
 
-Deferred
---------
-- Formation-specific visual layout.
-- AI substitution planner during live clock advancement.
+Phase Exit
+----------
+- Phase 28 is complete at the current gameplay depth.
+- Future refinements can add richer pitch interactions, role-specific
+  instructions, fatigue modeling, and score-aware AI substitutions, but those are
+  outside this phase's planned scope.

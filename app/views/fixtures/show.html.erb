@@ -63,19 +63,22 @@
             <div class="p-3">
               <h4>Starting eleven</h4>
               <% if lineup.starters.any? %>
-                <ol class="mt-2 grid gap-1">
-                  <% lineup.starters.each do |lineup_athlete| %>
-                    <li>
-                      <%= lineup_athlete.athlete.first_name %> <%= lineup_athlete.athlete.last_name %>
-                      <span class="badge"><%= lineup_athlete.lineup_slot_label %></span>
-                      <span class="badge"><%= lineup_athlete.position.humanize %></span>
-                      <span class="badge"><%= lineup_athlete.tactical_role.humanize %></span>
-                      <% if lineup_athlete.substituted_on_minute %>
-                        <span class="badge badge-good">on <%= lineup_athlete.substituted_on_minute %>'</span>
+                <div class="formation-pitch mt-2">
+                  <% LineupBoard.rows_for(lineup).each do |row| %>
+                    <div class="formation-row" style="grid-template-columns: repeat(<%= [ row.length, 1 ].max %>, minmax(0, 1fr));">
+                      <% row.each do |lineup_athlete| %>
+                        <div class="formation-player">
+                          <span class="formation-slot"><%= lineup_athlete.lineup_slot_label %></span>
+                          <strong><%= lineup_athlete.athlete.last_name %></strong>
+                          <small><%= lineup_athlete.position.humanize %> · <%= lineup_athlete.tactical_role.humanize %></small>
+                          <% if lineup_athlete.substituted_on_minute %>
+                            <span class="badge badge-good">on <%= lineup_athlete.substituted_on_minute %>'</span>
+                          <% end %>
+                        </div>
                       <% end %>
-                    </li>
+                    </div>
                   <% end %>
-                </ol>
+                </div>
               <% else %>
                 <p class="empty-state mt-2">No starters selected.</p>
               <% end %>

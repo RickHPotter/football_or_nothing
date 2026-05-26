@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_26_001000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_26_002000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -369,6 +369,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_001000) do
     t.index ["fixture_id"], name: "index_match_stats_on_fixture_id"
   end
 
+  create_table "matchday_sessions", force: :cascade do |t|
+    t.bigint "career_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "elapsed_seconds", default: 0, null: false
+    t.bigint "focused_fixture_id"
+    t.integer "minute", default: 0, null: false
+    t.datetime "paused_at"
+    t.integer "period", default: 0, null: false
+    t.integer "round", null: false
+    t.date "scheduled_on", null: false
+    t.datetime "started_at"
+    t.integer "status", default: 0, null: false
+    t.integer "total_duration_seconds", default: 20, null: false
+    t.bigint "tournament_edition_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["career_id", "tournament_edition_id", "scheduled_on", "round"], name: "index_matchday_sessions_on_matchday", unique: true
+    t.index ["career_id"], name: "index_matchday_sessions_on_career_id"
+    t.index ["focused_fixture_id"], name: "index_matchday_sessions_on_focused_fixture_id"
+    t.index ["tournament_edition_id"], name: "index_matchday_sessions_on_tournament_edition_id"
+  end
+
   create_table "news_items", force: :cascade do |t|
     t.bigint "athlete_id"
     t.text "body"
@@ -662,6 +683,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_001000) do
   add_foreign_key "match_states", "fixtures"
   add_foreign_key "match_stats", "clubs"
   add_foreign_key "match_stats", "fixtures"
+  add_foreign_key "matchday_sessions", "careers"
+  add_foreign_key "matchday_sessions", "fixtures", column: "focused_fixture_id"
+  add_foreign_key "matchday_sessions", "tournament_editions"
   add_foreign_key "news_items", "athletes"
   add_foreign_key "news_items", "careers"
   add_foreign_key "news_items", "clubs"

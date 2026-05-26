@@ -40,6 +40,7 @@ Implemented Phase Documents
 - `26_import_audit_data_normalization.md`
 - `27_gameplay_bridge_frontend_exposure.md`
 - `28_squad_lineups_substitutions.md`
+- `29_real_time_matchday_simulation.md`
 - `phase_status_audit.md`
 
 
@@ -47,6 +48,5 @@ Current Continuation Point
 --------------------------
 Phases 1 through 28 are implemented at first-playable depth.
 
-The next implementation target should be chosen from Phase 28 deferred lineup
-depth, Phase 27 browsing depth, import cleanup from the Phase 26 audit report,
-or the next planning pass.
+Phase 29 is the active implementation target. It replaces the fixture-only
+clock with server-authoritative simultaneous matchday simulation.

@@ -3,7 +3,7 @@ Phase 29 - Real-Time Matchday Simulation
 
 Status
 ------
-Slice 1 complete. Slice 2 is next.
+Slice 2 complete. Slice 3 is next.
 
 
 Goal
@@ -45,7 +45,7 @@ Planned Slices
 - Slice 1: matchday session model, fixture grouping, and foundational tests.
   Implemented with `MatchdaySession` and `MatchdaySessionStarter`.
 - Slice 2: server-authoritative clock calculation with start, pause, resume,
-  half, and full-time state.
+  half, and full-time state. Implemented with `MatchdayClock`.
 - Slice 3: deterministic live event planning and due-event application.
 - Slice 4: routes/controllers for start, pause, resume, and focused fixture
   selection.
@@ -89,6 +89,11 @@ Verified
 - Fixtures from other matchdays are excluded.
 - Invalid focused fixtures are rejected.
 - Starting the same matchday twice reuses the existing session.
+- `MatchdayClock` starts sessions from server time.
+- `MatchdayClock` refreshes minutes from elapsed server time.
+- Pausing stores elapsed seconds and freezes the session.
+- Resuming continues from stored elapsed seconds.
+- Full time is reached when elapsed seconds meet the configured duration.
 
 
 Frontend Target

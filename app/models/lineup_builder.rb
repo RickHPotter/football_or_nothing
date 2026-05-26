@@ -41,6 +41,7 @@ class LineupBuilder
         position: slot.position,
         tactical_role: :standard,
         lineup_slot: index + 1,
+        lineup_slot_key: slot.name,
         starter: true
       )
     end
@@ -63,6 +64,7 @@ class LineupBuilder
         position: athlete.position,
         tactical_role: :standard,
         lineup_slot: 12 + index,
+        lineup_slot_key: "sub_#{index + 1}",
         starter: false
       )
     end

@@ -67,6 +67,7 @@
                   <% lineup.starters.each do |lineup_athlete| %>
                     <li>
                       <%= lineup_athlete.athlete.first_name %> <%= lineup_athlete.athlete.last_name %>
+                      <span class="badge"><%= lineup_athlete.lineup_slot_label %></span>
                       <span class="badge"><%= lineup_athlete.position.humanize %></span>
                       <% if lineup_athlete.substituted_on_minute %>
                         <span class="badge badge-good">on <%= lineup_athlete.substituted_on_minute %>'</span>
@@ -84,6 +85,7 @@
                   <% lineup.bench.each do |lineup_athlete| %>
                     <li>
                       <%= lineup_athlete.athlete.first_name %> <%= lineup_athlete.athlete.last_name %>
+                      <span class="badge"><%= lineup_athlete.lineup_slot_label %></span>
                       <span class="badge"><%= lineup_athlete.position.humanize %></span>
                       <% if lineup_athlete.substituted_off_minute %>
                         <span class="badge badge-warn">off <%= lineup_athlete.substituted_off_minute %>'</span>

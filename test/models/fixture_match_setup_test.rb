@@ -61,6 +61,21 @@ class FixtureMatchSetupTest < ActiveSupport::TestCase
     assert_operator bench.count(&:goalkeeper?), :<=, 1
   end
 
+  test "persists formation slot keys for starters and bench" do
+    fixture = fixtures(:one)
+    club = fixture.home_club
+    club.athlete_contracts.update_all(current: false)
+    add_balanced_squad_depth(club)
+
+    fixture.ensure_match_setup!
+
+    lineup = fixture.lineup_for(club)
+    expected_slots = LineupTemplate.for(lineup.formation).map { |slot| slot.name.to_s }
+
+    assert_equal expected_slots, lineup.starters.map(&:lineup_slot_key)
+    assert(lineup.bench.all? { |lineup_athlete| lineup_athlete.lineup_slot_key.start_with?("sub_") })
+  end
+
   test "formation templates define eleven starter slots" do
     LineupTemplate::TEMPLATES.each_key do |formation|
       slots = LineupTemplate.for(formation)
@@ -82,6 +97,20 @@ class FixtureMatchSetupTest < ActiveSupport::TestCase
       status: :active,
       current: true
     )
+  end
+
+  def add_balanced_squad_depth(club)
+    positions = %i[
+      goalkeeper goalkeeper
+      center_back center_back center_back center_back
+      full_back full_back full_back full_back
+      defensive_midfielder central_midfielder central_midfielder attacking_midfielder
+      winger winger striker striker striker
+    ]
+
+    positions.each_with_index do |position, index|
+      create_contracted_athlete(club, "Depth", index, position, 5)
+    end
   end
 
   def create_athlete(club, first_name, last_name, position, ability)

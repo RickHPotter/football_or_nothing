@@ -15,10 +15,15 @@ class LineupAthlete < ApplicationRecord
   scope :starters, -> { where(starter: true) }
   scope :bench, -> { where(starter: false) }
 
+  validates :lineup_slot_key, presence: true
   validates :lineup_slot, numericality: { only_integer: true, in: 1..25 }
   validates :athlete_id, uniqueness: { scope: :lineup_id }
   validates :lineup_slot, uniqueness: { scope: :lineup_id }
   validates :substituted_on_minute, :substituted_off_minute,
             numericality: { only_integer: true, in: 0..90 },
             allow_nil: true
+
+  def lineup_slot_label
+    lineup_slot_key.to_s.upcase
+  end
 end

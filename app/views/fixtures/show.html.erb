@@ -206,6 +206,21 @@
             <div class="mt-3">
               <%= button_to "Regenerate lineup", regenerate_lineup_career_fixture_path(@career, @fixture), class: "btn btn-secondary" %>
             </div>
+
+            <% lineup_options = (@managed_lineup.starters + @managed_lineup.bench).map { |lineup_athlete| [ "#{lineup_athlete.lineup_slot_label} - #{lineup_athlete.athlete.first_name} #{lineup_athlete.athlete.last_name}", lineup_athlete.id ] } %>
+            <% if lineup_options.many? %>
+              <%= form_with url: swap_lineup_athletes_career_fixture_path(@career, @fixture), method: :patch, class: "form-stack mt-4" do |form| %>
+                <div>
+                  <%= form.label :from_lineup_athlete_id, "Slot" %>
+                  <%= form.select(:from_lineup_athlete_id, lineup_options) %>
+                </div>
+                <div>
+                  <%= form.label :to_lineup_athlete_id, "Swap with" %>
+                  <%= form.select(:to_lineup_athlete_id, lineup_options) %>
+                </div>
+                <%= form.submit "Swap players" %>
+              <% end %>
+            <% end %>
           <% end %>
 
           <% if @managed_lineup.starters.any? && @managed_lineup.bench.any? %>

@@ -23,6 +23,7 @@ Rails.application.routes.draw do
       post :advance_clock, on: :member
       patch :tactics, on: :member
       post :regenerate_lineup, on: :member
+      patch :swap_lineup_athletes, on: :member
       post :substitute, on: :member
     end
     resources :manager_contracts, only: :create

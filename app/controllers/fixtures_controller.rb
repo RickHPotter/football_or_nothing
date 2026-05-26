@@ -4,7 +4,8 @@ class FixturesController < ApplicationController
   before_action :set_career
   before_action :set_club
   before_action :set_fixture
-  before_action :ensure_match_setup, only: %i[show simulate start pause resume advance_clock tactics regenerate_lineup substitute]
+  before_action :ensure_match_setup,
+                only: %i[show simulate start pause resume advance_clock tactics regenerate_lineup swap_lineup_athletes substitute]
 
   def show
     @standings = @fixture.tournament_edition.standings
@@ -79,6 +80,23 @@ class FixturesController < ApplicationController
     LineupBuilder.call(lineup: @fixture.lineup_for(@club))
 
     redirect_to career_fixture_path(@career, @fixture), notice: "Lineup regenerated."
+  end
+
+  def swap_lineup_athletes
+    unless @fixture.match_state.not_started?
+      redirect_to career_fixture_path(@career, @fixture), alert: "Lineups can only be changed before kickoff."
+      return
+    end
+
+    LineupSwapper.call(
+      lineup: @fixture.lineup_for(@club),
+      from_lineup_athlete_id: params.expect(:from_lineup_athlete_id),
+      to_lineup_athlete_id: params.expect(:to_lineup_athlete_id)
+    )
+
+    redirect_to career_fixture_path(@career, @fixture), notice: "Lineup updated."
+  rescue ActiveRecord::RecordNotFound
+    redirect_to career_fixture_path(@career, @fixture), alert: "Choose two players from your lineup."
   end
 
   def substitute

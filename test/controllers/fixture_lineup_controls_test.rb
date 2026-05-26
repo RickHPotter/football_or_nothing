@@ -51,6 +51,44 @@ class FixtureLineupControlsTest < ActionDispatch::IntegrationTest
     assert_equal "Lineups can only be regenerated before kickoff.", flash[:alert]
   end
 
+  test "swaps managed lineup athletes before kickoff" do
+    add_balanced_squad_depth(@career.manager.current_club)
+    get career_fixture_path(@career, @fixture)
+    lineup = @fixture.reload.lineup_for(@career.manager.current_club)
+    starter = lineup.starters.find_by!(lineup_slot_key: "rb")
+    substitute = lineup.bench.first
+
+    patch swap_lineup_athletes_career_fixture_path(@career, @fixture), params: {
+      from_lineup_athlete_id: starter.id,
+      to_lineup_athlete_id: substitute.id
+    }
+
+    assert_redirected_to career_fixture_path(@career, @fixture)
+    assert_equal "Lineup updated.", flash[:notice]
+    assert_not starter.reload.starter?
+    assert_equal "rb", substitute.reload.lineup_slot_key
+    assert substitute.starter?
+  end
+
+  test "does not swap managed lineup athletes after kickoff" do
+    add_balanced_squad_depth(@career.manager.current_club)
+    get career_fixture_path(@career, @fixture)
+    lineup = @fixture.reload.lineup_for(@career.manager.current_club)
+    starter = lineup.starters.first
+    substitute = lineup.bench.first
+
+    post start_career_fixture_path(@career, @fixture)
+    patch swap_lineup_athletes_career_fixture_path(@career, @fixture), params: {
+      from_lineup_athlete_id: starter.id,
+      to_lineup_athlete_id: substitute.id
+    }
+
+    assert_redirected_to career_fixture_path(@career, @fixture)
+    assert_equal "Lineups can only be changed before kickoff.", flash[:alert]
+    assert starter.reload.starter?
+    assert_not substitute.reload.starter?
+  end
+
   test "records substitution for managed club" do
     add_balanced_squad_depth(@career.manager.current_club)
     get career_fixture_path(@career, @fixture)

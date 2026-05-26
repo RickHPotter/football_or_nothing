@@ -40,6 +40,9 @@ Implemented
 - Pre-kickoff lineup regeneration is available from the fixture screen.
 - Lineup athletes persist formation slot keys such as `rb`, `lcb`, and `st`.
 - Fixture lineups show the generated slot key beside each selected athlete.
+- Managers can manually swap selected lineup athletes before kickoff.
+- Manual swaps preserve the selected formation slot instead of changing the
+  formation.
 - Substituted-off players cannot re-enter as unused bench players.
 - Substituted-on players remain eligible to be substituted off later.
 - Invalid substitution attempts redirect with a clear alert.
@@ -69,11 +72,12 @@ Covered by fixture setup and fixture controller tests:
 - pre-kickoff lineup regeneration works and is blocked after kickoff
 - generated starters keep formation slot keys and bench players keep substitute
   slot keys
+- manual lineup swaps move players between slots before kickoff
+- manual lineup swaps are blocked after kickoff
 
 
 Deferred
 --------
-- Manager-facing manual pre-match lineup editor.
 - Formation-specific visual layout.
 - AI substitution planner during live clock advancement.
 - Position-fit penalties in match strength calculation.

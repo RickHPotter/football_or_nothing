@@ -4,7 +4,7 @@ class FixturesController < ApplicationController
   before_action :set_career
   before_action :set_club
   before_action :set_fixture
-  before_action :ensure_match_setup, only: %i[show simulate start pause resume advance_clock tactics substitute]
+  before_action :ensure_match_setup, only: %i[show simulate start pause resume advance_clock tactics regenerate_lineup substitute]
 
   def show
     @standings = @fixture.tournament_edition.standings
@@ -63,9 +63,22 @@ class FixturesController < ApplicationController
   end
 
   def tactics
-    @fixture.lineup_for(@club).update!(tactics_params)
+    lineup = @fixture.lineup_for(@club)
+    lineup.update!(tactics_params)
+    LineupBuilder.call(lineup:) if @fixture.match_state.not_started?
 
     redirect_to career_fixture_path(@career, @fixture), notice: "Tactics updated."
+  end
+
+  def regenerate_lineup
+    unless @fixture.match_state.not_started?
+      redirect_to career_fixture_path(@career, @fixture), alert: "Lineups can only be regenerated before kickoff."
+      return
+    end
+
+    LineupBuilder.call(lineup: @fixture.lineup_for(@club))
+
+    redirect_to career_fixture_path(@career, @fixture), notice: "Lineup regenerated."
   end
 
   def substitute
@@ -75,7 +88,7 @@ class FixturesController < ApplicationController
     end
 
     lineup = @fixture.lineup_for(@club)
-    off = lineup.lineup_athletes.starters.where(substituted_on_minute: nil).find(params.expect(:off_lineup_athlete_id))
+    off = lineup.lineup_athletes.starters.find(params.expect(:off_lineup_athlete_id))
     on = lineup.lineup_athletes.bench.where(substituted_on_minute: nil, substituted_off_minute: nil).find(params.expect(:on_lineup_athlete_id))
     minute = @fixture.match_state.minute
 

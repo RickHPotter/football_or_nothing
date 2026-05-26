@@ -35,7 +35,11 @@ Implemented
   extra goalkeepers.
 - Injured and suspended athletes are still avoided where possible.
 - Fixture setup remains idempotent.
+- Manager tactics use supported formation choices instead of free text.
+- Pre-kickoff formation changes rebuild the selected lineup.
+- Pre-kickoff lineup regeneration is available from the fixture screen.
 - Substituted-off players cannot re-enter as unused bench players.
+- Substituted-on players remain eligible to be substituted off later.
 - Invalid substitution attempts redirect with a clear alert.
 
 
@@ -59,12 +63,14 @@ Covered by fixture setup and fixture controller tests:
 - injured players are avoided where possible
 - setup does not duplicate lineups
 - substituted-off players cannot re-enter
+- substituted-on players can be substituted off
+- pre-kickoff lineup regeneration works and is blocked after kickoff
 
 
 Deferred
 --------
 - Persisting explicit slot names on `LineupAthlete`.
-- Manager-facing pre-match lineup editor.
+- Manager-facing manual pre-match lineup editor.
 - Formation-specific visual layout.
 - AI substitution planner during live clock advancement.
 - Position-fit penalties in match strength calculation.

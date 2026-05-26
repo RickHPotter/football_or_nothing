@@ -22,6 +22,7 @@ Rails.application.routes.draw do
       post :resume, on: :member
       post :advance_clock, on: :member
       patch :tactics, on: :member
+      post :regenerate_lineup, on: :member
       post :substitute, on: :member
     end
     resources :manager_contracts, only: :create

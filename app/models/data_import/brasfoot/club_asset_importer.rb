@@ -61,11 +61,14 @@ module DataImport
 
         attachment.detach if attachment.attached?
 
-        attachment.attach(
-          io: File.open(path, "rb"),
-          filename: path.basename.to_s,
-          content_type: "image/png"
-        )
+        blob = File.open(path, "rb") do |file|
+          ActiveStorage::Blob.create_and_upload!(
+            io: file,
+            filename: path.basename.to_s,
+            content_type: "image/png"
+          )
+        end
+        attachment.attach(blob)
         @imported_count += 1
       end
 

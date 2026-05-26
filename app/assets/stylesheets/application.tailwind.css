@@ -4,11 +4,11 @@
 
 @layer base {
   html {
-    @apply bg-board-100 text-board-900;
+    @apply h-full bg-board-900 text-board-900;
   }
 
   body {
-    @apply min-h-screen text-sm antialiased;
+    @apply h-full overflow-hidden bg-board-900 text-sm antialiased;
   }
 
   h1 {
@@ -45,7 +45,7 @@
   }
 
   th {
-    @apply border-b border-board-200 bg-board-100 px-2 py-2 text-left text-xs font-bold uppercase text-board-700;
+    @apply sticky top-0 z-10 border-b border-board-200 bg-board-100 px-2 py-2 text-left text-xs font-bold uppercase text-board-700;
   }
 
   td {
@@ -55,15 +55,15 @@
 
 @layer components {
   .game-shell {
-    @apply min-h-screen bg-board-100;
+    @apply flex h-dvh min-h-0 flex-col overflow-hidden bg-board-100;
   }
 
   .game-topbar {
-    @apply border-b-4 border-pitch-800 bg-board-900 text-board-50;
+    @apply shrink-0 border-b-4 border-pitch-800 bg-board-900 text-board-50 shadow-line;
   }
 
   .game-topbar-inner {
-    @apply mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between;
+    @apply mx-auto flex max-w-screen-2xl flex-col gap-3 px-4 py-2.5 sm:flex-row sm:items-center sm:justify-between;
   }
 
   .game-brand {
@@ -71,12 +71,12 @@
   }
 
   .game-nav {
-    @apply flex flex-wrap gap-1;
+    @apply flex max-w-full flex-wrap gap-1;
   }
 
   .game-nav-link,
   .game-nav button {
-    @apply border border-board-700 bg-board-700 px-3 py-1.5 text-xs font-bold uppercase text-board-50 no-underline hover:bg-pitch-800 hover:no-underline;
+    @apply border border-board-700 bg-board-700 px-3 py-1.5 text-xs font-bold uppercase text-board-50 no-underline shadow-line hover:bg-pitch-800 hover:no-underline;
   }
 
   .game-nav-link.is-active {
@@ -84,11 +84,12 @@
   }
 
   .game-page {
-    @apply mx-auto grid max-w-7xl gap-4 px-4 py-4;
+    @apply mx-auto grid min-h-0 w-full max-w-screen-2xl flex-1 content-start gap-3 overflow-y-auto px-4 py-3;
+    scrollbar-gutter: stable;
   }
 
   .game-header {
-    @apply border border-board-200 bg-white p-4 shadow-line;
+    @apply border border-board-200 border-t-pitch-800 border-t-4 bg-white p-3 shadow-line;
   }
 
   .game-title-row {
@@ -96,35 +97,35 @@
   }
 
   .game-subtitle {
-    @apply mt-1 text-sm text-board-700;
+    @apply mt-1 text-sm font-semibold text-board-700;
   }
 
   .game-grid {
-    @apply grid gap-4 lg:grid-cols-12;
+    @apply grid min-h-0 gap-3 lg:grid-cols-12;
   }
 
   .game-main {
-    @apply grid gap-4 lg:col-span-8;
+    @apply grid min-w-0 content-start gap-3 lg:col-span-8;
   }
 
   .game-side {
-    @apply grid content-start gap-4 lg:col-span-4;
+    @apply grid min-w-0 content-start gap-3 lg:col-span-4;
   }
 
   .panel {
-    @apply border border-board-200 bg-white shadow-line;
+    @apply min-w-0 border border-board-200 bg-white shadow-line;
   }
 
   .panel-header {
-    @apply flex items-center justify-between border-b border-board-200 bg-board-50 px-3 py-2;
+    @apply flex min-h-10 items-center justify-between gap-3 border-b border-board-200 bg-board-50 px-3 py-2;
   }
 
   .panel-body {
-    @apply p-3;
+    @apply min-w-0 p-3;
   }
 
   .table-wrap {
-    @apply overflow-x-auto border border-board-200;
+    @apply max-h-[58vh] overflow-auto border border-board-200 bg-white;
   }
 
   .stat-grid {
@@ -132,7 +133,7 @@
   }
 
   .stat-tile {
-    @apply border border-board-200 bg-board-50 px-3 py-2;
+    @apply border border-board-200 bg-board-50 px-3 py-2 shadow-line;
   }
 
   .stat-label {
@@ -140,11 +141,11 @@
   }
 
   .stat-value {
-    @apply mt-1 text-lg font-black text-board-900;
+    @apply mt-1 text-lg font-black leading-tight text-board-900;
   }
 
   .badge {
-    @apply inline-flex items-center border border-board-200 bg-board-100 px-2 py-0.5 text-xs font-bold uppercase text-board-700;
+    @apply inline-flex items-center whitespace-nowrap border border-board-200 bg-board-100 px-2 py-0.5 text-xs font-bold uppercase text-board-700;
   }
 
   .badge-good {
@@ -158,7 +159,7 @@
   .btn,
   input[type="submit"],
   button[type="submit"] {
-    @apply inline-flex cursor-pointer items-center justify-center border border-pitch-800 bg-pitch-800 px-3 py-1.5 text-xs font-bold uppercase text-white no-underline hover:bg-pitch-700 hover:no-underline;
+    @apply inline-flex cursor-pointer items-center justify-center border border-pitch-800 bg-pitch-800 px-3 py-1.5 text-xs font-bold uppercase text-white no-underline shadow-line hover:bg-pitch-700 hover:no-underline;
   }
 
   .btn-secondary {

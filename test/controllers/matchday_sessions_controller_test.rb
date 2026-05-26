@@ -45,8 +45,8 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".matchday-fixture-card", 2
     assert_select ".matchday-fixture-card.is-managed", 1
     assert_select ".matchday-fixture-card", text: /#{other_fixture.home_club.short_name}/
+    assert_select ".fixture-three-column", 0
     assert_select "input[type='submit'][value='Update tactics']", 0
-    assert_select ".empty-state", /Pause matchday to make decisions/
   end
 
   test "shows manager controls when matchday is paused on managed fixture" do
@@ -54,10 +54,13 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
     MatchdayClock.start(session, now: Time.current)
     MatchdayClock.pause(session, now: Time.current + 2.seconds)
 
-    get career_fixture_path(@career, @fixture)
+    get career_fixture_path(@career, @fixture, details: true)
 
     assert_response :success
+    assert_select ".fixture-three-column"
     assert_select "input[type='submit'][value='Update tactics']"
+    assert_select "a", "Back to matchday"
+    assert_select "a", { text: "Back to club", count: 0 }
   end
 
   test "focuses a simultaneous fixture outside manager club" do
@@ -67,7 +70,7 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
 
     patch focus_matchday_career_fixture_path(@career, other_fixture)
 
-    assert_redirected_to career_fixture_path(@career, other_fixture)
+    assert_redirected_to career_fixture_path(@career, other_fixture, details: true)
     assert session.reload.paused?
     assert_equal other_fixture, session.focused_fixture
   end
@@ -79,7 +82,7 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
     MatchdayClock.pause(session, now: Time.current + 2.seconds)
     session.update!(focused_fixture: other_fixture)
 
-    get career_fixture_path(@career, other_fixture)
+    get career_fixture_path(@career, other_fixture, details: true)
 
     assert_response :success
     assert_select "input[type='submit'][value='Update tactics']", 0
@@ -99,6 +102,7 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
     assert @fixture.reload.completed?
     assert @fixture.match_state.full_time?
     assert session.matchday_standing_snapshots.where.not(position_after: nil).exists?
+    assert_not_equal "0-0", MatchdayScoreboard.call(session).fetch(@fixture)
   end
 
   test "resumes a paused matchday" do

@@ -2,7 +2,7 @@
 <% middle_panel_title = @fixture.completed? ? "Timeline" : "Manager Decisions" %>
 
 <% if @matchday_session&.running? || @matchday_session&.paused? || @matchday_session&.completed? %>
-  <section class="panel matchday-live-panel">
+  <section class="panel matchday-live-panel" <%= "data-controller=matchday-poll data-matchday-poll-interval-value=1000" if @matchday_session.running? %>>
     <div class="panel-header">
       <h2>Live Matchday</h2>
       <span class="badge <%= @matchday_session.running? ? "badge-good" : "badge-warn" %>">
@@ -36,6 +36,7 @@
   </section>
 <% end %>
 
+<% if @show_fixture_detail %>
 <div class="fixture-three-column">
   <div class="fixture-stack">
     <section class="match-team-card">
@@ -313,4 +314,9 @@
   </div>
 </div>
 
-<%= link_to "Back to club", career_club_path(@career), class: "btn btn-secondary" %>
+  <% if @matchday_session %>
+    <%= link_to "Back to matchday", career_fixture_path(@career, @fixture), class: "btn btn-secondary" %>
+  <% else %>
+    <%= link_to "Back to club", career_club_path(@career), class: "btn btn-secondary" %>
+  <% end %>
+<% end %>

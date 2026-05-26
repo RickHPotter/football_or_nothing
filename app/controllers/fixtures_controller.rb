@@ -73,7 +73,7 @@ class FixturesController < ApplicationController
     session.update!(focused_fixture: @fixture)
     MatchdayClock.pause(session)
 
-    redirect_to career_fixture_path(@career, @fixture)
+    redirect_to career_fixture_path(@career, @fixture, details: true)
   end
 
   def advance_clock
@@ -179,12 +179,12 @@ class FixturesController < ApplicationController
     @matchday_fixtures = @matchday_session&.fixtures || []
     @matchday_scorelines = @matchday_session ? MatchdayScoreboard.call(@matchday_session) : {}
     @standing_movements = MatchdayStandingMovement.call(@matchday_session)
+    @show_fixture_detail = @matchday_session.nil? || params[:details].present?
   end
 
   def load_fixture_context
     @standings = @fixture.tournament_edition.standings
     @events = @fixture.match_events.includes(:club, :athlete).order(:minute, :id)
-    @match_stats = @fixture.match_stats.includes(:club).index_by(&:club_id)
     @next_fixture = @career.next_fixture if @fixture.completed?
     @match_state = @fixture.match_state
     @managed_lineup = @fixture.lineup_for(@club)

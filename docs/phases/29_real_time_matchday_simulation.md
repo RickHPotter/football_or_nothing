@@ -3,7 +3,7 @@ Phase 29 - Real-Time Matchday Simulation
 
 Status
 ------
-Slice 10 complete. Phase 29 is complete.
+Slice 10 complete. Phase 29 is complete. Post-phase live matchday polish is in progress.
 
 
 Goal
@@ -144,6 +144,13 @@ Verified
   when a live server clock reaches full time.
 - Both instant simulation and live full-time completion now go through matchday
   session finalization.
+- Live matchday mode defaults to the matchday board only.
+- Focused fixture detail is rendered only after selecting a fixture from the
+  matchday board.
+- Focused fixture detail links back to the matchday board instead of the club
+  dashboard.
+- Running matchday boards poll through Turbo/Stimulus so the page keeps asking
+  the server for the authoritative minute, events, and finalization state.
 
 
 Frontend Target

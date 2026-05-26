@@ -121,7 +121,7 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     assert session.completed?
     assert_equal 2, session.matchday_standing_snapshots.count
 
-    get career_fixture_path(@career, @fixture)
+    get career_fixture_path(@career, @fixture, details: true)
 
     assert_response :success
     assert_select "h2", "Live Matchday"

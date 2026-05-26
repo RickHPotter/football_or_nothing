@@ -15,12 +15,18 @@ class TournamentsController < ApplicationController
     @editions = @tournament.tournament_editions.includes(:champion).order(season_year: :desc)
     @current_edition = @editions.first
     @standings = @current_edition&.standings || []
-    @fixtures = @current_edition&.fixtures&.includes(:home_club, :away_club)&.order(:scheduled_on, :round)&.limit(30) || []
+    @fixtures = current_edition_fixtures
   end
 
   private
 
   def set_career
     @career = Current.user.careers.includes(:manager).find(params.expect(:career_id))
+  end
+
+  def current_edition_fixtures
+    return [] unless @current_edition
+
+    @current_edition.fixtures.includes(:home_club, :away_club).order(:scheduled_on, :round).limit(30)
   end
 end

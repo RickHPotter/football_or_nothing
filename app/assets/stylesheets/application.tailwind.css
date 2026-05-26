@@ -8,27 +8,28 @@
   }
 
   body {
-    @apply h-full overflow-hidden bg-board-900 text-sm antialiased;
+    @apply h-full overflow-hidden bg-board-900 font-sans text-sm antialiased;
+    font-stretch: condensed;
   }
 
   h1 {
-    @apply text-2xl font-bold tracking-normal text-board-900;
+    @apply text-3xl font-black uppercase tracking-normal text-board-900;
   }
 
   h2 {
-    @apply text-base font-bold uppercase tracking-normal text-board-700;
+    @apply text-base font-black uppercase tracking-normal text-board-700;
   }
 
   h3 {
-    @apply text-sm font-bold text-board-900;
+    @apply text-sm font-black uppercase text-board-900;
   }
 
   h4 {
-    @apply text-xs font-bold uppercase tracking-normal text-board-700;
+    @apply text-xs font-black uppercase tracking-normal text-board-700;
   }
 
   a {
-    @apply font-semibold text-pitch-800 underline-offset-2 hover:underline;
+    @apply font-bold text-console-700 underline-offset-2 hover:underline;
   }
 
   label {
@@ -37,7 +38,7 @@
 
   input,
   select {
-    @apply mt-1 w-full border border-board-200 bg-white px-2 py-1.5 text-sm text-board-900 outline-none focus:border-pitch-700 focus:ring-1 focus:ring-pitch-700;
+    @apply mt-1 w-full border border-board-200 bg-white px-2 py-1.5 text-sm font-bold text-board-900 outline-none focus:border-console-300 focus:ring-1 focus:ring-console-300;
   }
 
   table {
@@ -45,7 +46,7 @@
   }
 
   th {
-    @apply border-b border-board-200 bg-board-100 px-2 py-2 text-left text-xs font-bold uppercase text-board-700;
+    @apply border-b border-board-200 bg-board-900 px-2 py-2 text-left text-xs font-black uppercase text-board-50;
   }
 
   td {
@@ -55,11 +56,11 @@
 
 @layer components {
   .game-shell {
-    @apply flex h-dvh min-h-0 flex-col overflow-hidden bg-board-100;
+    @apply flex h-dvh min-h-0 flex-col overflow-hidden bg-board-900;
   }
 
   .game-topbar {
-    @apply shrink-0 border-b-4 border-pitch-800 bg-board-900 text-board-50 shadow-line;
+    @apply shrink-0 border-b-4 border-result-300 bg-board-900 text-board-50 shadow-line;
   }
 
   .game-topbar-inner {
@@ -67,7 +68,7 @@
   }
 
   .game-brand {
-    @apply text-lg font-black uppercase tracking-normal text-white no-underline hover:no-underline;
+    @apply border-l-4 border-result-300 pl-2 text-xl font-black uppercase italic tracking-normal text-white no-underline hover:no-underline;
   }
 
   .game-nav {
@@ -76,20 +77,24 @@
 
   .game-nav-link,
   .game-nav button {
-    @apply border border-board-700 bg-board-700 px-3 py-1.5 text-xs font-bold uppercase text-board-50 no-underline shadow-line hover:bg-pitch-800 hover:no-underline;
+    @apply border border-console-700 bg-board-700 px-3 py-1.5 text-xs font-black uppercase text-board-50 no-underline shadow-line hover:bg-console-700 hover:no-underline;
   }
 
   .game-nav-link.is-active {
-    @apply border-pitch-700 bg-pitch-800 text-white;
+    @apply border-result-300 bg-console-700 text-white;
   }
 
   .game-page {
-    @apply mx-auto grid min-h-0 w-full max-w-screen-2xl flex-1 content-start gap-3 overflow-y-auto px-4 py-3;
+    @apply mx-auto grid min-h-0 w-full max-w-screen-2xl flex-1 content-start gap-3 overflow-y-auto bg-board-900 px-4 py-3;
     scrollbar-gutter: stable;
   }
 
   .game-header {
-    @apply border border-board-200 border-t-pitch-800 border-t-4 bg-white p-3 shadow-line;
+    @apply border border-console-700 border-l-result-300 border-l-4 bg-board-700 p-3 shadow-line;
+  }
+
+  .game-header h1 {
+    @apply text-board-50;
   }
 
   .game-title-row {
@@ -97,7 +102,7 @@
   }
 
   .game-subtitle {
-    @apply mt-1 text-sm font-semibold text-board-700;
+    @apply mt-1 text-sm font-bold uppercase text-board-100;
   }
 
   .game-grid {
@@ -113,11 +118,15 @@
   }
 
   .panel {
-    @apply relative z-0 min-w-0 border border-board-200 bg-white shadow-line;
+    @apply relative z-0 min-w-0 border border-board-200 bg-board-50 shadow-line;
   }
 
   .panel-header {
-    @apply flex min-h-10 items-center justify-between gap-3 border-b border-board-200 bg-board-50 px-3 py-2;
+    @apply flex min-h-10 items-center justify-between gap-3 border-b-4 border-console-700 bg-board-700 px-3 py-2;
+  }
+
+  .panel-header h2 {
+    @apply text-board-50;
   }
 
   .panel-body {
@@ -125,7 +134,7 @@
   }
 
   .table-wrap {
-    @apply max-h-[58vh] overflow-auto border border-board-200 bg-white;
+    @apply max-h-[58vh] overflow-auto border border-board-200 bg-white shadow-line;
   }
 
   .table-wrap th {
@@ -137,7 +146,7 @@
   }
 
   .stat-tile {
-    @apply border border-board-200 bg-board-50 px-3 py-2 shadow-line;
+    @apply border border-board-200 bg-white px-3 py-2 shadow-line;
   }
 
   .stat-label {
@@ -149,7 +158,7 @@
   }
 
   .badge {
-    @apply inline-flex items-center whitespace-nowrap border border-board-200 bg-board-100 px-2 py-0.5 text-xs font-bold uppercase text-board-700;
+    @apply inline-flex items-center whitespace-nowrap border border-board-200 bg-white px-2 py-0.5 text-xs font-black uppercase text-board-700;
   }
 
   .badge-good {
@@ -163,7 +172,7 @@
   .btn,
   input[type="submit"],
   button[type="submit"] {
-    @apply inline-flex cursor-pointer items-center justify-center border border-pitch-800 bg-pitch-800 px-3 py-1.5 text-xs font-bold uppercase text-white no-underline shadow-line hover:bg-pitch-700 hover:no-underline;
+    @apply inline-flex cursor-pointer items-center justify-center border border-console-700 bg-console-700 px-3 py-1.5 text-xs font-black uppercase text-white no-underline shadow-line hover:border-result-300 hover:bg-console-900 hover:no-underline;
   }
 
   .btn-secondary {
@@ -183,7 +192,7 @@
   }
 
   .flash-notice {
-    @apply border-pitch-700 bg-pitch-50 text-pitch-800;
+    @apply border-console-700 bg-console-100 text-console-900;
   }
 
   .empty-state {
@@ -203,7 +212,7 @@
   }
 
   .formation-pitch {
-    @apply grid gap-3 border border-pitch-800 bg-pitch-700 p-3 shadow-line;
+    @apply grid gap-3 border-2 border-board-50 bg-pitch-800 p-3 shadow-line;
   }
 
   .formation-row {
@@ -211,7 +220,7 @@
   }
 
   .formation-player {
-    @apply min-w-0 border border-pitch-900 bg-white/95 px-2 py-1.5 text-center text-xs shadow-line;
+    @apply min-w-0 border border-console-700 bg-white px-2 py-1.5 text-center text-xs shadow-line;
   }
 
   .formation-player strong {
@@ -223,6 +232,6 @@
   }
 
   .formation-slot {
-    @apply mx-auto mb-1 flex h-6 w-8 items-center justify-center border border-pitch-800 bg-pitch-50 text-xs font-black text-pitch-900;
+    @apply mx-auto mb-1 flex h-6 w-8 items-center justify-center border border-result-300 bg-board-900 text-xs font-black text-result-300;
   }
 }

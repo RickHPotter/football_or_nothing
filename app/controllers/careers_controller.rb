@@ -7,8 +7,8 @@ class CareersController < ApplicationController
     @manager = @career.manager
     @current_contract = @manager&.current_manager_contract
     @next_fixture = @career.next_fixture
-    @trophies = @manager&.trophies&.includes(:club, :tournament_edition)&.order(won_on: :desc) || []
-    @manager_season_stats = @manager&.manager_season_stats&.includes(:club, :tournament_edition)&.order(created_at: :desc) || []
+    @trophies = manager_trophies
+    @manager_season_stats = manager_season_stats
     @manager_totals = manager_totals(@manager_season_stats)
     @news_items = news_items_for(@manager&.current_club)
     @international_editions = international_editions
@@ -79,6 +79,18 @@ class CareersController < ApplicationController
 
   def default_career_attributes
     { name: "Manager Career", current_date: Date.new(2026, 1, 1) }
+  end
+
+  def manager_trophies
+    return [] unless @manager
+
+    @manager.trophies.includes(:club, :tournament_edition).order(won_on: :desc)
+  end
+
+  def manager_season_stats
+    return [] unless @manager
+
+    @manager.manager_season_stats.includes(:club, :tournament_edition).order(created_at: :desc)
   end
 
   def career_params

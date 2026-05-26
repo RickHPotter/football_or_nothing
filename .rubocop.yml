@@ -36,6 +36,9 @@ Style/ClassAndModuleChildren:
 
 Layout/LineLength:
   Max: 166
+  Exclude:
+    - "lib/tasks/openfootball.rake"
+    - "test/models/data_import/importers_test.rb"
 
 Layout/SpaceInsideArrayLiteralBrackets:
   EnforcedStyle: space
@@ -51,6 +54,11 @@ Metrics/ModuleLength:
 
 Metrics/ClassLength:
   Max: 200
+  Exclude:
+    - "app/models/data_import/brasfoot/audit_report.rb"
+    - "app/models/data_import/brasfoot/java_serialization_reader.rb"
+    - "app/models/data_import/brasfoot/pack_importer.rb"
+    - "app/models/match_simulator.rb"
 
 Metrics/MethodLength:
   Max: 32
@@ -65,6 +73,13 @@ Metrics/AbcSize:
     - "app/components/**/*.rb"
     - "app/views/**/*.rb"
     - "config/**/*.rb"
+    - "app/models/data_import/athletes_importer.rb"
+    - "app/models/international_competition_generator.rb"
+    - "app/models/match_simulator.rb"
+    - "app/models/tournament_finalizer.rb"
+    - "app/models/transfer_processor.rb"
+    - "app/models/youth_intake_generator.rb"
+    - "app/services/world_generator.rb"
 
 Metrics/BlockLength:
   Max: 22
@@ -73,6 +88,23 @@ Metrics/BlockLength:
     - "app/views/**/*.rb"
     - "config/**/*.rb"
     - "spec/**/*"
+    - "lib/tasks/**/*.rake"
+    - "test/**/*"
+
+Metrics/ParameterLists:
+  Exclude:
+    - "app/models/data_import/open_football_competition_importer.rb"
+    - "app/models/news_publisher.rb"
+    - "app/models/transfer_processor.rb"
+    - "lib/tasks/openfootball.rake"
+
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - "lib/tasks/**/*.rake"
+
+Security/Open:
+  Exclude:
+    - "lib/tasks/openfootball.rake"
 
 Lint/MissingSuper:
   Enabled: true

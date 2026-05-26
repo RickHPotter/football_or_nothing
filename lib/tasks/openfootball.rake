@@ -222,7 +222,10 @@ namespace :openfootball do
   end
 
   def env_list(key, default)
-    ENV.fetch(key, nil).presence&.split(",")&.map(&:strip)&.reject(&:blank?) || default
+    value = ENV.fetch(key, nil).presence
+    return default unless value
+
+    value.split(",").map(&:strip).reject(&:blank?)
   end
 
   def required_arg!(args, key)

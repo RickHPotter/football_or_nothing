@@ -221,12 +221,13 @@ module DataImport
       end
 
       def files
-        @files ||= begin
-          return [ path ] if path.file?
-
-          selected = Pathname.glob(path.join("*.ban").to_s).sort
-          limit ? selected.first(limit) : selected
-        end
+        @files ||=
+          if path.file?
+            [ path ]
+          else
+            selected = Pathname.glob(path.join("*.ban").to_s).sort
+            limit ? selected.first(limit) : selected
+          end
       end
 
       def java_serialization_file?(file)

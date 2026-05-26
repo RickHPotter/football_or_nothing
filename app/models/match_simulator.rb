@@ -229,7 +229,7 @@ class MatchSimulator
 
   def create_substitution_event(club, salt)
     lineup = fixture.lineup_for(club)
-    bench_player = lineup&.lineup_athletes&.bench&.includes(:athlete)&.order(:lineup_slot)&.first&.athlete
+    bench_player = first_bench_player_for(lineup)
     return unless bench_player
 
     fixture.match_events.create!(
@@ -302,9 +302,20 @@ class MatchSimulator
   def athletes_in_match(club)
     fixture.ensure_match_setup!
     lineup = fixture.lineup_for(club)
-    lineup_athletes = lineup&.lineup_athletes&.starters&.includes(:athlete)&.order(:lineup_slot)
-    athletes = lineup_athletes&.map(&:athlete).to_a
+    athletes = starting_lineup_athletes(lineup).map(&:athlete)
     athletes.presence || club.current_athletes.order(position: :asc, current_ability: :desc, id: :asc).limit(11).to_a
+  end
+
+  def first_bench_player_for(lineup)
+    return unless lineup
+
+    lineup.lineup_athletes.bench.includes(:athlete).order(:lineup_slot).first&.athlete
+  end
+
+  def starting_lineup_athletes(lineup)
+    return [] unless lineup
+
+    lineup.lineup_athletes.starters.includes(:athlete).order(:lineup_slot)
   end
 
   def goal_minute(index, goal_count, salt)

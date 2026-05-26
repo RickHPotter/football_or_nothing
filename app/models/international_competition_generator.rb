@@ -46,17 +46,17 @@ class InternationalCompetitionGenerator
   end
 
   def national_team_for(country)
-    country.clubs.find_or_create_by!(name: "#{country.name} National Team") do |club|
-      club.short_name = country.code.first(3).upcase
-      club.reputation = country.reputation
-      club.founded_year = 1900
-      club.international = true
-      club.status = :active
-    end.tap do |club|
-      club.create_club_finance! unless club.club_finance
-      ensure_stadium(country, club)
-      ensure_squad(country, club)
+    club = country.clubs.find_or_create_by!(name: "#{country.name} National Team") do |record|
+      record.short_name = country.code.first(3).upcase
+      record.reputation = country.reputation
+      record.founded_year = 1900
+      record.international = true
+      record.status = :active
     end
+    club.create_club_finance! unless club.club_finance
+    ensure_stadium(country, club)
+    ensure_squad(country, club)
+    club
   end
 
   def ensure_stadium(country, club)

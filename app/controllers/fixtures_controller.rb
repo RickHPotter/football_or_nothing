@@ -9,21 +9,8 @@ class FixturesController < ApplicationController
                          swap_lineup_athletes update_lineup_role substitute]
 
   def show
-    @matchday_session = matchday_session_for(@fixture)
-    refresh_matchday_session
-    @matchday_fixtures = @matchday_session&.fixtures || []
-    @matchday_scorelines = @matchday_session ? MatchdayScoreboard.call(@matchday_session) : {}
-    @standings = @fixture.tournament_edition.standings
-    @events = @fixture.match_events.includes(:club, :athlete).order(:minute, :id)
-    @match_stats = @fixture.match_stats.includes(:club).index_by(&:club_id)
-    @next_fixture = @career.next_fixture if @fixture.completed?
-    @match_state = @fixture.match_state
-    @lineups = @fixture.lineups.includes(lineup_athletes: :athlete).for_fixture_order
-    @managed_lineup = @fixture.lineup_for(@club)
-    @home_lineup = @fixture.lineup_for(@fixture.home_club)
-    @away_lineup = @fixture.lineup_for(@fixture.away_club)
-    @home_history_fixtures = FixtureHistory.call(fixture: @fixture, club: @fixture.home_club)
-    @away_history_fixtures = FixtureHistory.call(fixture: @fixture, club: @fixture.away_club)
+    load_matchday_context
+    load_fixture_context
   end
 
   def simulate
@@ -187,6 +174,27 @@ class FixturesController < ApplicationController
   end
 
   private
+
+  def load_matchday_context
+    @matchday_session = matchday_session_for(@fixture)
+    refresh_matchday_session
+    @matchday_fixtures = @matchday_session&.fixtures || []
+    @matchday_scorelines = @matchday_session ? MatchdayScoreboard.call(@matchday_session) : {}
+  end
+
+  def load_fixture_context
+    @standings = @fixture.tournament_edition.standings
+    @events = @fixture.match_events.includes(:club, :athlete).order(:minute, :id)
+    @match_stats = @fixture.match_stats.includes(:club).index_by(&:club_id)
+    @next_fixture = @career.next_fixture if @fixture.completed?
+    @match_state = @fixture.match_state
+    @managed_lineup = @fixture.lineup_for(@club)
+    @manager_decisions = FixtureManagerDecisions.new(fixture: @fixture, club: @club, lineup: @managed_lineup, matchday_session: @matchday_session)
+    @home_lineup = @fixture.lineup_for(@fixture.home_club)
+    @away_lineup = @fixture.lineup_for(@fixture.away_club)
+    @home_history_fixtures = FixtureHistory.call(fixture: @fixture, club: @fixture.home_club)
+    @away_history_fixtures = FixtureHistory.call(fixture: @fixture, club: @fixture.away_club)
+  end
 
   def set_career
     @career = Current.user.careers.includes(manager: { current_manager_contract: :club }).find(params.expect(:career_id))

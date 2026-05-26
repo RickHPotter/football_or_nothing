@@ -45,6 +45,19 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".matchday-fixture-card", 2
     assert_select ".matchday-fixture-card.is-managed", 1
     assert_select ".matchday-fixture-card", text: /#{other_fixture.home_club.short_name}/
+    assert_select "input[type='submit'][value='Update tactics']", 0
+    assert_select ".empty-state", /Pause matchday to make decisions/
+  end
+
+  test "shows manager controls when matchday is paused on managed fixture" do
+    session = MatchdaySessionStarter.call(career: @career, fixture: @fixture)
+    MatchdayClock.start(session, now: Time.current)
+    MatchdayClock.pause(session, now: Time.current + 2.seconds)
+
+    get career_fixture_path(@career, @fixture)
+
+    assert_response :success
+    assert_select "input[type='submit'][value='Update tactics']"
   end
 
   test "focuses a simultaneous fixture outside manager club" do
@@ -57,6 +70,20 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to career_fixture_path(@career, other_fixture)
     assert session.reload.paused?
     assert_equal other_fixture, session.focused_fixture
+  end
+
+  test "keeps manager controls hidden on neutral focused fixture" do
+    other_fixture = create_simultaneous_fixture
+    session = MatchdaySessionStarter.call(career: @career, fixture: @fixture)
+    MatchdayClock.start(session, now: Time.current)
+    MatchdayClock.pause(session, now: Time.current + 2.seconds)
+    session.update!(focused_fixture: other_fixture)
+
+    get career_fixture_path(@career, other_fixture)
+
+    assert_response :success
+    assert_select "input[type='submit'][value='Update tactics']", 0
+    assert_select ".empty-state", /Manager decisions are only available for your club/
   end
 
   test "resumes a paused matchday" do

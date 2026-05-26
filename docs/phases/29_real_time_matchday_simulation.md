@@ -3,7 +3,7 @@ Phase 29 - Real-Time Matchday Simulation
 
 Status
 ------
-Slice 6 complete. Slice 7 is next.
+Slice 7 complete. Slice 8 is next.
 
 
 Goal
@@ -55,7 +55,7 @@ Planned Slices
 - Slice 6: live matchday screen listing all simultaneous fixtures and pausing on
   fixture selection. Implemented on the fixture show page.
 - Slice 7: paused fixture detail with manager controls only for the managed
-  fixture.
+  fixture. Implemented with `FixtureManagerDecisions`.
 - Slice 8: instant whole-matchday simulation flow.
 - Slice 9: standings movement snapshots and completed matchday result screen.
 - Slice 10: final polish, tests, and documentation audit.
@@ -123,6 +123,11 @@ Verified
   matchday, focuses that fixture, and redirects to its fixture page.
 - Fixtures outside the manager's club are accessible only when they belong to
   the active career matchday session.
+- Manager decision controls are hidden while a matchday is running.
+- Paused matchdays expose manager decision controls only on the manager's own
+  fixture.
+- Neutral focused fixtures stay read-only and explain that decisions are only
+  available for the manager's club.
 
 
 Frontend Target

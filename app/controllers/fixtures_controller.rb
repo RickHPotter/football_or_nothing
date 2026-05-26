@@ -18,8 +18,8 @@ class FixturesController < ApplicationController
     @managed_lineup = @fixture.lineup_for(@club)
     @home_lineup = @fixture.lineup_for(@fixture.home_club)
     @away_lineup = @fixture.lineup_for(@fixture.away_club)
-    @home_history_fixtures = history_fixtures_for(@fixture.home_club)
-    @away_history_fixtures = history_fixtures_for(@fixture.away_club)
+    @home_history_fixtures = FixtureHistory.call(fixture: @fixture, club: @fixture.home_club)
+    @away_history_fixtures = FixtureHistory.call(fixture: @fixture, club: @fixture.away_club)
     @matchday_session = matchday_session_for(@fixture)
   end
 
@@ -28,7 +28,7 @@ class FixturesController < ApplicationController
     @fixture.match_state&.full_time!
     @career.update!(current_date: @fixture.scheduled_on) if @career.current_date < @fixture.scheduled_on
 
-    redirect_to career_fixture_path(@career, @fixture), notice: "Match simulated."
+    redirect_to career_fixture_path(@career, @fixture)
   end
 
   def start
@@ -36,19 +36,19 @@ class FixturesController < ApplicationController
     @fixture.match_state.running!
     @career.update!(current_date: @fixture.scheduled_on) if @career.current_date < @fixture.scheduled_on
 
-    redirect_to career_fixture_path(@career, @fixture), notice: "Match clock started."
+    redirect_to career_fixture_path(@career, @fixture)
   end
 
   def pause
     @fixture.match_state.paused! if @fixture.match_state.running?
 
-    redirect_to career_fixture_path(@career, @fixture), notice: "Match paused."
+    redirect_to career_fixture_path(@career, @fixture)
   end
 
   def resume
     @fixture.match_state.running! if @fixture.match_state.paused?
 
-    redirect_to career_fixture_path(@career, @fixture), notice: "Match resumed."
+    redirect_to career_fixture_path(@career, @fixture)
   end
 
   def start_matchday
@@ -56,7 +56,7 @@ class FixturesController < ApplicationController
     MatchdayEventPlanner.call(session:)
     MatchdayClock.start(session)
 
-    redirect_to career_fixture_path(@career, @fixture), notice: "Matchday clock started."
+    redirect_to career_fixture_path(@career, @fixture)
   end
 
   def pause_matchday
@@ -66,7 +66,7 @@ class FixturesController < ApplicationController
     session.update!(focused_fixture: @fixture)
     MatchdayClock.pause(session)
 
-    redirect_to career_fixture_path(@career, @fixture), notice: "Matchday paused."
+    redirect_to career_fixture_path(@career, @fixture)
   end
 
   def resume_matchday
@@ -75,7 +75,7 @@ class FixturesController < ApplicationController
 
     MatchdayClock.resume(session)
 
-    redirect_to career_fixture_path(@career, @fixture), notice: "Matchday resumed."
+    redirect_to career_fixture_path(@career, @fixture)
   end
 
   def focus_matchday
@@ -85,7 +85,7 @@ class FixturesController < ApplicationController
     session.update!(focused_fixture: @fixture)
     MatchdayClock.pause(session)
 
-    redirect_to career_fixture_path(@career, @fixture), notice: "Fixture focused."
+    redirect_to career_fixture_path(@career, @fixture)
   end
 
   def advance_clock
@@ -100,11 +100,10 @@ class FixturesController < ApplicationController
     if next_minute == 90
       MatchSimulator.call(@fixture)
       @fixture.match_state.full_time!
-      redirect_to career_fixture_path(@career, @fixture), notice: "Full time."
     else
       AiSubstitutionPlanner.call(fixture: @fixture, club: opponent_club, minute: next_minute)
-      redirect_to career_fixture_path(@career, @fixture), notice: "Advanced to #{next_minute}'."
     end
+    redirect_to career_fixture_path(@career, @fixture)
   end
 
   def tactics
@@ -224,14 +223,6 @@ class FixturesController < ApplicationController
 
   def redirect_missing_matchday
     redirect_to career_fixture_path(@career, @fixture), alert: "Start the matchday clock first."
-  end
-
-  def history_fixtures_for(club)
-    Fixture
-      .where("home_club_id = :club_id OR away_club_id = :club_id", club_id: club.id)
-      .where.not(id: @fixture.id)
-      .order(:scheduled_on, :kickoff_minute, :round, :id)
-      .limit(8)
   end
 
   def increment_substitution_count!

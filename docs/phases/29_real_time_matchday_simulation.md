@@ -110,8 +110,11 @@ Verified
   controls, and away club.
 - Home and away columns render club identity, formation, and a History feed that
   can include completed and scheduled fixtures.
+- History feeds render a five-match context window: two previous fixtures, the
+  current fixture highlighted, and two next fixtures when available.
 - The center column renders score/status/actions, then Timeline for completed
   fixtures or Manager Decisions for scheduled fixtures, then numbered standings.
+- Standings highlight both clubs involved in the focused fixture.
 
 
 Frontend Target

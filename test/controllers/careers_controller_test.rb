@@ -178,6 +178,7 @@ class CareersControllerTest < ActionDispatch::IntegrationTest
     post advance_career_path(careers(:one))
 
     assert_redirected_to career_fixture_path(careers(:one), fixtures(:one))
+    assert_nil flash[:notice]
     assert_equal fixtures(:one).scheduled_on, careers(:one).reload.current_date
   end
 

@@ -8,6 +8,10 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     @career = careers(:one)
     manager_contracts(:one).update!(current: true, status: :active, role: :head_coach, end_date: nil)
     @fixture = fixtures(:one)
+    TournamentParticipation.find_or_create_by!(tournament_edition: @fixture.tournament_edition, club: @fixture.away_club).update!(
+      status: :active,
+      position: 2
+    )
   end
 
   test "show fixture involving current club" do
@@ -25,8 +29,32 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", "Standings"
     assert_select "h2", { text: "History", count: 2 }
     assert_select "th", "#"
+    assert_select "li.font-bold", { text: /#{@fixture.home_club.name} vs #{@fixture.away_club.name}/, count: 2 }
+    assert_select "tr.font-bold", 2
     assert_select "button", "Start Matchday Clock"
     assert_select "button", "Simulate Match"
+  end
+
+  test "show fixture history uses two past current and two next matches" do
+    create_history_fixture(home_club: @fixture.home_club, away_club: create_club("Home Past One"), scheduled_on: "2026-01-18", round: 1)
+    create_history_fixture(home_club: create_club("Home Past Two"), away_club: @fixture.home_club, scheduled_on: "2026-01-25", round: 2)
+    create_history_fixture(home_club: @fixture.home_club, away_club: create_club("Home Next One"), scheduled_on: "2026-02-08", round: 4)
+    create_history_fixture(home_club: create_club("Home Next Two"), away_club: @fixture.home_club, scheduled_on: "2026-02-15", round: 5)
+    create_history_fixture(home_club: @fixture.away_club, away_club: create_club("Away Past One"), scheduled_on: "2026-01-18", round: 1)
+    create_history_fixture(home_club: create_club("Away Past Two"), away_club: @fixture.away_club, scheduled_on: "2026-01-25", round: 2)
+    create_history_fixture(home_club: @fixture.away_club, away_club: create_club("Away Next One"), scheduled_on: "2026-02-08", round: 4)
+    create_history_fixture(home_club: create_club("Away Next Two"), away_club: @fixture.away_club, scheduled_on: "2026-02-15", round: 5)
+
+    get career_fixture_path(@career, @fixture)
+
+    assert_response :success
+    assert_select ".panel", text: /History/, count: 2
+    assert_select ".panel ol", count: 2 do |lists|
+      lists.each do |list|
+        assert_select list, "li", 5
+        assert_select list, "li.font-bold", 1
+      end
+    end
   end
 
   test "start pause and resume match clock" do
@@ -61,6 +89,7 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     post simulate_career_fixture_path(@career, @fixture)
 
     assert_redirected_to career_fixture_path(@career, @fixture)
+    assert_nil flash[:notice]
     assert @fixture.reload.completed?
     assert @fixture.match_events.any?
     assert_equal @fixture.scheduled_on, @career.reload.current_date
@@ -117,6 +146,26 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
       stadium:,
       scheduled_on: "2026-03-01",
       round: 2
+    )
+  end
+
+  def create_history_fixture(home_club:, away_club:, scheduled_on:, round:)
+    tournament_editions(:one).fixtures.create!(
+      home_club:,
+      away_club:,
+      stadium: @fixture.stadium,
+      scheduled_on:,
+      kickoff_minute: @fixture.kickoff_minute,
+      round:
+    )
+  end
+
+  def create_club(name)
+    countries(:one).clubs.create!(
+      name:,
+      short_name: name.split.map(&:first).join,
+      reputation: 1,
+      status: :active
     )
   end
 end

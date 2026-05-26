@@ -31,7 +31,7 @@ class CareersController < ApplicationController
       @career.update!(current_date: fixture.scheduled_on)
       apply_training(current_date, fixture.scheduled_on)
       process_scouting(fixture.scheduled_on)
-      redirect_to career_fixture_path(@career, fixture), notice: "Advanced to match day."
+      redirect_to career_fixture_path(@career, fixture)
     else
       redirect_to @career, alert: "No upcoming fixtures are scheduled."
     end

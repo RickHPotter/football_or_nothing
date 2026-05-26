@@ -9,6 +9,10 @@ class FixturesController < ApplicationController
                          swap_lineup_athletes update_lineup_role substitute]
 
   def show
+    @matchday_session = matchday_session_for(@fixture)
+    refresh_matchday_session
+    @matchday_fixtures = @matchday_session&.fixtures || []
+    @matchday_scorelines = @matchday_session ? MatchdayScoreboard.call(@matchday_session) : {}
     @standings = @fixture.tournament_edition.standings
     @events = @fixture.match_events.includes(:club, :athlete).order(:minute, :id)
     @match_stats = @fixture.match_stats.includes(:club).index_by(&:club_id)
@@ -20,7 +24,6 @@ class FixturesController < ApplicationController
     @away_lineup = @fixture.lineup_for(@fixture.away_club)
     @home_history_fixtures = FixtureHistory.call(fixture: @fixture, club: @fixture.home_club)
     @away_history_fixtures = FixtureHistory.call(fixture: @fixture, club: @fixture.away_club)
-    @matchday_session = matchday_session_for(@fixture)
   end
 
   def simulate
@@ -197,10 +200,15 @@ class FixturesController < ApplicationController
   def set_fixture
     @fixture = Fixture.includes(:home_club, :away_club, :stadium, :match_events,
                                 tournament_edition: [ :tournament, { tournament_participations: :club } ]).find(params.expect(:id))
-    raise ActiveRecord::RecordNotFound unless @fixture.involves?(@club)
+    return if @fixture.involves?(@club)
+    return if matchday_session_for(@fixture)&.includes_fixture?(@fixture)
+
+    raise ActiveRecord::RecordNotFound
   end
 
   def ensure_match_setup
+    return unless @fixture.involves?(@club)
+
     @fixture.ensure_match_setup! unless @fixture.completed?
   end
 
@@ -223,6 +231,13 @@ class FixturesController < ApplicationController
 
   def redirect_missing_matchday
     redirect_to career_fixture_path(@career, @fixture), alert: "Start the matchday clock first."
+  end
+
+  def refresh_matchday_session
+    return unless @matchday_session&.running?
+
+    MatchdayClock.refresh(@matchday_session)
+    LiveMatchEventApplier.call(session: @matchday_session)
   end
 
   def increment_substitution_count!

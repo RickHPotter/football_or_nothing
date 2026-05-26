@@ -3,7 +3,7 @@ Phase 29 - Real-Time Matchday Simulation
 
 Status
 ------
-Slice 5 complete and polished. Slice 6 is next.
+Slice 6 complete. Slice 7 is next.
 
 
 Goal
@@ -53,7 +53,7 @@ Planned Slices
 - Slice 5: pre-match fixture page remodel with three vertical match columns:
   home club, match controls, and away club. Implemented on the fixture show page.
 - Slice 6: live matchday screen listing all simultaneous fixtures and pausing on
-  fixture selection.
+  fixture selection. Implemented on the fixture show page.
 - Slice 7: paused fixture detail with manager controls only for the managed
   fixture.
 - Slice 8: instant whole-matchday simulation flow.
@@ -115,6 +115,14 @@ Verified
 - The center column renders score/status/actions, then Timeline for completed
   fixtures or Manager Decisions for scheduled fixtures, then numbered standings.
 - Standings highlight both clubs involved in the focused fixture.
+- Running and paused matchday sessions render a Live Matchday board above the
+  fixture detail.
+- The Live Matchday board lists every simultaneous fixture in the session,
+  highlights the manager's fixture, and highlights the focused fixture.
+- Clicking any simultaneous fixture routes through the server, pauses the
+  matchday, focuses that fixture, and redirects to its fixture page.
+- Fixtures outside the manager's club are accessible only when they belong to
+  the active career matchday session.
 
 
 Frontend Target

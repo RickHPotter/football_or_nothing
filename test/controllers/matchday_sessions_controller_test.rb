@@ -33,6 +33,32 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal @fixture, session.focused_fixture
   end
 
+  test "shows live matchday fixtures while session is running" do
+    other_fixture = create_simultaneous_fixture
+    session = MatchdaySessionStarter.call(career: @career, fixture: @fixture)
+    MatchdayClock.start(session, now: Time.current)
+
+    get career_fixture_path(@career, @fixture)
+
+    assert_response :success
+    assert_select "h2", "Live Matchday"
+    assert_select ".matchday-fixture-card", 2
+    assert_select ".matchday-fixture-card.is-managed", 1
+    assert_select ".matchday-fixture-card", text: /#{other_fixture.home_club.short_name}/
+  end
+
+  test "focuses a simultaneous fixture outside manager club" do
+    other_fixture = create_simultaneous_fixture
+    session = MatchdaySessionStarter.call(career: @career, fixture: @fixture)
+    MatchdayClock.start(session, now: Time.current)
+
+    patch focus_matchday_career_fixture_path(@career, other_fixture)
+
+    assert_redirected_to career_fixture_path(@career, other_fixture)
+    assert session.reload.paused?
+    assert_equal other_fixture, session.focused_fixture
+  end
+
   test "resumes a paused matchday" do
     session = MatchdaySessionStarter.call(career: @career, fixture: @fixture)
     MatchdayClock.start(session)
@@ -49,5 +75,40 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to career_fixture_path(@career, @fixture)
     assert_equal "Start the matchday clock first.", flash[:alert]
+  end
+
+  private
+
+  def create_simultaneous_fixture
+    home_club = create_club("Parallel Home", "PARH")
+    away_club = create_club("Parallel Away", "PARA")
+    tournament_editions(:one).fixtures.create!(
+      home_club:,
+      away_club:,
+      stadium: stadium_for(home_club),
+      scheduled_on: @fixture.scheduled_on,
+      kickoff_minute: @fixture.kickoff_minute,
+      round: @fixture.round
+    )
+  end
+
+  def create_club(name, short_name)
+    countries(:one).clubs.create!(
+      name:,
+      short_name:,
+      reputation: 1,
+      status: :active
+    )
+  end
+
+  def stadium_for(club)
+    club.stadiums.create!(
+      country: club.country,
+      name: "#{club.name} Ground",
+      city: "Brasilia",
+      capacity: 10_000,
+      pitch_quality: 10,
+      ownership: :club_owned
+    )
   end
 end

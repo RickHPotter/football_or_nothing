@@ -1,6 +1,41 @@
 <% lineup_options = @managed_lineup ? (@managed_lineup.starters + @managed_lineup.bench).map { |lineup_athlete| [ "#{lineup_athlete.lineup_slot_label} - #{lineup_athlete.athlete.first_name} #{lineup_athlete.athlete.last_name}", lineup_athlete.id ] } : [] %>
 <% middle_panel_title = @fixture.completed? ? "Timeline" : "Manager Decisions" %>
 
+<% if @matchday_session&.running? || @matchday_session&.paused? %>
+  <section class="panel matchday-live-panel">
+    <div class="panel-header">
+      <h2>Live Matchday</h2>
+      <span class="badge <%= @matchday_session.running? ? "badge-good" : "badge-warn" %>">
+        <%= @matchday_session.status.humanize %> · <%= @matchday_session.minute %>'
+      </span>
+    </div>
+    <div class="panel-body">
+      <div class="matchday-fixture-grid">
+        <% @matchday_fixtures.each do |fixture| %>
+          <% card_classes = [ "matchday-fixture-card" ] %>
+          <% card_classes << "is-managed" if fixture.involves?(@club) %>
+          <% card_classes << "is-focused" if fixture == @matchday_session.focused_fixture %>
+          <%= button_to focus_matchday_career_fixture_path(@career, fixture), method: :patch, class: card_classes.join(" ") do %>
+            <span class="matchday-fixture-team">
+              <% if fixture.home_club.crest.attached? %>
+                <%= image_tag fixture.home_club.crest, class: "club-crest-sm" %>
+              <% end %>
+              <%= fixture.home_club.short_name.presence || fixture.home_club.name %>
+            </span>
+            <span class="matchday-fixture-score"><%= @matchday_scorelines.fetch(fixture, fixture.scoreline) %></span>
+            <span class="matchday-fixture-team matchday-fixture-team-away">
+              <%= fixture.away_club.short_name.presence || fixture.away_club.name %>
+              <% if fixture.away_club.crest.attached? %>
+                <%= image_tag fixture.away_club.crest, class: "club-crest-sm" %>
+              <% end %>
+            </span>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </section>
+<% end %>
+
 <div class="fixture-three-column">
   <div class="fixture-stack">
     <section class="match-team-card">

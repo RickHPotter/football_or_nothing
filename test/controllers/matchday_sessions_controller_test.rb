@@ -86,6 +86,21 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".empty-state", /Manager decisions are only available for your club/
   end
 
+  test "finalizes running matchday when server clock reaches full time" do
+    session = MatchdaySessionStarter.call(career: @career, fixture: @fixture)
+    travel_to Time.zone.local(2026, 2, 1, 12, 0, 0) do
+      MatchdayClock.start(session, now: 30.seconds.ago)
+
+      get career_fixture_path(@career, @fixture)
+    end
+
+    assert_response :success
+    assert session.reload.completed?
+    assert @fixture.reload.completed?
+    assert @fixture.match_state.full_time?
+    assert session.matchday_standing_snapshots.where.not(position_after: nil).exists?
+  end
+
   test "resumes a paused matchday" do
     session = MatchdaySessionStarter.call(career: @career, fixture: @fixture)
     MatchdayClock.start(session)

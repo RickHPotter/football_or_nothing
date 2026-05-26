@@ -3,7 +3,7 @@ Phase 29 - Real-Time Matchday Simulation
 
 Status
 ------
-Slice 9 complete. Slice 10 is next.
+Slice 10 complete. Phase 29 is complete.
 
 
 Goal
@@ -60,7 +60,8 @@ Planned Slices
   `MatchdayInstantSimulator`.
 - Slice 9: standings movement snapshots and completed matchday result screen.
   Implemented with `MatchdayStandingSnapshot`.
-- Slice 10: final polish, tests, and documentation audit.
+- Slice 10: final polish, tests, and documentation audit. Implemented with
+  `MatchdaySessionFinalizer` wiring for live full-time completion.
 
 
 Main Objects
@@ -139,6 +140,10 @@ Verified
 - Completed matchday pages keep the fixture badge board visible so the user can
   switch between results.
 - Completed matchday standings render movement hints when snapshot data exists.
+- `MatchdaySessionFinalizer` runs the existing match/stat/standings pipeline
+  when a live server clock reaches full time.
+- Both instant simulation and live full-time completion now go through matchday
+  session finalization.
 
 
 Frontend Target
@@ -166,7 +171,7 @@ Implementation Notes
 --------------------
 - Avoid client-side authority for minute, score, events, or finalization.
 - Event generation should be deterministic and idempotent.
-- Finalization should update fixtures, match stats, athlete season stats,
-  standings, trophies, and news consistently with the current instant simulator.
-- The existing `MatchSimulator` can remain as a compatibility layer while the
-  matchday services are introduced.
+- Finalization currently uses `MatchSimulator` as the compatibility layer for
+  fixtures, match stats, athlete season stats, standings, trophies, and news.
+- Future work can replace the compatibility finalizer with a live-native
+  simulator that preserves every planned live event exactly.

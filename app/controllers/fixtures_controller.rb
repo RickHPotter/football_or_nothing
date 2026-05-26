@@ -245,6 +245,7 @@ class FixturesController < ApplicationController
 
     MatchdayClock.refresh(@matchday_session)
     LiveMatchEventApplier.call(session: @matchday_session)
+    MatchdaySessionFinalizer.call(session: @matchday_session, focused_fixture: @fixture)
   end
 
   def increment_substitution_count!

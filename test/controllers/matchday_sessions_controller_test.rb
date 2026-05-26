@@ -105,6 +105,28 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
     assert_not_equal "0-0", MatchdayScoreboard.call(session).fetch(@fixture)
   end
 
+  test "status endpoint advances clock and applies due live events" do
+    session = MatchdaySessionStarter.call(career: @career, fixture: @fixture)
+    MatchdayClock.start(session, now: Time.zone.local(2026, 2, 1, 12, 0, 0))
+    session.matchday_events.create!(
+      fixture: @fixture,
+      club: @fixture.home_club,
+      athlete: athletes(:one),
+      minute: 1,
+      event_type: :goal,
+      description: "Joao Pereira scored for Aurora FC."
+    )
+
+    travel_to Time.zone.local(2026, 2, 1, 12, 0, 5) do
+      get matchday_status_career_fixture_path(@career, @fixture)
+    end
+
+    assert_response :success
+    assert_operator response.parsed_body.fetch("minute"), :>, 1
+    assert_match(/\A\d+-\d+\z/, response.parsed_body.dig("fixtures", @fixture.id.to_s, "scoreline"))
+    assert @fixture.match_events.goal.exists?(minute: 1)
+  end
+
   test "resumes a paused matchday" do
     session = MatchdaySessionStarter.call(career: @career, fixture: @fixture)
     MatchdayClock.start(session)

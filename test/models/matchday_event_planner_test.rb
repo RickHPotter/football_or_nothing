@@ -9,13 +9,14 @@ class MatchdayEventPlannerTest < ActiveSupport::TestCase
     simultaneous_fixture = create_simultaneous_fixture(fixture)
     session = MatchdaySessionStarter.call(career: careers(:one), fixture:)
 
-    assert_difference "MatchdayEvent.count", 4 do
-      MatchdayEventPlanner.call(session:)
-    end
+    event_count = MatchdayEvent.count
+    MatchdayEventPlanner.call(session:)
 
     assert_equal 0, fixture.match_events.count
     assert_equal 0, simultaneous_fixture.match_events.count
+    assert_operator MatchdayEvent.count - event_count, :>=, 4
     assert_equal [ fixture.id, simultaneous_fixture.id ], session.matchday_events.distinct.order(:fixture_id).pluck(:fixture_id)
+    assert session.matchday_events.goal.exists?
   end
 
   test "does not duplicate planned events" do

@@ -5,16 +5,16 @@ class MatchSimulator
     new(...).call
   end
 
-  def initialize(fixture)
+  def initialize(fixture, preserve_events: false)
     @fixture = fixture
+    @preserve_events = preserve_events
   end
 
   def call
     return fixture if fixture.completed?
 
     Fixture.transaction do
-      fixture.match_events.destroy_all
-      create_match_texture_events
+      reset_events
       home_goals, away_goals = score
       fixture.match_stats.destroy_all
       fixture.update!(
@@ -22,8 +22,9 @@ class MatchSimulator
         away_goals:,
         status: :completed
       )
-      create_goal_events(fixture.home_club, home_goals, 11)
-      create_goal_events(fixture.away_club, away_goals, 47)
+      create_goal_events(fixture.home_club, home_goals, 11) unless preserve_events?
+      create_goal_events(fixture.away_club, away_goals, 47) unless preserve_events?
+      apply_availability_events
       update_athlete_stats(fixture.home_club)
       update_athlete_stats(fixture.away_club)
       create_match_stats!
@@ -40,13 +41,29 @@ class MatchSimulator
 
   attr_reader :fixture
 
+  def reset_events
+    return if preserve_events?
+
+    fixture.match_events.destroy_all
+    create_match_texture_events
+  end
+
   def score
+    return live_score if preserve_events?
+
     home_strength = team_strength(fixture.home_club)[:attack] + 2
     away_strength = team_strength(fixture.away_club)[:attack]
 
     [
       goals_for(home_strength, team_strength(fixture.away_club)[:defense], 17),
       goals_for(away_strength, team_strength(fixture.home_club)[:defense], 53)
+    ]
+  end
+
+  def live_score
+    [
+      fixture.match_events.goal.where(club: fixture.home_club).count,
+      fixture.match_events.goal.where(club: fixture.away_club).count
     ]
   end
 
@@ -126,7 +143,6 @@ class MatchSimulator
     create_injury_event(fixture.away_club, 227)
     create_substitution_event(fixture.home_club, 241)
     create_substitution_event(fixture.away_club, 257)
-    apply_availability_events
   end
 
   def create_match_stats!
@@ -325,6 +341,10 @@ class MatchSimulator
 
   def event_minute(salt, index, minimum, maximum)
     minimum + ((seeded_value(salt + index) + (index * 11)) % (maximum - minimum + 1))
+  end
+
+  def preserve_events?
+    @preserve_events
   end
 
   def participation_for(club)

@@ -9,12 +9,13 @@ class LiveMatchEventApplierTest < ActiveSupport::TestCase
     session = MatchdaySessionStarter.call(career: careers(:one), fixture:)
     MatchdayEventPlanner.call(session:)
     first_event = session.matchday_events.order(:minute).first
+    due_count = session.matchday_events.due(first_event.minute).count
 
-    assert_difference "MatchEvent.count", 1 do
+    assert_difference "MatchEvent.count", due_count do
       LiveMatchEventApplier.call(session:, minute: first_event.minute)
     end
 
-    assert first_event.reload.applied_at?
+    assert session.matchday_events.due(first_event.minute).empty?
     assert_no_difference "MatchEvent.count" do
       LiveMatchEventApplier.call(session:, minute: first_event.minute)
     end

@@ -2,11 +2,12 @@
 <% middle_panel_title = @fixture.completed? ? "Timeline" : "Manager Decisions" %>
 
 <% if @matchday_session&.running? || @matchday_session&.paused? || @matchday_session&.completed? %>
-  <section class="panel matchday-live-panel" <%= "data-controller=matchday-poll data-matchday-poll-interval-value=1000" if @matchday_session.running? %>>
+  <section class="panel matchday-live-panel" <%= "data-controller=matchday-poll data-matchday-poll-url-value=#{matchday_status_career_fixture_path(@career, @fixture)} data-matchday-poll-interval-value=250" if @matchday_session.running? %>>
     <div class="panel-header">
       <h2>Live Matchday</h2>
       <span class="badge <%= @matchday_session.running? ? "badge-good" : "badge-warn" %>">
-        <%= @matchday_session.status.humanize %> · <%= @matchday_session.minute %>'
+        <span data-matchday-poll-target="status"><%= @matchday_session.status.humanize %></span> ·
+        <span data-matchday-poll-target="minute"><%= @matchday_session.minute %></span>'
       </span>
     </div>
     <div class="panel-body">
@@ -22,7 +23,7 @@
               <% end %>
               <%= fixture.home_club.short_name.presence || fixture.home_club.name %>
             </span>
-            <span class="matchday-fixture-score"><%= @matchday_scorelines.fetch(fixture, fixture.scoreline) %></span>
+            <span class="matchday-fixture-score" data-fixture-score-id="<%= fixture.id %>"><%= @matchday_scorelines.fetch(fixture, fixture.scoreline) %></span>
             <span class="matchday-fixture-team matchday-fixture-team-away">
               <%= fixture.away_club.short_name.presence || fixture.away_club.name %>
               <% if fixture.away_club.crest.attached? %>

@@ -151,6 +151,12 @@ Verified
   dashboard.
 - Running matchday boards poll through Turbo/Stimulus so the page keeps asking
   the server for the authoritative minute, events, and finalization state.
+- Running matchday boards now poll a lightweight JSON status endpoint every
+  250ms instead of reloading the full page on every tick.
+- Planned matchday events include goals, so score changes are created during the
+  live clock instead of only at full time.
+- Full-time finalization preserves the live-created timeline and scores fixtures
+  from the visible goal events already applied by the live clock.
 
 
 Frontend Target

@@ -13,7 +13,9 @@ class MatchdayInstantSimulator
   def call
     session = MatchdaySessionStarter.call(career:, fixture:)
 
+    MatchdayEventPlanner.call(session:)
     complete_session!(session)
+    LiveMatchEventApplier.call(session:, minute: 90)
     MatchdaySessionFinalizer.call(session:, focused_fixture: fixture)
 
     session

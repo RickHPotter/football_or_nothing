@@ -24,6 +24,7 @@ Rails.application.routes.draw do
       patch :pause_matchday, on: :member
       patch :resume_matchday, on: :member
       patch :focus_matchday, on: :member
+      get :matchday_status, on: :member, to: "matchday_statuses#show"
       post :advance_clock, on: :member
       patch :tactics, on: :member
       post :regenerate_lineup, on: :member

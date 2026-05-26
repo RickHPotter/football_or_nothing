@@ -32,7 +32,7 @@ class MatchdaySessionFinalizer
   end
 
   def finalize_fixture(fixture)
-    MatchSimulator.call(fixture)
+    MatchSimulator.new(fixture, preserve_events: true).call
     fixture.match_state&.full_time!
   end
 

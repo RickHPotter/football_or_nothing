@@ -112,6 +112,7 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     assert simultaneous_fixture.reload.completed?
     assert @fixture.match_state.full_time?
     assert simultaneous_fixture.match_state.full_time?
+    assert_not_equal "0-0", @fixture.scoreline
     session = MatchdaySession.find_by!(
       career: @career,
       tournament_edition: @fixture.tournament_edition,

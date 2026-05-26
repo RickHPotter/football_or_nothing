@@ -15,11 +15,13 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", /#{@fixture.home_club.name}/
-    assert_select "h2", "Lineups"
+    assert_select "h2", "Home Formation"
+    assert_select "h2", "Away Formation"
     assert_select "h2", "Manager Decisions"
     assert_select "h2", "Timeline"
     assert_select "h2", "Standings"
-    assert_select "button", "Simulate match"
+    assert_select "button", "Start Matchday Clock"
+    assert_select "button", "Simulate Match"
   end
 
   test "start pause and resume match clock" do

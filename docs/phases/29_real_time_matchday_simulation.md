@@ -3,7 +3,7 @@ Phase 29 - Real-Time Matchday Simulation
 
 Status
 ------
-Slice 4 complete. Slice 5 is next.
+Slice 5 complete. Slice 6 is next.
 
 
 Goal
@@ -51,7 +51,7 @@ Planned Slices
 - Slice 4: routes/controllers for start, pause, resume, and focused fixture
   selection. Implemented with fixture member endpoints.
 - Slice 5: pre-match fixture page remodel with a stronger hero and two
-  three-column tactical/context blocks.
+  three-column tactical/context blocks. Implemented on the fixture show page.
 - Slice 6: live matchday screen listing all simultaneous fixtures and pausing on
   fixture selection.
 - Slice 7: paused fixture detail with manager controls only for the managed
@@ -106,6 +106,12 @@ Verified
 - Fixture routes can start a matchday session for a selected fixture.
 - Starting a matchday session also plans hidden matchday events.
 - Fixture routes can pause, resume, and focus the current matchday session.
+- Fixture show now renders a stronger match hero with home/away clubs, score
+  state, matchday clock controls, and instant simulation.
+- Fixture show now renders the first three-column block as home formation,
+  manager decisions, and away formation.
+- Fixture show now renders the second three-column block as home recent form,
+  standings, and away recent form.
 
 
 Frontend Target

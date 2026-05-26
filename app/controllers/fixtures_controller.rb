@@ -16,6 +16,11 @@ class FixturesController < ApplicationController
     @match_state = @fixture.match_state
     @lineups = @fixture.lineups.includes(lineup_athletes: :athlete).for_fixture_order
     @managed_lineup = @fixture.lineup_for(@club)
+    @home_lineup = @fixture.lineup_for(@fixture.home_club)
+    @away_lineup = @fixture.lineup_for(@fixture.away_club)
+    @home_recent_fixtures = recent_fixtures_for(@fixture.home_club)
+    @away_recent_fixtures = recent_fixtures_for(@fixture.away_club)
+    @matchday_session = matchday_session_for(@fixture)
   end
 
   def simulate
@@ -219,6 +224,14 @@ class FixturesController < ApplicationController
 
   def redirect_missing_matchday
     redirect_to career_fixture_path(@career, @fixture), alert: "Start the matchday clock first."
+  end
+
+  def recent_fixtures_for(club)
+    Fixture
+      .where("home_club_id = :club_id OR away_club_id = :club_id", club_id: club.id)
+      .where.not(id: @fixture.id)
+      .order(scheduled_on: :desc, kickoff_minute: :desc, id: :desc)
+      .limit(5)
   end
 
   def increment_substitution_count!

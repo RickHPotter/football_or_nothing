@@ -234,4 +234,44 @@
   .formation-slot {
     @apply mx-auto mb-1 flex h-6 w-8 items-center justify-center border border-result-300 bg-board-900 text-xs font-black text-result-300;
   }
+
+  .match-hero {
+    @apply grid gap-3 border border-console-700 border-l-4 border-l-result-300 bg-board-700 p-3 shadow-line lg:grid-cols-[1fr_1.35fr_1fr];
+  }
+
+  .match-team-card {
+    @apply flex min-h-32 items-center gap-3 border border-board-200 bg-board-900 p-3 text-board-50 shadow-line;
+  }
+
+  .match-team-card-away {
+    @apply justify-end text-right;
+  }
+
+  .match-team-name {
+    @apply text-xl font-black uppercase leading-tight;
+  }
+
+  .match-team-meta {
+    @apply mt-1 text-xs font-black uppercase text-result-300;
+  }
+
+  .match-score-card {
+    @apply flex min-h-32 flex-col items-center justify-center border border-result-300 bg-board-900 p-3 text-center text-board-50 shadow-line;
+  }
+
+  .match-score-card h1 {
+    @apply text-2xl text-board-50;
+  }
+
+  .match-scoreline {
+    @apply my-2 text-5xl font-black uppercase text-result-300;
+  }
+
+  .match-score-card p {
+    @apply text-xs font-black uppercase text-board-100;
+  }
+
+  .matchday-triple {
+    @apply grid min-h-0 gap-3 lg:grid-cols-3;
+  }
 }

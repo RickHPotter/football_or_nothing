@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_26_002000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_26_003000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -369,6 +369,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_002000) do
     t.index ["fixture_id"], name: "index_match_stats_on_fixture_id"
   end
 
+  create_table "matchday_events", force: :cascade do |t|
+    t.datetime "applied_at"
+    t.bigint "athlete_id", null: false
+    t.bigint "club_id", null: false
+    t.datetime "created_at", null: false
+    t.string "description", null: false
+    t.integer "event_type", null: false
+    t.bigint "fixture_id", null: false
+    t.bigint "matchday_session_id", null: false
+    t.integer "minute", null: false
+    t.datetime "updated_at", null: false
+    t.index ["athlete_id"], name: "index_matchday_events_on_athlete_id"
+    t.index ["club_id"], name: "index_matchday_events_on_club_id"
+    t.index ["fixture_id"], name: "index_matchday_events_on_fixture_id"
+    t.index ["matchday_session_id", "fixture_id", "minute", "id"], name: "index_matchday_events_on_session_fixture_minute"
+    t.index ["matchday_session_id"], name: "index_matchday_events_on_matchday_session_id"
+  end
+
   create_table "matchday_sessions", force: :cascade do |t|
     t.bigint "career_id", null: false
     t.datetime "created_at", null: false
@@ -683,6 +701,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_002000) do
   add_foreign_key "match_states", "fixtures"
   add_foreign_key "match_stats", "clubs"
   add_foreign_key "match_stats", "fixtures"
+  add_foreign_key "matchday_events", "athletes"
+  add_foreign_key "matchday_events", "clubs"
+  add_foreign_key "matchday_events", "fixtures"
+  add_foreign_key "matchday_events", "matchday_sessions"
   add_foreign_key "matchday_sessions", "careers"
   add_foreign_key "matchday_sessions", "fixtures", column: "focused_fixture_id"
   add_foreign_key "matchday_sessions", "tournament_editions"

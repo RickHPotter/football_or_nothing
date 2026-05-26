@@ -3,7 +3,7 @@ Phase 29 - Real-Time Matchday Simulation
 
 Status
 ------
-Slice 2 complete. Slice 3 is next.
+Slice 3 complete. Slice 4 is next.
 
 
 Goal
@@ -46,7 +46,8 @@ Planned Slices
   Implemented with `MatchdaySession` and `MatchdaySessionStarter`.
 - Slice 2: server-authoritative clock calculation with start, pause, resume,
   half, and full-time state. Implemented with `MatchdayClock`.
-- Slice 3: deterministic live event planning and due-event application.
+- Slice 3: deterministic live event planning and due-event application. Implemented
+  with `MatchdayEvent`, `MatchdayEventPlanner`, and `LiveMatchEventApplier`.
 - Slice 4: routes/controllers for start, pause, resume, and focused fixture
   selection.
 - Slice 5: pre-match fixture page remodel with a stronger hero and two
@@ -94,6 +95,14 @@ Verified
 - Pausing stores elapsed seconds and freezes the session.
 - Resuming continues from stored elapsed seconds.
 - Full time is reached when elapsed seconds meet the configured duration.
+- `MatchdayEvent` stores planned hidden events separately from visible
+  `MatchEvent` records.
+- `MatchdayEventPlanner` creates deterministic planned events for every fixture
+  in a session.
+- `LiveMatchEventApplier` creates visible `MatchEvent` records only when planned
+  events are due.
+- Applied planned events are marked with `applied_at` so polling cannot create
+  duplicate timeline events.
 
 
 Frontend Target

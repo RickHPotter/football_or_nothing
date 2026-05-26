@@ -14,7 +14,11 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     get career_fixture_path(@career, @fixture)
 
     assert_response :success
-    assert_select "h1", /#{@fixture.home_club.name}/
+    assert_select ".match-team-name", @fixture.home_club.name
+    assert_select ".match-team-name", @fixture.away_club.name
+    assert_select ".match-score-card h1", false
+    assert_select ".match-status-badge", @fixture.status.humanize
+    assert_select ".match-score-card .badge", false
     assert_select "h2", "Home Formation"
     assert_select "h2", "Away Formation"
     assert_select "h2", "Manager Decisions"

@@ -78,7 +78,9 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     get career_fixture_path(@career, @fixture)
 
     assert_response :success
-    assert_select "h2", { text: "Timeline", count: 0 }
+    assert_select "h2", "Timeline"
+    assert_select "h2", { text: "Manager Decisions", count: 0 }
+    assert_select "li", /Joao Pereira scored/
     assert_select "button", "Advance to next match"
   end
 

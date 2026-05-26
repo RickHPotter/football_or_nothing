@@ -1,4 +1,5 @@
 <% lineup_options = @managed_lineup ? (@managed_lineup.starters + @managed_lineup.bench).map { |lineup_athlete| [ "#{lineup_athlete.lineup_slot_label} - #{lineup_athlete.athlete.first_name} #{lineup_athlete.athlete.last_name}", lineup_athlete.id ] } : [] %>
+<% middle_panel_title = @fixture.completed? ? "Timeline" : "Manager Decisions" %>
 
 <section class="match-hero">
   <div class="match-team-card">
@@ -45,7 +46,7 @@
 </section>
 
 <div class="matchday-triple matchday-tactics-grid">
-  <% [ [ "Home Formation", @home_lineup ], [ "Manager Decisions", @managed_lineup ], [ "Away Formation", @away_lineup ] ].each do |title, lineup| %>
+  <% [ [ "Home Formation", @home_lineup ], [ middle_panel_title, @managed_lineup ], [ "Away Formation", @away_lineup ] ].each do |title, lineup| %>
     <section class="panel">
       <div class="panel-header">
         <h2><%= title %></h2>
@@ -54,7 +55,26 @@
         <% end %>
       </div>
       <div class="panel-body">
-        <% if title == "Manager Decisions" && !@fixture.completed? %>
+        <% if title == "Timeline" %>
+          <% if @events.any? %>
+            <ol class="grid gap-2">
+              <% @events.each do |event| %>
+                <% event_badge_class = case event.event_type
+                                       when "goal" then "badge-good"
+                                       when "yellow_card", "red_card", "injury" then "badge-warn"
+                                       else ""
+                                       end %>
+                <li>
+                  <span class="badge <%= event_badge_class %>"><%= event.minute %>'</span>
+                  <span class="badge"><%= event.event_type.humanize %></span>
+                  <%= event.description %>
+                </li>
+              <% end %>
+            </ol>
+          <% else %>
+            <p class="empty-state">No match events recorded.</p>
+          <% end %>
+        <% elsif title == "Manager Decisions" && !@fixture.completed? %>
           <%= form_with model: @managed_lineup, url: tactics_career_fixture_path(@career, @fixture), method: :patch, class: "form-stack" do |form| %>
             <div>
               <%= form.label :formation %>

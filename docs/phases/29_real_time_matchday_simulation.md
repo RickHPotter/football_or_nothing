@@ -3,7 +3,7 @@ Phase 29 - Real-Time Matchday Simulation
 
 Status
 ------
-Slice 3 complete. Slice 4 is next.
+Slice 4 complete. Slice 5 is next.
 
 
 Goal
@@ -49,7 +49,7 @@ Planned Slices
 - Slice 3: deterministic live event planning and due-event application. Implemented
   with `MatchdayEvent`, `MatchdayEventPlanner`, and `LiveMatchEventApplier`.
 - Slice 4: routes/controllers for start, pause, resume, and focused fixture
-  selection.
+  selection. Implemented with fixture member endpoints.
 - Slice 5: pre-match fixture page remodel with a stronger hero and two
   three-column tactical/context blocks.
 - Slice 6: live matchday screen listing all simultaneous fixtures and pausing on
@@ -103,6 +103,9 @@ Verified
   events are due.
 - Applied planned events are marked with `applied_at` so polling cannot create
   duplicate timeline events.
+- Fixture routes can start a matchday session for a selected fixture.
+- Starting a matchday session also plans hidden matchday events.
+- Fixture routes can pause, resume, and focus the current matchday session.
 
 
 Frontend Target

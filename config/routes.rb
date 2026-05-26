@@ -20,6 +20,10 @@ Rails.application.routes.draw do
       post :start, on: :member
       post :pause, on: :member
       post :resume, on: :member
+      post :start_matchday, on: :member
+      patch :pause_matchday, on: :member
+      patch :resume_matchday, on: :member
+      patch :focus_matchday, on: :member
       post :advance_clock, on: :member
       patch :tactics, on: :member
       post :regenerate_lineup, on: :member

@@ -5,7 +5,8 @@ class FixturesController < ApplicationController
   before_action :set_club
   before_action :set_fixture
   before_action :ensure_match_setup,
-                only: %i[show simulate start pause resume advance_clock tactics regenerate_lineup swap_lineup_athletes update_lineup_role substitute]
+                only: %i[show simulate start pause resume start_matchday pause_matchday resume_matchday focus_matchday advance_clock tactics regenerate_lineup
+                         swap_lineup_athletes update_lineup_role substitute]
 
   def show
     @standings = @fixture.tournament_edition.standings
@@ -43,6 +44,43 @@ class FixturesController < ApplicationController
     @fixture.match_state.running! if @fixture.match_state.paused?
 
     redirect_to career_fixture_path(@career, @fixture), notice: "Match resumed."
+  end
+
+  def start_matchday
+    session = MatchdaySessionStarter.call(career: @career, fixture: @fixture)
+    MatchdayEventPlanner.call(session:)
+    MatchdayClock.start(session)
+
+    redirect_to career_fixture_path(@career, @fixture), notice: "Matchday clock started."
+  end
+
+  def pause_matchday
+    session = matchday_session_for(@fixture)
+    return redirect_missing_matchday unless session
+
+    session.update!(focused_fixture: @fixture)
+    MatchdayClock.pause(session)
+
+    redirect_to career_fixture_path(@career, @fixture), notice: "Matchday paused."
+  end
+
+  def resume_matchday
+    session = matchday_session_for(@fixture)
+    return redirect_missing_matchday unless session
+
+    MatchdayClock.resume(session)
+
+    redirect_to career_fixture_path(@career, @fixture), notice: "Matchday resumed."
+  end
+
+  def focus_matchday
+    session = matchday_session_for(@fixture)
+    return redirect_missing_matchday unless session
+
+    session.update!(focused_fixture: @fixture)
+    MatchdayClock.pause(session)
+
+    redirect_to career_fixture_path(@career, @fixture), notice: "Fixture focused."
   end
 
   def advance_clock
@@ -168,6 +206,19 @@ class FixturesController < ApplicationController
 
   def opponent_club
     @opponent_club ||= @fixture.home_club_id == @club.id ? @fixture.away_club : @fixture.home_club
+  end
+
+  def matchday_session_for(fixture)
+    MatchdaySession.find_by(
+      career: @career,
+      tournament_edition: fixture.tournament_edition,
+      scheduled_on: fixture.scheduled_on,
+      round: fixture.round
+    )
+  end
+
+  def redirect_missing_matchday
+    redirect_to career_fixture_path(@career, @fixture), alert: "Start the matchday clock first."
   end
 
   def increment_substitution_count!

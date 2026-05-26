@@ -1,8 +1,6 @@
 <% lineup_options = @managed_lineup ? (@managed_lineup.starters + @managed_lineup.bench).map { |lineup_athlete| [ "#{lineup_athlete.lineup_slot_label} - #{lineup_athlete.athlete.first_name} #{lineup_athlete.athlete.last_name}", lineup_athlete.id ] } : [] %>
 
 <section class="match-hero">
-  <span class="match-status-badge badge <%= @fixture.completed? ? "badge-good" : "badge-warn" %>"><%= @fixture.status.humanize %></span>
-
   <div class="match-team-card">
     <% if @fixture.home_club.crest.attached? %>
       <%= image_tag @fixture.home_club.crest, class: "club-crest-lg" %>
@@ -14,6 +12,7 @@
   </div>
 
   <div class="match-score-card">
+    <span class="match-status-badge badge <%= @fixture.completed? ? "badge-good" : "badge-warn" %>"><%= @fixture.status.humanize %></span>
     <div class="match-scoreline"><%= @fixture.scoreline %></div>
     <p><%= @fixture.tournament_edition.name %> · Round <%= @fixture.round %></p>
     <p><%= @fixture.scheduled_on %> · <%= @fixture.stadium.name %></p>
@@ -183,31 +182,5 @@
     </section>
   <% end %>
 </div>
-
-<section class="panel">
-  <div class="panel-header">
-    <h2>Timeline</h2>
-  </div>
-  <div class="panel-body">
-    <% if @events.any? %>
-      <ol class="grid gap-2">
-        <% @events.each do |event| %>
-          <% event_badge_class = case event.event_type
-                                 when "goal" then "badge-good"
-                                 when "yellow_card", "red_card", "injury" then "badge-warn"
-                                 else ""
-                                 end %>
-          <li>
-            <span class="badge <%= event_badge_class %>"><%= event.minute %>'</span>
-            <span class="badge"><%= event.event_type.humanize %></span>
-            <%= event.description %>
-          </li>
-        <% end %>
-      </ol>
-    <% else %>
-      <p class="empty-state">No match events yet.</p>
-    <% end %>
-  </div>
-</section>
 
 <%= link_to "Back to club", career_club_path(@career), class: "btn btn-secondary" %>

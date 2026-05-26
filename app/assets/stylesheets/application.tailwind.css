@@ -236,7 +236,7 @@
   }
 
   .match-hero {
-    @apply relative grid gap-3 border border-console-700 border-l-4 border-l-result-300 bg-board-700 p-3 pr-24 shadow-line lg:grid-cols-[1fr_0.9fr_1fr];
+    @apply grid gap-3 border border-console-700 border-l-4 border-l-result-300 bg-board-700 p-3 shadow-line lg:grid-cols-[1fr_0.9fr_1fr];
   }
 
   .match-team-card {
@@ -256,7 +256,7 @@
   }
 
   .match-score-card {
-    @apply flex min-h-24 min-w-0 flex-col items-center justify-center border border-result-300 bg-board-900 p-3 text-center text-board-50 shadow-line;
+    @apply relative flex min-h-24 min-w-0 flex-col items-center justify-center border border-result-300 bg-board-900 p-3 pt-8 text-center text-board-50 shadow-line;
   }
 
   .match-score-card h1 {
@@ -272,7 +272,7 @@
   }
 
   .matchday-triple {
-    @apply grid min-h-0 gap-3 lg:grid-cols-3;
+    @apply clear-both grid gap-3 lg:grid-cols-3;
   }
 
   .matchday-tactics-grid {
@@ -280,10 +280,10 @@
   }
 
   .matchday-tactics-grid .panel {
-    @apply min-h-0 overflow-hidden;
+    @apply min-h-0;
   }
 
   .match-status-badge {
-    @apply absolute right-3 top-3 z-10;
+    @apply absolute right-2 top-2 z-10;
   }
 }

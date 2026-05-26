@@ -18,11 +18,10 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     assert_select ".match-team-name", @fixture.away_club.name
     assert_select ".match-score-card h1", false
     assert_select ".match-status-badge", @fixture.status.humanize
-    assert_select ".match-score-card .badge", false
     assert_select "h2", "Home Formation"
     assert_select "h2", "Away Formation"
     assert_select "h2", "Manager Decisions"
-    assert_select "h2", "Timeline"
+    assert_select "h2", { text: "Timeline", count: 0 }
     assert_select "h2", "Standings"
     assert_select "button", "Start Matchday Clock"
     assert_select "button", "Simulate Match"
@@ -79,7 +78,7 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     get career_fixture_path(@career, @fixture)
 
     assert_response :success
-    assert_select "li", /Joao Pereira scored/
+    assert_select "h2", { text: "Timeline", count: 0 }
     assert_select "button", "Advance to next match"
   end
 

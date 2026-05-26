@@ -52,7 +52,7 @@ class FixturesController < ApplicationController
     return redirect_missing_matchday unless session
 
     session.update!(focused_fixture: @fixture)
-    MatchdayClock.pause(session)
+    MatchdayClock.pause(session) if session.running?
 
     redirect_to career_fixture_path(@career, @fixture)
   end
@@ -178,6 +178,7 @@ class FixturesController < ApplicationController
     refresh_matchday_session
     @matchday_fixtures = @matchday_session&.fixtures || []
     @matchday_scorelines = @matchday_session ? MatchdayScoreboard.call(@matchday_session) : {}
+    @standing_movements = MatchdayStandingMovement.call(@matchday_session)
   end
 
   def load_fixture_context

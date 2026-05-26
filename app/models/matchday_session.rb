@@ -8,6 +8,7 @@ class MatchdaySession < ApplicationRecord
   belongs_to :tournament_edition
   belongs_to :focused_fixture, class_name: "Fixture", optional: true
   has_many :matchday_events, dependent: :destroy
+  has_many :matchday_standing_snapshots, dependent: :destroy
 
   validates :scheduled_on, :round, presence: true
   validates :minute, numericality: { only_integer: true, in: 0..90 }

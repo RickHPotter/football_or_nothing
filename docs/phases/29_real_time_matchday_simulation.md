@@ -3,7 +3,7 @@ Phase 29 - Real-Time Matchday Simulation
 
 Status
 ------
-Slice 8 complete. Slice 9 is next.
+Slice 9 complete. Slice 10 is next.
 
 
 Goal
@@ -59,6 +59,7 @@ Planned Slices
 - Slice 8: instant whole-matchday simulation flow. Implemented with
   `MatchdayInstantSimulator`.
 - Slice 9: standings movement snapshots and completed matchday result screen.
+  Implemented with `MatchdayStandingSnapshot`.
 - Slice 10: final polish, tests, and documentation audit.
 
 
@@ -133,6 +134,11 @@ Verified
   group, not only the selected fixture.
 - Instant simulation creates/reuses a matchday session, marks each fixture's
   match state full time, completes the session, and advances the career date.
+- Matchday standings snapshots record before/after positions for each
+  participation in the matchday competition.
+- Completed matchday pages keep the fixture badge board visible so the user can
+  switch between results.
+- Completed matchday standings render movement hints when snapshot data exists.
 
 
 Frontend Target

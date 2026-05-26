@@ -1,7 +1,7 @@
 <% lineup_options = @managed_lineup ? (@managed_lineup.starters + @managed_lineup.bench).map { |lineup_athlete| [ "#{lineup_athlete.lineup_slot_label} - #{lineup_athlete.athlete.first_name} #{lineup_athlete.athlete.last_name}", lineup_athlete.id ] } : [] %>
 <% middle_panel_title = @fixture.completed? ? "Timeline" : "Manager Decisions" %>
 
-<% if @matchday_session&.running? || @matchday_session&.paused? %>
+<% if @matchday_session&.running? || @matchday_session&.paused? || @matchday_session&.completed? %>
   <section class="panel matchday-live-panel">
     <div class="panel-header">
       <h2>Live Matchday</h2>
@@ -224,6 +224,9 @@
                 <th>Pts</th>
                 <th>P</th>
                 <th>GD</th>
+                <% if @standing_movements.any? %>
+                  <th>Move</th>
+                <% end %>
               </tr>
             </thead>
             <tbody>
@@ -234,6 +237,10 @@
                   <td><strong><%= participation.points %></strong></td>
                   <td><%= participation.played %></td>
                   <td><%= participation.goal_difference %></td>
+                  <% if @standing_movements.any? %>
+                    <% movement = @standing_movements.fetch(participation.club_id, 0) %>
+                    <td><%= movement.positive? ? "+#{movement}" : movement %></td>
+                  <% end %>
                 </tr>
               <% end %>
             </tbody>

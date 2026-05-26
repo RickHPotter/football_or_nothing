@@ -112,8 +112,21 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     assert simultaneous_fixture.reload.completed?
     assert @fixture.match_state.full_time?
     assert simultaneous_fixture.match_state.full_time?
-    assert MatchdaySession.find_by!(career: @career, tournament_edition: @fixture.tournament_edition, scheduled_on: @fixture.scheduled_on,
-                                    round: @fixture.round).completed?
+    session = MatchdaySession.find_by!(
+      career: @career,
+      tournament_edition: @fixture.tournament_edition,
+      scheduled_on: @fixture.scheduled_on,
+      round: @fixture.round
+    )
+    assert session.completed?
+    assert_equal 2, session.matchday_standing_snapshots.count
+
+    get career_fixture_path(@career, @fixture)
+
+    assert_response :success
+    assert_select "h2", "Live Matchday"
+    assert_select ".matchday-fixture-card", 2
+    assert_select "th", "Move"
   end
 
   test "show completed fixture links next match" do

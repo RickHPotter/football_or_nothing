@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_26_003000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_26_230847) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -408,6 +408,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_003000) do
     t.index ["tournament_edition_id"], name: "index_matchday_sessions_on_tournament_edition_id"
   end
 
+  create_table "matchday_standing_snapshots", force: :cascade do |t|
+    t.bigint "club_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "matchday_session_id", null: false
+    t.integer "position_after"
+    t.integer "position_before"
+    t.bigint "tournament_participation_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_id"], name: "index_matchday_standing_snapshots_on_club_id"
+    t.index ["matchday_session_id", "tournament_participation_id"], name: "index_matchday_standing_snapshots_on_session_participation", unique: true
+    t.index ["matchday_session_id"], name: "index_matchday_standing_snapshots_on_matchday_session_id"
+    t.index ["tournament_participation_id"], name: "idx_on_tournament_participation_id_1ac872dda9"
+  end
+
   create_table "news_items", force: :cascade do |t|
     t.bigint "athlete_id"
     t.text "body"
@@ -708,6 +722,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_003000) do
   add_foreign_key "matchday_sessions", "careers"
   add_foreign_key "matchday_sessions", "fixtures", column: "focused_fixture_id"
   add_foreign_key "matchday_sessions", "tournament_editions"
+  add_foreign_key "matchday_standing_snapshots", "clubs"
+  add_foreign_key "matchday_standing_snapshots", "matchday_sessions"
+  add_foreign_key "matchday_standing_snapshots", "tournament_participations"
   add_foreign_key "news_items", "athletes"
   add_foreign_key "news_items", "careers"
   add_foreign_key "news_items", "clubs"

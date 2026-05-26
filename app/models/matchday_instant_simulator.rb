@@ -13,7 +13,9 @@ class MatchdayInstantSimulator
   def call
     session = MatchdaySessionStarter.call(career:, fixture:)
 
+    MatchdayStandingSnapshotRecorder.call(session:, stage: :before)
     session.fixtures.each { |matchday_fixture| simulate_fixture(matchday_fixture) }
+    MatchdayStandingSnapshotRecorder.call(session:, stage: :after)
     finish_session!(session)
     advance_career!
 

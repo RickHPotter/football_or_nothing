@@ -3,7 +3,7 @@ Phase 29 - Real-Time Matchday Simulation
 
 Status
 ------
-Slice 5 complete. Slice 6 is next.
+Slice 5 complete and polished. Slice 6 is next.
 
 
 Goal
@@ -50,8 +50,8 @@ Planned Slices
   with `MatchdayEvent`, `MatchdayEventPlanner`, and `LiveMatchEventApplier`.
 - Slice 4: routes/controllers for start, pause, resume, and focused fixture
   selection. Implemented with fixture member endpoints.
-- Slice 5: pre-match fixture page remodel with a stronger hero and two
-  three-column tactical/context blocks. Implemented on the fixture show page.
+- Slice 5: pre-match fixture page remodel with three vertical match columns:
+  home club, match controls, and away club. Implemented on the fixture show page.
 - Slice 6: live matchday screen listing all simultaneous fixtures and pausing on
   fixture selection.
 - Slice 7: paused fixture detail with manager controls only for the managed
@@ -106,22 +106,21 @@ Verified
 - Fixture routes can start a matchday session for a selected fixture.
 - Starting a matchday session also plans hidden matchday events.
 - Fixture routes can pause, resume, and focus the current matchday session.
-- Fixture show now renders a stronger match hero with home/away clubs, score
-  state, matchday clock controls, and instant simulation.
-- Fixture show now renders the first three-column block as home formation,
-  manager decisions, and away formation.
-- Fixture show now renders the second three-column block as home recent form,
-  standings, and away recent form.
+- Fixture show now renders three vertical match columns: home club, center match
+  controls, and away club.
+- Home and away columns render club identity, formation, and a History feed that
+  can include completed and scheduled fixtures.
+- The center column renders score/status/actions, then Timeline for completed
+  fixtures or Manager Decisions for scheduled fixtures, then numbered standings.
 
 
 Frontend Target
 ---------------
 Before kickoff:
-- Top hero with home and away crests, score/versus state, competition details,
-  stadium/date, and the start/simulate controls.
-- First three-column block: home formation, manager decisions, away formation.
-- Second three-column block: home recent matches, standings, away recent
-  matches.
+- Three columns: home club identity, center score/actions, away club identity.
+- Home and away columns include formation and History below the identity block.
+- Center column includes manager decisions and numbered standings below the
+  score/action block.
 
 Live mode:
 - All simultaneous fixtures render together.

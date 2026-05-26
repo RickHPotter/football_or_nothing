@@ -23,6 +23,8 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", "Manager Decisions"
     assert_select "h2", { text: "Timeline", count: 0 }
     assert_select "h2", "Standings"
+    assert_select "h2", { text: "History", count: 2 }
+    assert_select "th", "#"
     assert_select "button", "Start Matchday Clock"
     assert_select "button", "Simulate Match"
   end

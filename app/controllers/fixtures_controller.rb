@@ -18,8 +18,8 @@ class FixturesController < ApplicationController
     @managed_lineup = @fixture.lineup_for(@club)
     @home_lineup = @fixture.lineup_for(@fixture.home_club)
     @away_lineup = @fixture.lineup_for(@fixture.away_club)
-    @home_recent_fixtures = recent_fixtures_for(@fixture.home_club)
-    @away_recent_fixtures = recent_fixtures_for(@fixture.away_club)
+    @home_history_fixtures = history_fixtures_for(@fixture.home_club)
+    @away_history_fixtures = history_fixtures_for(@fixture.away_club)
     @matchday_session = matchday_session_for(@fixture)
   end
 
@@ -226,12 +226,12 @@ class FixturesController < ApplicationController
     redirect_to career_fixture_path(@career, @fixture), alert: "Start the matchday clock first."
   end
 
-  def recent_fixtures_for(club)
+  def history_fixtures_for(club)
     Fixture
       .where("home_club_id = :club_id OR away_club_id = :club_id", club_id: club.id)
       .where.not(id: @fixture.id)
-      .order(scheduled_on: :desc, kickoff_minute: :desc, id: :desc)
-      .limit(5)
+      .order(:scheduled_on, :kickoff_minute, :round, :id)
+      .limit(8)
   end
 
   def increment_substitution_count!

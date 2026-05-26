@@ -12,6 +12,15 @@ class MatchStrengthCalculator
     "balanced" => 0.0,
     "attacking" => -1.0
   }.freeze
+  POSITION_FALLBACKS = {
+    "center_back" => %w[full_back defensive_midfielder],
+    "full_back" => %w[center_back defensive_midfielder winger],
+    "defensive_midfielder" => %w[center_back central_midfielder],
+    "central_midfielder" => %w[defensive_midfielder attacking_midfielder],
+    "attacking_midfielder" => %w[central_midfielder winger striker],
+    "winger" => %w[attacking_midfielder full_back striker],
+    "striker" => %w[winger attacking_midfielder]
+  }.freeze
 
   def self.call(...)
     new(...).call
@@ -40,6 +49,7 @@ class MatchStrengthCalculator
       club.reputation +
       mentality_attack +
       condition_modifier -
+      position_fit_penalty -
       dismissal_penalty -
       injury_penalty +
       substitution_bonus
@@ -50,6 +60,7 @@ class MatchStrengthCalculator
       club.reputation +
       mentality_defense +
       condition_modifier -
+      position_fit_penalty -
       dismissal_penalty -
       injury_penalty +
       substitution_bonus
@@ -58,6 +69,8 @@ class MatchStrengthCalculator
   def control_strength
     attribute_average(%i[passing first_touch teamwork work_rate decisions]) +
       mentality_attack.fdiv(2) +
+      condition_modifier -
+      position_fit_penalty +
       substitution_bonus
   end
 
@@ -78,7 +91,7 @@ class MatchStrengthCalculator
   def athletes_in_match
     @athletes_in_match ||= begin
       fixture.ensure_match_setup!
-      lineup_starters.presence ||
+      lineup_starters.map(&:athlete).presence ||
         club.current_athletes.order(position: :asc, current_ability: :desc, id: :asc).limit(11).to_a
     end
   end
@@ -109,7 +122,24 @@ class MatchStrengthCalculator
   def lineup_starters
     return [] unless lineup
 
-    lineup.lineup_athletes.starters.includes(:athlete).order(:lineup_slot).map(&:athlete)
+    @lineup_starters ||= lineup.lineup_athletes.starters.includes(:athlete).order(:lineup_slot).to_a
+  end
+
+  def position_fit_penalty
+    return 0 if lineup_starters.empty?
+
+    penalties = lineup_starters.sum { |lineup_athlete| position_fit_penalty_for(lineup_athlete) }
+    penalties.fdiv(lineup_starters.length) * 2
+  end
+
+  def position_fit_penalty_for(lineup_athlete)
+    athlete_position = lineup_athlete.athlete.position
+    slot_position = lineup_athlete.position
+    return 0 if athlete_position == slot_position
+    return 3.0 if athlete_position == "goalkeeper" || slot_position == "goalkeeper"
+    return 0.6 if POSITION_FALLBACKS.fetch(slot_position, []).include?(athlete_position)
+
+    1.4
   end
 
   def mentality_attack

@@ -3,7 +3,9 @@ Phase 28 - Squad Lineups and Substitutions
 
 Status
 ------
-Implemented at first lineup-generation depth.
+In progress. Core lineup generation, pre-match controls, substitution guards,
+slot persistence, and manual swaps are implemented. Simulation impact is being
+expanded through position-fit penalties.
 
 
 Goal
@@ -16,10 +18,26 @@ Main Files
 ----------
 - `app/models/lineup_template.rb`
 - `app/models/lineup_builder.rb`
+- `app/models/lineup_swapper.rb`
+- `app/models/match_strength_calculator.rb`
 - `app/models/fixture.rb`
 - `app/controllers/fixtures_controller.rb`
 - `test/models/fixture_match_setup_test.rb`
+- `test/models/lineup_swapper_test.rb`
+- `test/models/match_strength_calculator_test.rb`
 - `test/controllers/fixtures_controller_test.rb`
+- `test/controllers/fixture_lineup_controls_test.rb`
+
+
+Completed Slices
+----------------
+- Slice 1: realistic generated lineups and balanced benches.
+- Slice 2: fixture lineup controls for formation selection, regeneration, and
+  corrected substitution eligibility.
+- Slice 3: persisted lineup slot keys for formation-aware UI and future pitch
+  layout work.
+- Slice 4: manual pre-kickoff lineup swaps that preserve formation slots.
+- Slice 5: position-fit penalties in match strength calculation.
 
 
 Implemented
@@ -43,6 +61,9 @@ Implemented
 - Managers can manually swap selected lineup athletes before kickoff.
 - Manual swaps preserve the selected formation slot instead of changing the
   formation.
+- Match strength now penalizes athletes used outside their natural position.
+- Goalkeeper/outfield mismatches receive the strongest position-fit penalty.
+- Adjacent role coverage receives only a light penalty.
 - Substituted-off players cannot re-enter as unused bench players.
 - Substituted-on players remain eligible to be substituted off later.
 - Invalid substitution attempts redirect with a clear alert.
@@ -74,11 +95,11 @@ Covered by fixture setup and fixture controller tests:
   slot keys
 - manual lineup swaps move players between slots before kickoff
 - manual lineup swaps are blocked after kickoff
+- awkward position usage lowers attack, defense, and control strength
 
 
 Deferred
 --------
 - Formation-specific visual layout.
 - AI substitution planner during live clock advancement.
-- Position-fit penalties in match strength calculation.
 - Tactical role depth beyond the current standard role.

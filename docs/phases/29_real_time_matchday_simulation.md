@@ -3,7 +3,7 @@ Phase 29 - Real-Time Matchday Simulation
 
 Status
 ------
-Slice 7 complete. Slice 8 is next.
+Slice 8 complete. Slice 9 is next.
 
 
 Goal
@@ -56,7 +56,8 @@ Planned Slices
   fixture selection. Implemented on the fixture show page.
 - Slice 7: paused fixture detail with manager controls only for the managed
   fixture. Implemented with `FixtureManagerDecisions`.
-- Slice 8: instant whole-matchday simulation flow.
+- Slice 8: instant whole-matchday simulation flow. Implemented with
+  `MatchdayInstantSimulator`.
 - Slice 9: standings movement snapshots and completed matchday result screen.
 - Slice 10: final polish, tests, and documentation audit.
 
@@ -128,6 +129,10 @@ Verified
   fixture.
 - Neutral focused fixtures stay read-only and explain that decisions are only
   available for the manager's club.
+- `Simulate Match` now simulates every fixture in the simultaneous matchday
+  group, not only the selected fixture.
+- Instant simulation creates/reuses a matchday session, marks each fixture's
+  match state full time, completes the session, and advances the career date.
 
 
 Frontend Target

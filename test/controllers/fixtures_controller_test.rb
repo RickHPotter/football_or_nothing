@@ -95,6 +95,27 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     assert_equal @fixture.scheduled_on, @career.reload.current_date
   end
 
+  test "simulate completes the whole simultaneous matchday" do
+    simultaneous_fixture = tournament_editions(:one).fixtures.create!(
+      home_club: @fixture.away_club,
+      away_club: @fixture.home_club,
+      stadium: stadiums(:two),
+      scheduled_on: @fixture.scheduled_on,
+      kickoff_minute: @fixture.kickoff_minute,
+      round: @fixture.round
+    )
+
+    post simulate_career_fixture_path(@career, @fixture)
+
+    assert_redirected_to career_fixture_path(@career, @fixture)
+    assert @fixture.reload.completed?
+    assert simultaneous_fixture.reload.completed?
+    assert @fixture.match_state.full_time?
+    assert simultaneous_fixture.match_state.full_time?
+    assert MatchdaySession.find_by!(career: @career, tournament_edition: @fixture.tournament_edition, scheduled_on: @fixture.scheduled_on,
+                                    round: @fixture.round).completed?
+  end
+
   test "show completed fixture links next match" do
     @fixture.update!(status: :completed, home_goals: 1, away_goals: 0)
     @fixture.match_events.create!(

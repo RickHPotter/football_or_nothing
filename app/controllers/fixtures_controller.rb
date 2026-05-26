@@ -14,9 +14,7 @@ class FixturesController < ApplicationController
   end
 
   def simulate
-    MatchSimulator.call(@fixture)
-    @fixture.match_state&.full_time!
-    @career.update!(current_date: @fixture.scheduled_on) if @career.current_date < @fixture.scheduled_on
+    MatchdayInstantSimulator.call(career: @career, fixture: @fixture)
 
     redirect_to career_fixture_path(@career, @fixture)
   end

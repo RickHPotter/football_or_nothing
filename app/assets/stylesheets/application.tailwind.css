@@ -45,7 +45,7 @@
   }
 
   th {
-    @apply sticky top-0 z-10 border-b border-board-200 bg-board-100 px-2 py-2 text-left text-xs font-bold uppercase text-board-700;
+    @apply border-b border-board-200 bg-board-100 px-2 py-2 text-left text-xs font-bold uppercase text-board-700;
   }
 
   td {
@@ -101,7 +101,7 @@
   }
 
   .game-grid {
-    @apply grid min-h-0 gap-3 lg:grid-cols-12;
+    @apply relative z-0 grid min-h-0 gap-3 lg:grid-cols-12;
   }
 
   .game-main {
@@ -113,7 +113,7 @@
   }
 
   .panel {
-    @apply min-w-0 border border-board-200 bg-white shadow-line;
+    @apply relative z-0 min-w-0 border border-board-200 bg-white shadow-line;
   }
 
   .panel-header {
@@ -126,6 +126,10 @@
 
   .table-wrap {
     @apply max-h-[58vh] overflow-auto border border-board-200 bg-white;
+  }
+
+  .table-wrap th {
+    @apply sticky top-0 z-10;
   }
 
   .stat-grid {

@@ -5,8 +5,7 @@ class PasswordsController < ApplicationController
   before_action :set_user_by_token, only: %i[edit update]
   rate_limit to: 10, within: 3.minutes, only: :create, with: -> { redirect_to new_password_path, alert: "Try again later." }
 
-  def new
-  end
+  def new; end
 
   def create
     if (user = User.find_by(email_address: params[:email_address]))
@@ -16,8 +15,7 @@ class PasswordsController < ApplicationController
     redirect_to new_session_path, notice: "Password reset instructions sent (if user with that email address exists)."
   end
 
-  def edit
-  end
+  def edit; end
 
   def update
     if @user.update(params.permit(:password, :password_confirmation))

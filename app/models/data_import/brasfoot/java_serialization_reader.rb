@@ -219,11 +219,11 @@ module DataImport
       end
 
       def object_field?(type)
-        type == "L" || type == "["
+        [ "L", "[" ].include?(type)
       end
 
       def write_method?(descriptor)
-        (descriptor.flags & SC_WRITE_METHOD) == SC_WRITE_METHOD
+        descriptor.flags.allbits?(SC_WRITE_METHOD)
       end
 
       def peek_u1

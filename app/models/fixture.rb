@@ -53,22 +53,7 @@ class Fixture < ApplicationRecord
     end
     return if lineup.lineup_athletes.exists?
 
-    athletes_for_lineup(club).each_with_index do |athlete, index|
-      lineup.lineup_athletes.create!(
-        athlete:,
-        position: athlete.position,
-        tactical_role: :standard,
-        lineup_slot: index + 1,
-        starter: index < 11
-      )
-    end
-  end
-
-  def athletes_for_lineup(club)
-    athletes = club.current_athletes.order(position: :asc, current_ability: :desc, id: :asc).to_a
-    athletes = club.athletes.order(position: :asc, current_ability: :desc, id: :asc).to_a if athletes.empty?
-    available_athletes = athletes.select { |athlete| athlete.available_on?(scheduled_on) }
-    (available_athletes.presence || athletes).first(18)
+    LineupBuilder.call(lineup:, date: scheduled_on)
   end
 
   def clubs_must_differ

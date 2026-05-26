@@ -127,7 +127,7 @@ class CareersController < ApplicationController
   end
 
   def club_divisions_for(clubs, selected_division)
-    return clubs.each_with_object({}) { |club, divisions| divisions[club.id] = selected_division } if selected_division
+    return clubs.to_h { |club| [ club.id, selected_division ] } if selected_division
 
     {}
   end

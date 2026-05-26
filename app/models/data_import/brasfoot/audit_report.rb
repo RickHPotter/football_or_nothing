@@ -144,20 +144,20 @@ module DataImport
       def clubs_missing_asset(asset_name)
         @clubs_missing_asset ||= {}
         @clubs_missing_asset[asset_name] ||= begin
-        attached_ids = ActiveStorage::Attachment.where(
-          record_type: "Club",
-          record_id: clubs.select(:id),
-          name: asset_name
-        ).select(:record_id)
+          attached_ids = ActiveStorage::Attachment.where(
+            record_type: "Club",
+            record_id: clubs.select(:id),
+            name: asset_name
+          ).select(:record_id)
 
-        clubs.where.not(id: attached_ids)
+          clubs.where.not(id: attached_ids)
         end
       end
 
       def athletes_without_current_contracts
         @athletes_without_current_contracts ||= athletes
-          .left_outer_joins(:current_athlete_contract)
-          .where(athlete_contracts: { id: nil })
+                                                .left_outer_joins(:current_athlete_contract)
+                                                .where(athlete_contracts: { id: nil })
       end
 
       def tournaments_without_editions
@@ -222,42 +222,40 @@ module DataImport
 
       def duplicate_club_name_rows
         @duplicate_club_name_rows ||= clubs
-          .select(:country_id, :name)
-          .group(:country_id, :name)
-          .having("COUNT(*) > 1")
-          .count(:id)
+                                      .select(:country_id, :name)
+                                      .group(:country_id, :name)
+                                      .having("COUNT(*) > 1")
+                                      .count(:id)
       end
 
       def duplicate_stadium_name_rows
         @duplicate_stadium_name_rows ||= Stadium
-          .where(club_id: clubs.select(:id))
-          .select(:country_id, :name)
-          .group(:country_id, :name)
-          .having("COUNT(*) > 1")
-          .count(:id)
+                                         .where(club_id: clubs.select(:id))
+                                         .select(:country_id, :name)
+                                         .group(:country_id, :name)
+                                         .having("COUNT(*) > 1")
+                                         .count(:id)
       end
 
       def suspicious_fixture_count_rows
-        @suspicious_fixture_count_rows ||= begin
-        editions
-          .includes(:tournament)
-          .limit(nil)
-          .filter_map do |edition|
-            club_count = edition.tournament_participations.count
-            next if club_count < 2
+        @suspicious_fixture_count_rows ||= editions
+                                           .includes(:tournament)
+                                           .limit(nil)
+                                           .filter_map do |edition|
+                                             club_count = edition.tournament_participations.count
+                                             next if club_count < 2
 
-            expected_fixture_count = club_count * (club_count - 1)
-            actual_fixture_count = edition.fixtures.count
-            next if actual_fixture_count == expected_fixture_count
+                                             expected_fixture_count = club_count * (club_count - 1)
+                                             actual_fixture_count = edition.fixtures.count
+                                             next if actual_fixture_count == expected_fixture_count
 
-            {
-              edition: edition.name,
-              clubs: club_count,
-              fixtures: actual_fixture_count,
-              expected_fixtures: expected_fixture_count
-            }
-          end
-        end
+                                             {
+                                               edition: edition.name,
+                                               clubs: club_count,
+                                               fixtures: actual_fixture_count,
+                                               expected_fixtures: expected_fixture_count
+                                             }
+                                           end
       end
     end
   end

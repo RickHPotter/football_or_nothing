@@ -39,12 +39,14 @@ Implemented Phase Documents
 - `25_brasfoot_pack_import.md`
 - `26_import_audit_data_normalization.md`
 - `27_gameplay_bridge_frontend_exposure.md`
+- `28_squad_lineups_substitutions.md`
 - `phase_status_audit.md`
 
 
 Current Continuation Point
 --------------------------
-Phases 1 through 27 are implemented at first-playable depth.
+Phases 1 through 28 are implemented at first-playable depth.
 
-The next implementation target should be chosen from Phase 27 deferred items,
-import cleanup from the Phase 26 audit report, or the next planning pass.
+The next implementation target should be chosen from Phase 28 deferred lineup
+depth, Phase 27 browsing depth, import cleanup from the Phase 26 audit report,
+or the next planning pass.

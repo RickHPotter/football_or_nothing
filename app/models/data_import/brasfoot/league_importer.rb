@@ -7,24 +7,24 @@ module DataImport
       DEFAULT_SEASON_YEAR = 2026
       DEFAULT_STARTS_ON = Date.new(2026, 5, 1)
       CONFIG_COUNTRIES = PackImporter::COUNTRIES_BY_SUFFIX.merge(
-        "afg" => [ "Afghanistan", "AFG" ],
+        "afg" => %w[Afghanistan AFG],
         "afs" => [ "South Africa", "ZAF" ],
         "ars" => [ "Saudi Arabia", "KSA" ],
-        "aus" => [ "Australia", "AUS" ],
-        "aze" => [ "Azerbaijan", "AZE" ],
-        "bul" => [ "Bulgaria", "BUL" ],
-        "cat" => [ "Qatar", "QAT" ],
+        "aus" => %w[Australia AUS],
+        "aze" => %w[Azerbaijan AZE],
+        "bul" => %w[Bulgaria BUL],
+        "cat" => %w[Qatar QAT],
         "crs" => [ "Costa Rica", "CRC" ],
-        "din" => [ "Denmark", "DEN" ],
+        "din" => %w[Denmark DEN],
         "emi" => [ "United Arab Emirates", "UAE" ],
-        "equ" => [ "Ecuador", "ECU" ],
-        "hun" => [ "Hungary", "HUN" ],
-        "mal" => [ "Malaysia", "MAS" ],
-        "mar" => [ "Morocco", "MAR" ],
+        "equ" => %w[Ecuador ECU],
+        "hun" => %w[Hungary HUN],
+        "mal" => %w[Malaysia MAS],
+        "mar" => %w[Morocco MAR],
         "rtc" => [ "Czech Republic", "CZE" ],
-        "ser" => [ "Serbia", "SRB" ],
-        "tai" => [ "Thailand", "THA" ],
-        "ucr" => [ "Ukraine", "UKR" ]
+        "ser" => %w[Serbia SRB],
+        "tai" => %w[Thailand THA],
+        "ucr" => %w[Ukraine UKR]
       ).freeze
 
       def self.call(...)
@@ -47,8 +47,8 @@ module DataImport
           import_run.complete!(records_processed: imported_record_count(imported_editions))
           imported_editions
         end
-      rescue StandardError => error
-        import_run.fail!(notes: error.message) if import_run&.persisted? && import_run.running?
+      rescue StandardError => e
+        import_run.fail!(notes: e.message) if import_run&.persisted? && import_run.running?
         raise
       end
 
@@ -133,8 +133,8 @@ module DataImport
       end
 
       def country_identity
-        return [ "Brazil", "BRA" ] if config.kind == :state
-        return [ "Brazil", "BRA" ] if config.divisions.first&.raw_fields&.fetch("pais", nil) == PackImporter::BRAZIL_COUNTRY_ID
+        return %w[Brazil BRA] if config.kind == :state
+        return %w[Brazil BRA] if config.divisions.first&.raw_fields&.fetch("pais", nil) == PackImporter::BRAZIL_COUNTRY_ID
 
         CONFIG_COUNTRIES.fetch(config.name.downcase, [ config.name, config.name ])
       end

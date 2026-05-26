@@ -23,19 +23,19 @@ module DataImport
 
     test "imports club athlete and contract relationships" do
       CountriesImporter.call(source: "fixture", rows: [
-        { external_id: "cty", name: "Importia", code: "IMP", reputation: 7 }
-      ])
+                               { external_id: "cty", name: "Importia", code: "IMP", reputation: 7 }
+                             ])
       ClubsImporter.call(source: "fixture", rows: [
-        { external_id: "club", country_external_id: "cty", name: "Importia FC", short_name: "IFC", reputation: 8 }
-      ])
+                           { external_id: "club", country_external_id: "cty", name: "Importia FC", short_name: "IFC", reputation: 8 }
+                         ])
       AthletesImporter.call(source: "fixture", rows: [
-        { external_id: "athlete", country_external_id: "cty", first_name: "Import", last_name: "Player", position: "striker", current_ability: 9, potential_ability: 12 }
-      ])
+                              { external_id: "athlete", country_external_id: "cty", first_name: "Import", last_name: "Player", position: "striker", current_ability: 9, potential_ability: 12 }
+                            ])
 
       assert_difference "AthleteContract.count", 1 do
         ContractsImporter.call(source: "fixture", rows: [
-          { external_id: "contract", athlete_external_id: "athlete", club_external_id: "club", start_date: Date.new(2026, 1, 1), wage: 100 }
-        ])
+                                 { external_id: "contract", athlete_external_id: "athlete", club_external_id: "club", start_date: Date.new(2026, 1, 1), wage: 100 }
+                               ])
       end
 
       athlete = Athlete.find_by!(external_source: "fixture", external_id: "athlete")

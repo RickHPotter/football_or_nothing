@@ -9,60 +9,60 @@ module DataImport
       DEFAULT_START_DATE = Date.new(2026, 1, 1)
 
       COUNTRIES_BY_SUFFIX = {
-        "ale" => [ "Germany", "GER" ],
-        "arg" => [ "Argentina", "ARG" ],
-        "aut" => [ "Austria", "AUT" ],
-        "bel" => [ "Belgium", "BEL" ],
-        "bra" => [ "Brazil", "BRA" ],
-        "br" => [ "Brazil", "BRA" ],
-        "ce" => [ "Brazil", "BRA" ],
-        "cg" => [ "Brazil", "BRA" ],
-        "go" => [ "Brazil", "BRA" ],
-        "ma" => [ "Brazil", "BRA" ],
-        "mg" => [ "Brazil", "BRA" ],
-        "mt" => [ "Brazil", "BRA" ],
-        "pa" => [ "Brazil", "BRA" ],
-        "pb" => [ "Brazil", "BRA" ],
-        "pe" => [ "Brazil", "BRA" ],
-        "pr" => [ "Brazil", "BRA" ],
-        "rj" => [ "Brazil", "BRA" ],
-        "rn" => [ "Brazil", "BRA" ],
-        "rs" => [ "Brazil", "BRA" ],
-        "sc" => [ "Brazil", "BRA" ],
-        "se" => [ "Brazil", "BRA" ],
-        "sp" => [ "Brazil", "BRA" ],
-        "bol" => [ "Bolivia", "BOL" ],
-        "chi" => [ "Chile", "CHI" ],
-        "chn" => [ "China", "CHN" ],
-        "col" => [ "Colombia", "COL" ],
-        "cro" => [ "Croatia", "CRO" ],
-        "den" => [ "Denmark", "DEN" ],
-        "egi" => [ "Egypt", "EGY" ],
-        "eng" => [ "England", "ENG" ],
-        "ing" => [ "England", "ENG" ],
-        "esc" => [ "Scotland", "SCO" ],
-        "esp" => [ "Spain", "ESP" ],
+        "ale" => %w[Germany GER],
+        "arg" => %w[Argentina ARG],
+        "aut" => %w[Austria AUT],
+        "bel" => %w[Belgium BEL],
+        "bra" => %w[Brazil BRA],
+        "br" => %w[Brazil BRA],
+        "ce" => %w[Brazil BRA],
+        "cg" => %w[Brazil BRA],
+        "go" => %w[Brazil BRA],
+        "ma" => %w[Brazil BRA],
+        "mg" => %w[Brazil BRA],
+        "mt" => %w[Brazil BRA],
+        "pa" => %w[Brazil BRA],
+        "pb" => %w[Brazil BRA],
+        "pe" => %w[Brazil BRA],
+        "pr" => %w[Brazil BRA],
+        "rj" => %w[Brazil BRA],
+        "rn" => %w[Brazil BRA],
+        "rs" => %w[Brazil BRA],
+        "sc" => %w[Brazil BRA],
+        "se" => %w[Brazil BRA],
+        "sp" => %w[Brazil BRA],
+        "bol" => %w[Bolivia BOL],
+        "chi" => %w[Chile CHI],
+        "chn" => %w[China CHN],
+        "col" => %w[Colombia COL],
+        "cro" => %w[Croatia CRO],
+        "den" => %w[Denmark DEN],
+        "egi" => %w[Egypt EGY],
+        "eng" => %w[England ENG],
+        "ing" => %w[England ENG],
+        "esc" => %w[Scotland SCO],
+        "esp" => %w[Spain ESP],
         "eua" => [ "United States", "USA" ],
-        "fr" => [ "France", "FRA" ],
-        "fra" => [ "France", "FRA" ],
-        "gre" => [ "Greece", "GRE" ],
-        "hol" => [ "Netherlands", "NED" ],
-        "ita" => [ "Italy", "ITA" ],
-        "it" => [ "Italy", "ITA" ],
-        "jap" => [ "Japan", "JPN" ],
-        "mex" => [ "Mexico", "MEX" ],
-        "nor" => [ "Norway", "NOR" ],
-        "par" => [ "Paraguay", "PAR" ],
-        "per" => [ "Peru", "PER" ],
-        "por" => [ "Portugal", "POR" ],
-        "pt" => [ "Portugal", "POR" ],
-        "rus" => [ "Russia", "RUS" ],
-        "srb" => [ "Serbia", "SRB" ],
-        "sue" => [ "Sweden", "SWE" ],
-        "sui" => [ "Switzerland", "SUI" ],
-        "tur" => [ "Turkey", "TUR" ],
-        "uru" => [ "Uruguay", "URU" ],
-        "ven" => [ "Venezuela", "VEN" ]
+        "fr" => %w[France FRA],
+        "fra" => %w[France FRA],
+        "gre" => %w[Greece GRE],
+        "hol" => %w[Netherlands NED],
+        "ita" => %w[Italy ITA],
+        "it" => %w[Italy ITA],
+        "jap" => %w[Japan JPN],
+        "mex" => %w[Mexico MEX],
+        "nor" => %w[Norway NOR],
+        "par" => %w[Paraguay PAR],
+        "per" => %w[Peru PER],
+        "por" => %w[Portugal POR],
+        "pt" => %w[Portugal POR],
+        "rus" => %w[Russia RUS],
+        "srb" => %w[Serbia SRB],
+        "sue" => %w[Sweden SWE],
+        "sui" => %w[Switzerland SUI],
+        "tur" => %w[Turkey TUR],
+        "uru" => %w[Uruguay URU],
+        "ven" => %w[Venezuela VEN]
       }.freeze
 
       BRAZIL_STATE_SUFFIXES = %w[
@@ -99,10 +99,10 @@ module DataImport
           import_run
           files.each { |file| import_file(file) }
           import_run.complete!(records_processed: imported_records_count)
-          import_run.update!(notes: "Skipped files: #{skipped_files.join(", ")}") if skipped_files.any?
+          import_run.update!(notes: "Skipped files: #{skipped_files.join(', ')}") if skipped_files.any?
         end
-      rescue StandardError => error
-        import_run.fail!(notes: error.message) if import_run&.persisted? && import_run.running?
+      rescue StandardError => e
+        import_run.fail!(notes: e.message) if import_run&.persisted? && import_run.running?
         raise
       end
 
@@ -132,8 +132,8 @@ module DataImport
         end
 
         import_team(TeamFileParser.call(file))
-      rescue ArgumentError => error
-        skipped_files << "#{file.basename}: #{error.message}"
+      rescue ArgumentError => e
+        skipped_files << "#{file.basename}: #{e.message}"
       end
 
       def import_team(team)

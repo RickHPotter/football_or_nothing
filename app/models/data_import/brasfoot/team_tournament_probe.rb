@@ -59,8 +59,7 @@ module DataImport
       def national_config_code_for(external_id)
         return "BRA" if team_country_id == PackImporter::BRAZIL_COUNTRY_ID
 
-        suffix = country_suffix_from_external_id(external_id)
-        suffix
+        country_suffix_from_external_id(external_id)
       end
 
       def candidate_national_division(team)

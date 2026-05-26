@@ -14,7 +14,7 @@ class InternationalCompetitionGeneratorTest < ActiveSupport::TestCase
     assert edition.tournament.international?
     assert edition.clubs.all?(&:international?)
     assert edition.fixtures.any?
-    assert edition.clubs.all? { |club| club.current_athletes.count >= 18 }
+    assert(edition.clubs.all? { |club| club.current_athletes.count >= 18 })
   end
 
   test "is idempotent for the same season" do

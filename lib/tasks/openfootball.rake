@@ -33,7 +33,7 @@ namespace :openfootball do
   task master: :environment do
     importer = MasterImporter.new(
       seasons: env_list("OPENFOOTBALL_SEASONS", [ "2023-24" ]),
-      years: env_list("OPENFOOTBALL_YEARS", [ "2024", "2022" ]).map(&:to_i),
+      years: env_list("OPENFOOTBALL_YEARS", %w[2024 2022]).map(&:to_i),
       datasets: env_list("OPENFOOTBALL_DATASETS", %w[football_json worldcup_json england champions_league south_america]),
       strict: ActiveModel::Type::Boolean.new.cast(ENV.fetch("OPENFOOTBALL_STRICT", false))
     )
@@ -41,7 +41,7 @@ namespace :openfootball do
   end
 
   desc "Import one OpenFootball JSON URL. Args: url,country_name,country_code,source,competition_name,short_name,season_year"
-  task :url, [ :url, :country_name, :country_code, :source, :competition_name, :short_name, :season_year ] => :environment do |_task, args|
+  task :url, %i[url country_name country_code source competition_name short_name season_year] => :environment do |_task, args|
     required_arg!(args, :url)
     required_arg!(args, :country_name)
     required_arg!(args, :country_code)
@@ -60,7 +60,7 @@ namespace :openfootball do
   end
 
   desc "Import one local OpenFootball JSON file. Args: path,country_name,country_code,source,competition_name,short_name,season_year"
-  task :file, [ :path, :country_name, :country_code, :source, :competition_name, :short_name, :season_year ] => :environment do |_task, args|
+  task :file, %i[path country_name country_code source competition_name short_name season_year] => :environment do |_task, args|
     required_arg!(args, :path)
     required_arg!(args, :country_name)
     required_arg!(args, :country_code)
@@ -90,10 +90,10 @@ namespace :openfootball do
     def call
       selected_datasets.each do |dataset|
         ImportOne.call(dataset)
-      rescue OpenURI::HTTPError, SocketError, Errno::ECONNREFUSED, JSON::ParserError, KeyError, ActiveRecord::RecordInvalid => error
+      rescue OpenURI::HTTPError, SocketError, Errno::ECONNREFUSED, JSON::ParserError, KeyError, ActiveRecord::RecordInvalid => e
         raise if strict
 
-        warn "[openfootball] skipped #{dataset.key}: #{error.class} #{error.message}"
+        warn "[openfootball] skipped #{dataset.key}: #{e.class} #{e.message}"
       end
     end
 

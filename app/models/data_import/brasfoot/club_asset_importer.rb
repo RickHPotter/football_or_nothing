@@ -31,8 +31,8 @@ module DataImport
           end
           import_run.complete!(records_processed: imported_count)
         end
-      rescue StandardError => error
-        import_run.fail!(notes: error.message) if import_run&.persisted? && import_run.running?
+      rescue StandardError => e
+        import_run.fail!(notes: e.message) if import_run&.persisted? && import_run.running?
         raise
       end
 

@@ -23,8 +23,8 @@ module DataImport
       end
 
       finish_with(records)
-    rescue StandardError => error
-      import_run.fail!(notes: error.message)
+    rescue StandardError => e
+      import_run.fail!(notes: e.message)
       raise
     end
 

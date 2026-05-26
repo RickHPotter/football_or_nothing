@@ -910,6 +910,33 @@ Deferred:
 - Deeper imported-club finance balancing.
 
 
+Phase 28 - Squad Lineups and Substitutions
+------------------------------------------
+Status: implemented at first lineup-generation depth.
+
+Goal:
+Make lineups and substitutions behave like football squads instead of selecting
+the first athletes ordered by position.
+
+Implemented:
+- Added formation templates for `4-4-2`, `4-3-3`, and `4-2-3-1`.
+- Added a lineup builder that fills formation slots by preferred and fallback
+  positions.
+- Replaced fixture setup's raw position ordering with realistic lineup
+  generation.
+- Limited generated starters to one goalkeeper when outfield players are
+  available.
+- Balanced bench selection and avoided extra goalkeeper-heavy benches.
+- Blocked substituted-off players from re-entering as unused substitutes.
+
+Deferred:
+- Persisted lineup slot names.
+- Pre-match lineup editor.
+- AI substitution planner.
+- Formation visual layout.
+- Position-fit penalties in match strength.
+
+
 Recommended Order After Phase 24
 --------------------------------
 1. Phase 25 - Brasfoot pack import

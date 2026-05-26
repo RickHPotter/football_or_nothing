@@ -7,7 +7,7 @@ namespace :brasfoot do
   task import: :environment do
     pack_path = Pathname(ENV.fetch("BRASFOOT_PACK_PATH", DEFAULT_PACK_PATH))
     path = ENV.fetch("BRASFOOT_TEAMS_PATH", pack_path.join("teams").to_s)
-    limit = ENV["BRASFOOT_LIMIT"]
+    limit = ENV.fetch("BRASFOOT_LIMIT", nil)
     source = ENV.fetch("BRASFOOT_SOURCE", DataImport::Brasfoot::PackImporter::DEFAULT_SOURCE)
     country_name = ENV.fetch("BRASFOOT_COUNTRY_NAME", DataImport::Brasfoot::PackImporter::DEFAULT_COUNTRY_NAME)
     country_code = ENV.fetch("BRASFOOT_COUNTRY_CODE", DataImport::Brasfoot::PackImporter::DEFAULT_COUNTRY_CODE)
@@ -37,7 +37,7 @@ namespace :brasfoot do
           season_year: ENV.fetch("BRASFOOT_SEASON_YEAR", DataImport::Brasfoot::LeagueImporter::DEFAULT_SEASON_YEAR)
         )
 
-        puts "[brasfoot] imported league #{config_path.basename}: #{editions.map(&:name).join(", ")}"
+        puts "[brasfoot] imported league #{config_path.basename}: #{editions.map(&:name).join(', ')}"
       end
     end
   end
@@ -111,10 +111,10 @@ namespace :brasfoot do
           index + 1,
           team.external_id,
           team.name,
-          "n=#{fields["n"]}",
-          "c=#{fields["c"]}",
-          "o=#{fields["o"]}",
-          "g=#{fields["g"]}"
+          "n=#{fields['n']}",
+          "c=#{fields['c']}",
+          "o=#{fields['o']}",
+          "g=#{fields['g']}"
         ].join(" | ")
       end
     end

@@ -75,8 +75,8 @@ class FixturesController < ApplicationController
     end
 
     lineup = @fixture.lineup_for(@club)
-    off = lineup.lineup_athletes.starters.find(params.expect(:off_lineup_athlete_id))
-    on = lineup.lineup_athletes.bench.find(params.expect(:on_lineup_athlete_id))
+    off = lineup.lineup_athletes.starters.where(substituted_on_minute: nil).find(params.expect(:off_lineup_athlete_id))
+    on = lineup.lineup_athletes.bench.where(substituted_on_minute: nil, substituted_off_minute: nil).find(params.expect(:on_lineup_athlete_id))
     minute = @fixture.match_state.minute
 
     LineupAthlete.transaction do
@@ -86,6 +86,8 @@ class FixturesController < ApplicationController
     end
 
     redirect_to career_fixture_path(@career, @fixture), notice: "Substitution made."
+  rescue ActiveRecord::RecordNotFound
+    redirect_to career_fixture_path(@career, @fixture), alert: "Choose one active starter and one unused substitute."
   end
 
   private

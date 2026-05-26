@@ -82,6 +82,30 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, @fixture.match_state.reload.home_substitutions
   end
 
+  test "does not allow substituted off player to re-enter" do
+    add_squad_depth(@career.manager.current_club, 12)
+    get career_fixture_path(@career, @fixture)
+
+    lineup = @fixture.reload.lineup_for(@career.manager.current_club)
+    starter = lineup.starters.first
+    substitute = lineup.bench.first
+
+    post substitute_career_fixture_path(@career, @fixture), params: {
+      off_lineup_athlete_id: starter.id,
+      on_lineup_athlete_id: substitute.id
+    }
+
+    next_starter = lineup.reload.starters.where.not(id: substitute.id).first
+    post substitute_career_fixture_path(@career, @fixture), params: {
+      off_lineup_athlete_id: next_starter.id,
+      on_lineup_athlete_id: starter.id
+    }
+
+    assert_redirected_to career_fixture_path(@career, @fixture)
+    assert_equal "Choose one active starter and one unused substitute.", flash[:alert]
+    assert_not starter.reload.starter?
+  end
+
   test "simulate completes fixture" do
     @fixture.update!(status: :scheduled, home_goals: nil, away_goals: nil)
     @career.update!(current_date: "2026-01-01")
@@ -113,7 +137,16 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show rejects fixture outside current club" do
-    other_club = clubs(:two)
+    fixture = outside_fixture
+
+    get career_fixture_path(@career, fixture)
+
+    assert_response :not_found
+  end
+
+  private
+
+  def outside_fixture
     third_club = countries(:two).clubs.create!(
       name: "Outside FC",
       short_name: "OUT",
@@ -128,20 +161,14 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
       pitch_quality: 1,
       ownership: :club_owned
     )
-    fixture = tournament_editions(:two).fixtures.create!(
+    tournament_editions(:two).fixtures.create!(
       home_club: third_club,
-      away_club: other_club,
+      away_club: clubs(:two),
       stadium:,
       scheduled_on: "2026-03-01",
       round: 2
     )
-
-    get career_fixture_path(@career, fixture)
-
-    assert_response :not_found
   end
-
-  private
 
   def add_squad_depth(club, count)
     count.times do |index|

@@ -56,7 +56,7 @@ module DataImport
 
       def division_name(fields)
         [ fields["nome"], fields["nomeDivisao"] ].compact_blank.join(" ").presence ||
-          "Division #{fields["divisao"]}"
+          "Division #{fields['divisao']}"
       end
     end
   end

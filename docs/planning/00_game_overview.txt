@@ -163,8 +163,10 @@ Implemented:
   fixture counts.
 - Imported-world browsing for countries, clubs, tournaments, standings,
   fixtures, squads, club assets, and reputation-gated job actions.
+- Formation-aware lineup generation that avoids unrealistic goalkeeper-heavy
+  starting elevens and enforces basic substitution legality.
 
 Next major phase:
-The first playable backlog through Phase 27 is complete at initial depth. Next
-work should come from Phase 26 audit cleanup, Phase 27 deferred browsing depth,
-or a new planning pass.
+The first playable backlog through Phase 28 is complete at initial depth. Next
+work should come from Phase 28 deferred lineup depth, Phase 26 audit cleanup,
+Phase 27 deferred browsing depth, or a new planning pass.

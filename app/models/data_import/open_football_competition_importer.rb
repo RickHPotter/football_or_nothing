@@ -28,8 +28,8 @@ module DataImport
         import_run.complete!(records_processed: imported_records_count)
         edition
       end
-    rescue StandardError => error
-      import_run.fail!(notes: error.message) if import_run&.persisted? && import_run.running?
+    rescue StandardError => e
+      import_run.fail!(notes: e.message) if import_run&.persisted? && import_run.running?
       raise
     end
 
@@ -42,7 +42,7 @@ module DataImport
     end
 
     def import_country
-      @country ||= (Country.find_by(external_source: source, external_id: country_code) || Country.find_or_initialize_by(code: country_code)).tap do |country|
+      @import_country ||= (Country.find_by(external_source: source, external_id: country_code) || Country.find_or_initialize_by(code: country_code)).tap do |country|
         country.name = country_name
         country.code = country_code
         country.external_source ||= source
@@ -54,7 +54,7 @@ module DataImport
     end
 
     def import_tournament
-      @tournament ||= country.tournaments.find_or_initialize_by(name: resolved_competition_name).tap do |tournament|
+      @import_tournament ||= country.tournaments.find_or_initialize_by(name: resolved_competition_name).tap do |tournament|
         tournament.short_name = short_name.presence || resolved_competition_name.split.map { |word| word.first.upcase }.join.first(6)
         tournament.scope = :domestic
         tournament.format = :league
@@ -64,7 +64,7 @@ module DataImport
     end
 
     def import_edition
-      @edition ||= tournament.tournament_editions.find_or_initialize_by(season_year:).tap do |edition|
+      @import_edition ||= tournament.tournament_editions.find_or_initialize_by(season_year:).tap do |edition|
         edition.name = "#{tournament.name} #{season_year}"
         edition.starts_on = match_dates.min
         edition.ends_on = match_dates.max

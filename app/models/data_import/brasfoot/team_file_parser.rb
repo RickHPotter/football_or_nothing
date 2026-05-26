@@ -54,7 +54,7 @@ module DataImport
           next if name.blank?
 
           ParsedPlayer.new(
-            external_id: "#{path.basename(".ban")}:#{index}:#{name.parameterize}",
+            external_id: "#{path.basename('.ban')}:#{index}:#{name.parameterize}",
             name:,
             position: POSITION_BY_CODE.fetch(fields["e"], :central_midfielder),
             current_ability: rating_from(fields),

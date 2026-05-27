@@ -1,7 +1,9 @@
 <% managed_lineup = lineup&.club == @club %>
 <% substitutions_used = lineup ? @fixture.club_substitution_count(lineup.club) : 0 %>
 <% substitution_slots_left = [ 5 - substitutions_used, 0 ].max %>
-<% lineup_interactive = managed_lineup && @matchday_session&.paused? && !@fixture.completed? %>
+<% live_lineup_interactive = managed_lineup && @matchday_session&.paused? && !@fixture.completed? %>
+<% pre_match_lineup_interactive = managed_lineup && @matchday_session.nil? && @fixture.match_state.not_started? %>
+<% lineup_interactive = live_lineup_interactive || pre_match_lineup_interactive %>
 
 <section class="panel" <%= "data-controller=lineup-substitution" if lineup_interactive %>>
   <div class="panel-header">
@@ -12,11 +14,13 @@
   </div>
   <div class="panel-body">
     <% if lineup&.starters&.any? %>
-      <% if lineup_interactive %>
+      <% if live_lineup_interactive %>
         <%= form_with url: substitute_career_fixture_path(@career, @fixture), method: :post, class: "lineup-action-form", data: { lineup_substitution_target: "substitutionForm" } do |form| %>
           <%= form.hidden_field :off_lineup_athlete_id, data: { lineup_substitution_target: "offInput" } %>
           <%= form.hidden_field :on_lineup_athlete_id, data: { lineup_substitution_target: "onInput" } %>
         <% end %>
+      <% end %>
+      <% if lineup_interactive %>
         <%= form_with url: swap_lineup_athletes_career_fixture_path(@career, @fixture), method: :patch, class: "lineup-action-form", data: { lineup_substitution_target: "swapForm" } do |form| %>
           <%= form.hidden_field :from_lineup_athlete_id, data: { lineup_substitution_target: "fromInput" } %>
           <%= form.hidden_field :to_lineup_athlete_id, data: { lineup_substitution_target: "toInput" } %>
@@ -60,15 +64,19 @@
       <% if lineup.bench.any? %>
         <div class="substitution-bench">
           <div class="substitution-bench-header">
-            <h3>Substitutes</h3>
-            <span class="badge"><%= substitution_slots_left %> left</span>
+            <h3>Bench</h3>
+            <% if live_lineup_interactive %>
+              <span class="badge"><%= substitution_slots_left %> left</span>
+            <% else %>
+              <span class="badge"><%= lineup.bench.count %>/9</span>
+            <% end %>
           </div>
           <div class="substitution-bench-list">
             <% lineup.bench.each do |lineup_athlete| %>
               <% athlete = lineup_athlete.athlete %>
               <% available = lineup_athlete.substituted_on_minute.nil? && lineup_athlete.substituted_off_minute.nil? && athlete.available_on?(@fixture.scheduled_on) %>
               <% interactive_substitute = lineup_interactive && available %>
-              <div class="bench-player-token <%= "is-disabled" unless available %>" data-lineup-athlete-id="<%= lineup_athlete.id %>" data-lineup-token-kind="substitute" data-player-name="<%= athlete.last_name %>" draggable="<%= interactive_substitute %>" <% if interactive_substitute %>data-lineup-substitution-target="substitute" data-action="dragstart->lineup-substitution#dragToken click->lineup-substitution#selectToken keydown->lineup-substitution#keySelectToken" role="button" tabindex="0" aria-label="Bring on <%= athlete.first_name %> <%= athlete.last_name %>"<% end %>>
+              <div class="bench-player-token <%= "is-disabled" unless available %>" data-lineup-athlete-id="<%= lineup_athlete.id %>" data-lineup-token-kind="substitute" data-player-name="<%= athlete.last_name %>" draggable="<%= interactive_substitute %>" <% if interactive_substitute %>data-lineup-substitution-target="substitute" data-action="dragstart->lineup-substitution#dragToken dragover->lineup-substitution#allowDrop drop->lineup-substitution#dropOnToken click->lineup-substitution#selectToken keydown->lineup-substitution#keySelectToken" role="button" tabindex="0" aria-label="Bring on <%= athlete.first_name %> <%= athlete.last_name %>"<% end %>>
                 <div class="formation-shirt"><%= lineup_athlete.lineup_slot_label %></div>
                 <div class="formation-player-body">
                   <strong><%= athlete.last_name %></strong>
@@ -80,6 +88,34 @@
                     <% elsif lineup_athlete.substituted_off_minute %>
                       <span>OFF <%= lineup_athlete.substituted_off_minute %>'</span>
                     <% elsif !athlete.available_on?(@fixture.scheduled_on) %>
+                      <span>OUT</span>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+      <% if lineup.reserves.any? %>
+        <div class="substitution-bench">
+          <div class="substitution-bench-header">
+            <h3>Substitutes</h3>
+            <span class="badge">Out</span>
+          </div>
+          <div class="substitution-bench-list">
+            <% lineup.reserves.each do |lineup_athlete| %>
+              <% athlete = lineup_athlete.athlete %>
+              <% available = athlete.available_on?(@fixture.scheduled_on) %>
+              <% interactive_reserve = pre_match_lineup_interactive && available %>
+              <div class="bench-player-token <%= "is-disabled" unless available %>" data-lineup-athlete-id="<%= lineup_athlete.id %>" data-lineup-token-kind="reserve" data-player-name="<%= athlete.last_name %>" draggable="<%= interactive_reserve %>" <% if interactive_reserve %>data-lineup-substitution-target="reserve" data-action="dragstart->lineup-substitution#dragToken dragover->lineup-substitution#allowDrop drop->lineup-substitution#dropOnToken click->lineup-substitution#selectToken keydown->lineup-substitution#keySelectToken" role="button" tabindex="0" aria-label="Include <%= athlete.first_name %> <%= athlete.last_name %>"<% end %>>
+                <div class="formation-shirt"><%= lineup_athlete.lineup_slot_label %></div>
+                <div class="formation-player-body">
+                  <strong><%= athlete.last_name %></strong>
+                  <small><%= lineup_athlete.position.humanize %> · <%= lineup_athlete.tactical_role.humanize %></small>
+                  <div class="formation-player-meta">
+                    <span><%= athlete.condition %>%</span>
+                    <% unless available %>
                       <span>OUT</span>
                     <% end %>
                   </div>

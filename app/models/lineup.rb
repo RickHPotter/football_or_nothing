@@ -23,6 +23,10 @@ class Lineup < ApplicationRecord
     lineup_athletes.bench.includes(:athlete).order(:lineup_slot)
   end
 
+  def reserves
+    lineup_athletes.reserves.includes(:athlete).order(:lineup_slot)
+  end
+
   private
 
   def club_must_play_fixture

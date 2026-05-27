@@ -4,6 +4,7 @@ export default class extends Controller {
   static targets = [
     "starter",
     "substitute",
+    "reserve",
     "substitutionForm",
     "swapForm",
     "offInput",
@@ -65,7 +66,7 @@ export default class extends Controller {
   submitMove(source, target) {
     if (!source || !target || source === target) return
 
-    if (this.isStarter(source) && this.isStarter(target)) {
+    if (this.swapOnlyMode || (this.isStarter(source) && this.isStarter(target))) {
       this.submitSwap(source, target)
     } else if (this.isSubstitution(source, target)) {
       this.submitSubstitution(source, target)
@@ -100,6 +101,8 @@ export default class extends Controller {
   }
 
   canSubmitMove(source, target) {
+    if (this.swapOnlyMode) return true
+
     return (this.isStarter(source) && this.isStarter(target)) || this.isSubstitution(source, target)
   }
 
@@ -115,6 +118,10 @@ export default class extends Controller {
     return token.dataset.lineupTokenKind === "substitute"
   }
 
+  get swapOnlyMode() {
+    return this.hasSwapFormTarget && !this.hasSubstitutionFormTarget
+  }
+
   markSelected(token) {
     this.clearSelection()
     this.selectedToken = token
@@ -125,9 +132,10 @@ export default class extends Controller {
     this.selectedToken = null
     this.starterTargets.forEach((target) => target.classList.remove("is-selected"))
     this.substituteTargets.forEach((target) => target.classList.remove("is-selected"))
+    this.reserveTargets.forEach((target) => target.classList.remove("is-selected"))
   }
 
   findToken(lineupAthleteId) {
-    return [...this.starterTargets, ...this.substituteTargets].find((target) => target.dataset.lineupAthleteId === lineupAthleteId)
+    return [...this.starterTargets, ...this.substituteTargets, ...this.reserveTargets].find((target) => target.dataset.lineupAthleteId === lineupAthleteId)
   }
 }

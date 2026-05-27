@@ -13,10 +13,11 @@ class LineupAthlete < ApplicationRecord
   belongs_to :athlete
 
   scope :starters, -> { where(starter: true) }
-  scope :bench, -> { where(starter: false) }
+  scope :bench, -> { where(starter: false, lineup_slot: LineupBuilder::BENCH_SLOT_RANGE) }
+  scope :reserves, -> { where(starter: false).where(lineup_slot: LineupBuilder::RESERVE_SLOT_START..) }
 
   validates :lineup_slot_key, presence: true
-  validates :lineup_slot, numericality: { only_integer: true, in: 1..25 }
+  validates :lineup_slot, numericality: { only_integer: true, in: 1..99 }
   validates :athlete_id, uniqueness: { scope: :lineup_id }
   validates :lineup_slot, uniqueness: { scope: :lineup_id }
   validates :substituted_on_minute, :substituted_off_minute,

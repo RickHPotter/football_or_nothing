@@ -185,6 +185,12 @@ Implemented:
 - Future planned live events for a substituted-off player are retargeted to the
   incoming player, preventing removed athletes from scoring or creating later
   highlights.
+- Scheduled Match Screens now expose the same visual swap behavior before
+  kickoff. The matchday squad is modeled as XI plus a nine-player `Bench`, with
+  remaining available players shown separately as non-participating
+  `Substitutes`.
+- Pre-match swaps can move players between the XI, Bench, and non-participating
+  Substitutes without counting as live substitutions.
 
 Slice 7: live timeline and board refresh integration
 - After a successful substitution, the focused Live Match Screen should show the

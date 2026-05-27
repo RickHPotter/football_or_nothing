@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class LineupBuilder
-  BENCH_LIMIT = 7
+  BENCH_LIMIT = 9
+  BENCH_SLOT_RANGE = 12..20
+  RESERVE_SLOT_START = 21
   BENCH_GROUPS = [
     %i[goalkeeper],
     %i[center_back full_back],
@@ -22,7 +24,8 @@ class LineupBuilder
     lineup.lineup_athletes.destroy_all
     selected = []
     build_starters(selected)
-    build_bench(selected)
+    bench = build_bench(selected)
+    build_reserves(selected + bench)
     lineup
   end
 
@@ -58,13 +61,29 @@ class LineupBuilder
     remaining = remaining.reject(&:goalkeeper?) if bench.any?(&:goalkeeper?)
     bench.concat(remaining.first(BENCH_LIMIT - bench.length))
 
-    bench.first(BENCH_LIMIT).each_with_index do |athlete, index|
+    bench = bench.first(BENCH_LIMIT)
+    bench.each_with_index do |athlete, index|
       lineup.lineup_athletes.create!(
         athlete:,
         position: athlete.position,
         tactical_role: :standard,
         lineup_slot: 12 + index,
         lineup_slot_key: "sub_#{index + 1}",
+        starter: false
+      )
+    end
+
+    bench
+  end
+
+  def build_reserves(selected)
+    (roster_pool - selected).each_with_index do |athlete, index|
+      lineup.lineup_athletes.create!(
+        athlete:,
+        position: athlete.position,
+        tactical_role: :standard,
+        lineup_slot: RESERVE_SLOT_START + index,
+        lineup_slot_key: "res_#{index + 1}",
         starter: false
       )
     end
@@ -89,6 +108,10 @@ class LineupBuilder
       available = athletes.select { |athlete| athlete.available_on?(date) }
       available.presence || athletes
     end
+  end
+
+  def roster_pool
+    @roster_pool ||= available_pool
   end
 
   def athlete_score(athlete)

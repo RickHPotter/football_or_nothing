@@ -76,6 +76,24 @@ class FixtureMatchSetupTest < ActiveSupport::TestCase
     assert(lineup.bench.all? { |lineup_athlete| lineup_athlete.lineup_slot_key.start_with?("sub_") })
   end
 
+  test "builds a twenty player matchday squad and reserves" do
+    fixture = fixtures(:one)
+    club = fixture.home_club
+    club.athlete_contracts.update_all(current: false)
+    add_balanced_squad_depth(club)
+    6.times { |index| add_depth_player(club, :central_midfielder, 100 + index) }
+
+    fixture.ensure_match_setup!
+
+    lineup = fixture.lineup_for(club)
+
+    assert_equal 11, lineup.starters.count
+    assert_equal 9, lineup.bench.count
+    assert_equal 5, lineup.reserves.count
+    assert(lineup.bench.all? { |lineup_athlete| lineup_athlete.lineup_slot_key.start_with?("sub_") })
+    assert(lineup.reserves.all? { |lineup_athlete| lineup_athlete.lineup_slot_key.start_with?("res_") })
+  end
+
   test "formation templates define eleven starter slots" do
     LineupTemplate::TEMPLATES.each_key do |formation|
       slots = LineupTemplate.for(formation)

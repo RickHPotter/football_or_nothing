@@ -83,6 +83,8 @@ Implemented
   from the 60th minute onward.
 - Phase 30 moves live user substitutions out of the old form flow and into the
   visual pitch-and-bench controls.
+- The matchday bench is nine players when enough available squad depth exists;
+  remaining available players are tracked as non-participating substitutes.
 - AI substitutions preserve the incoming player's assigned formation slot,
   update substitution counters, and create timeline substitution events.
 - Substituted-off players cannot re-enter as unused bench players.

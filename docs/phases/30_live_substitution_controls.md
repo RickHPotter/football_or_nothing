@@ -3,7 +3,7 @@ Phase 30 - Live Substitution Controls
 
 Status
 ------
-Slices 1 through 7 complete.
+Complete. Slices 1 through 10 are implemented.
 
 
 Goal
@@ -202,6 +202,17 @@ Slice 8: AI and opponent behavior alignment
 - Ensure AI substitution planning skips the manager's club in every live
   matchday fixture. The user's lineup changes only through user action.
 
+Implemented:
+- Live matchday event application now runs AI substitutions for non-managed
+  clubs only.
+- The manager's club is skipped during live AI substitution planning, so the
+  user's lineup changes only through explicit user action.
+- AI substitution planning now guards against duplicate substitutions for the
+  same club and minute, which prevents polling from stacking several AI changes
+  at the same match minute.
+- Regression coverage verifies live AI substitutions affect only the opponent
+  side and leave the managed club untouched.
+
 Slice 9: visual polish and accessibility
 - Use a field-like visual treatment rather than table/list styling.
 - Keep text readable and non-overlapping in long names.
@@ -210,12 +221,29 @@ Slice 9: visual polish and accessibility
 - Preserve keyboard-accessible fallback for selecting outgoing and incoming
   players.
 
+Implemented:
+- Interactive starter and substitute tokens now expose button semantics,
+  keyboard focus, and Enter/Space activation through the Stimulus controller.
+- Interactive tokens have visible focus styling aligned with the existing hover
+  treatment.
+- Read-only/opponent tokens remain non-focusable and do not receive action
+  bindings.
+- Regression coverage verifies rendered drag, drop, keyboard, and role
+  attributes on the paused Live Match Screen.
+
 Slice 10: documentation, tests, and cleanup
 - Update Phase 30 with implemented details.
 - Update Phase 28 notes if any old substitution controls are retired.
 - Remove dead view branches, obsolete tests, and stale copy.
 - Run focused controller/model/system-style tests where available.
 - Run full Rails tests and RuboCop.
+
+Implemented:
+- Phase 30 now records all completed slices.
+- Phase 28 notes that live substitution interaction moved into Phase 30.
+- Focused model/controller tests cover AI substitution alignment and interactive
+  lineup token wiring.
+- Full Rails test and RuboCop passes are required before closing the phase.
 
 
 Expected Data/Code Areas

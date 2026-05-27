@@ -17,6 +17,7 @@ class AiSubstitutionPlanner
   def call
     return unless minute >= MINUTE_THRESHOLD
     return if fixture.completed? || fixture.club_substitution_count(club) >= MAX_SUBSTITUTIONS
+    return if fixture.match_events.substitution.exists?(club:, minute:)
     return unless lineup
 
     off = player_off

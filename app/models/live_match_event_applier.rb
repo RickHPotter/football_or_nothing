@@ -14,6 +14,7 @@ class LiveMatchEventApplier
   def call
     MatchdayEvent.transaction do
       session.matchday_events.due(minute).each { |event| apply_event(event) }
+      apply_ai_substitutions
     end
   end
 
@@ -32,5 +33,19 @@ class LiveMatchEventApplier
       description: event.description
     )
     event.update!(applied_at: now)
+  end
+
+  def apply_ai_substitutions
+    session.fixtures.each do |fixture|
+      ai_clubs_for(fixture).each { |club| AiSubstitutionPlanner.call(fixture:, club:, minute:) }
+    end
+  end
+
+  def ai_clubs_for(fixture)
+    [ fixture.home_club, fixture.away_club ].reject { |club| club == managed_club }
+  end
+
+  def managed_club
+    @managed_club ||= session.career.manager&.current_club
   end
 end

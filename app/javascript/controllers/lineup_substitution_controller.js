@@ -34,8 +34,17 @@ export default class extends Controller {
   }
 
   selectToken(event) {
-    const token = event.currentTarget
+    this.chooseToken(event.currentTarget)
+  }
 
+  keySelectToken(event) {
+    if (!["Enter", " "].includes(event.key)) return
+
+    event.preventDefault()
+    this.chooseToken(event.currentTarget)
+  }
+
+  chooseToken(token) {
     if (!this.selectedToken) {
       this.markSelected(token)
       return

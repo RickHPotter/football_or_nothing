@@ -298,7 +298,7 @@
 
   .bench-player-token[draggable="true"],
   .formation-player-token[draggable="true"] {
-    @apply cursor-pointer hover:border-result-300 hover:bg-result-100;
+    @apply cursor-pointer hover:border-result-300 hover:bg-result-100 focus:border-result-300 focus:bg-result-100 focus:outline-none focus:ring-2 focus:ring-result-300;
   }
 
   .bench-player-token.is-disabled {

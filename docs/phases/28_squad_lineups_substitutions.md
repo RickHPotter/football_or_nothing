@@ -81,6 +81,8 @@ Implemented
   lightly improves control.
 - During live clock advancement, the opposing club can make AI substitutions
   from the 60th minute onward.
+- Phase 30 moves live user substitutions out of the old form flow and into the
+  visual pitch-and-bench controls.
 - AI substitutions preserve the incoming player's assigned formation slot,
   update substitution counters, and create timeline substitution events.
 - Substituted-off players cannot re-enter as unused bench players.
@@ -131,3 +133,4 @@ Phase Exit
 - Future refinements can add richer pitch interactions, role-specific
   instructions, fatigue modeling, and score-aware AI substitutions, but those are
   outside this phase's planned scope.
+- Live substitution interaction continues in Phase 30.

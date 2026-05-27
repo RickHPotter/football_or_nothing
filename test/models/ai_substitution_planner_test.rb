@@ -9,6 +9,7 @@ class AiSubstitutionPlannerTest < ActiveSupport::TestCase
     @club.athlete_contracts.update_all(current: false)
     add_balanced_squad_depth(@club)
     @fixture.ensure_match_setup!
+    @fixture.match_state.update!(home_substitutions: 0, away_substitutions: 0)
   end
 
   test "does not make early substitutions" do
@@ -36,6 +37,16 @@ class AiSubstitutionPlannerTest < ActiveSupport::TestCase
     assert_no_difference "MatchEvent.substitution.count" do
       AiSubstitutionPlanner.call(fixture: @fixture, club: @club, minute: 75)
     end
+  end
+
+  test "does not make duplicate substitutions for the same club and minute" do
+    AiSubstitutionPlanner.call(fixture: @fixture, club: @club, minute: 60)
+
+    assert_no_difference "MatchEvent.substitution.count" do
+      AiSubstitutionPlanner.call(fixture: @fixture, club: @club, minute: 60)
+    end
+
+    assert_equal 1, @fixture.match_state.reload.away_substitutions
   end
 
   private

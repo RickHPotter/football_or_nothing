@@ -111,12 +111,14 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
     travel_to Time.zone.local(2026, 2, 1, 12, 0, 0) do
       MatchdayClock.start(session, now: 90.seconds.ago)
 
-      get career_fixture_path(@career, @fixture)
+      get career_fixture_path(@career, @fixture, details: true)
     end
 
     assert_response :success
     assert session.reload.completed?
     assert @fixture.reload.completed?
+    assert_select ".match-status-badge", "Completed"
+    assert_select "h2", "Timeline"
     assert @fixture.match_state.full_time?
     assert session.matchday_standing_snapshots.where.not(position_after: nil).exists?
     assert_not_equal "0-0", MatchdayScoreboard.call(session).fetch(@fixture)

@@ -3,7 +3,7 @@ Phase 30 - Live Substitution Controls
 
 Status
 ------
-Planned. No implementation has started.
+Slice 1 complete. Slices 2 and 3 are in progress.
 
 
 Goal
@@ -60,6 +60,12 @@ Slice 1: live completion state audit and bug fix
 - Ensure the focused fixture is reloaded after finalization before rendering.
 - Add regression coverage for visiting `careers/:career_id/fixtures/:id?details=true`
   after the server clock reaches full time.
+
+Implemented:
+- `FixturesController#refresh_matchday_session` reloads the focused fixture
+  after live finalization completes.
+- Regression coverage verifies that a full-time focused Live Match Screen
+  renders the `Completed` badge and Timeline.
 
 Slice 2: split pre-match swaps from live substitutions
 - Keep pre-match lineup swap behavior available only before kickoff if it is

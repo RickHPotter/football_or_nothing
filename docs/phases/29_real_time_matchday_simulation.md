@@ -3,7 +3,8 @@ Phase 29 - Real-Time Matchday Simulation
 
 Status
 ------
-Slice 10 complete. Phase 29 is complete. Post-phase live matchday polish is in progress.
+Slice 10 complete. Phase 29 is complete. Follow-up substitution interaction work
+continues in Phase 30.
 
 
 Goal

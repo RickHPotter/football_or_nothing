@@ -41,12 +41,14 @@ Implemented Phase Documents
 - `27_gameplay_bridge_frontend_exposure.md`
 - `28_squad_lineups_substitutions.md`
 - `29_real_time_matchday_simulation.md`
+- `30_live_substitution_controls.md`
 - `phase_status_audit.md`
 
 
 Current Continuation Point
 --------------------------
-Phases 1 through 28 are implemented at first-playable depth.
+Phases 1 through 29 are implemented at first-playable depth.
 
-Phase 29 is the active implementation target. It replaces the fixture-only
-clock with server-authoritative simultaneous matchday simulation.
+Phase 30 is the active planning target. It connects the real-time matchday flow
+to visual pitch-and-bench substitution controls and fixes the live full-time
+fixture-status rendering bug.

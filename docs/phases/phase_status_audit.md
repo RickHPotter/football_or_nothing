@@ -9,10 +9,10 @@ so the next phase can be chosen deliberately.
 
 Summary
 -------
-Phases 1 through 24 are implemented enough to support the current first
+Phases 1 through 29 are implemented enough to support the current first
 playable loop.
 
-There are no blocking leftovers from phases 1 through 24 in the first playable
+There are no blocking leftovers from phases 1 through 29 in the first playable
 backlog.
 
 There are, however, many intentional deferrals. These are not bugs by
@@ -41,6 +41,8 @@ Implemented First-Playable Loop
 - International competition generation.
 - Data import foundation.
 - Initial UI system polish.
+- Real-time simultaneous matchday simulation.
+- Named Match, Live Matchday, and Live Match screens.
 
 
 Not Blocking Before Phase 21
@@ -58,8 +60,8 @@ These deferred items can wait until their dedicated future expansion:
 - Youth competitions.
 - Press conferences and media reaction.
 - Promotion/relegation.
-- Data import.
 - UI component extraction.
+- Visual drag-and-drop substitution controls.
 
 
 Worth Considering Next
@@ -74,5 +76,5 @@ These are not blockers, but they are good candidates for the next planning pass:
 Recommended Next Step
 ---------------------
 Recommended next step:
-Define the next backlog around either tactical depth, UI hardening, or code
-quality cleanup.
+Execute Phase 30: live substitution controls, richer pitch visuals, and the
+full-time focused-fixture status bug fix.

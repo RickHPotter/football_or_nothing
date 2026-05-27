@@ -152,7 +152,17 @@ Verified
 - Running matchday boards poll through Turbo/Stimulus so the page keeps asking
   the server for the authoritative minute, events, and finalization state.
 - Running matchday boards now poll a lightweight JSON status endpoint every
-  250ms instead of reloading the full page on every tick.
+  500ms instead of reloading the full page on every tick.
+- Matchday duration is now 60 seconds to give the live board more updates over a
+  longer running match.
+- Live match cards are stacked with fixed score-card sizing and a timeline area
+  under each card for goals, cards, and other visible events.
+- The matchday board groups the manager's fixture first under Your matches, then
+  lists the rest under Other matches.
+- Matchday cards use full club names and show only the latest visible highlight
+  below each score row.
+- Detail mode hides the Live Matchday board; returning to the board requires the
+  Back to matchday button.
 - Planned matchday events include goals, so score changes are created during the
   live clock instead of only at full time.
 - Full-time finalization preserves the live-created timeline and scores fixtures

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_26_230847) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_27_000100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -399,7 +399,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_230847) do
     t.date "scheduled_on", null: false
     t.datetime "started_at"
     t.integer "status", default: 0, null: false
-    t.integer "total_duration_seconds", default: 20, null: false
+    t.integer "total_duration_seconds", default: 60, null: false
     t.bigint "tournament_edition_id", null: false
     t.datetime "updated_at", null: false
     t.index ["career_id", "tournament_edition_id", "scheduled_on", "round"], name: "index_matchday_sessions_on_matchday", unique: true

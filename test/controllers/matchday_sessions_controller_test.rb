@@ -44,7 +44,10 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", "Live Matchday"
     assert_select ".matchday-fixture-card", 2
     assert_select ".matchday-fixture-card.is-managed", 1
-    assert_select ".matchday-fixture-card", text: /#{other_fixture.home_club.short_name}/
+    assert_select "h3", "Your matches"
+    assert_select "h3", "Other matches"
+    assert_select ".matchday-fixture-card", text: /#{other_fixture.home_club.name}/
+    assert_select ".matchday-fixture-shell", 2
     assert_select ".fixture-three-column", 0
     assert_select "input[type='submit'][value='Update tactics']", 0
   end
@@ -92,7 +95,7 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
   test "finalizes running matchday when server clock reaches full time" do
     session = MatchdaySessionStarter.call(career: @career, fixture: @fixture)
     travel_to Time.zone.local(2026, 2, 1, 12, 0, 0) do
-      MatchdayClock.start(session, now: 30.seconds.ago)
+      MatchdayClock.start(session, now: 90.seconds.ago)
 
       get career_fixture_path(@career, @fixture)
     end

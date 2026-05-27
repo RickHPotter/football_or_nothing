@@ -20,7 +20,7 @@ class MatchdayClockTest < ActiveSupport::TestCase
     now = Time.zone.local(2026, 2, 1, 12, 0, 0)
     MatchdayClock.start(session, now:)
 
-    MatchdayClock.refresh(session, now: now + 5.seconds)
+    MatchdayClock.refresh(session, now: now + 15.seconds)
 
     assert_equal 22, session.reload.minute
     assert session.first_half?
@@ -31,12 +31,12 @@ class MatchdayClockTest < ActiveSupport::TestCase
     now = Time.zone.local(2026, 2, 1, 12, 0, 0)
     MatchdayClock.start(session, now:)
 
-    MatchdayClock.refresh(session, now: now + 10.seconds)
+    MatchdayClock.refresh(session, now: now + 30.seconds)
 
     assert_equal 45, session.reload.minute
     assert session.half_time?
 
-    MatchdayClock.refresh(session, now: now + 20.seconds)
+    MatchdayClock.refresh(session, now: now + 60.seconds)
 
     assert_equal 90, session.reload.minute
     assert session.completed?
@@ -47,18 +47,18 @@ class MatchdayClockTest < ActiveSupport::TestCase
     session = matchday_session
     now = Time.zone.local(2026, 2, 1, 12, 0, 0)
     MatchdayClock.start(session, now:)
-    MatchdayClock.pause(session, now: now + 5.seconds)
+    MatchdayClock.pause(session, now: now + 15.seconds)
 
     assert session.reload.paused?
     assert_equal 22, session.minute
-    assert_equal 5, session.elapsed_seconds
+    assert_equal 15, session.elapsed_seconds
 
-    MatchdayClock.resume(session, now: now + 15.seconds)
-    MatchdayClock.refresh(session, now: now + 20.seconds)
+    MatchdayClock.resume(session, now: now + 30.seconds)
+    MatchdayClock.refresh(session, now: now + 45.seconds)
 
     assert_equal 45, session.reload.minute
     assert session.half_time?
-    assert_equal 10, session.elapsed_seconds
+    assert_equal 30, session.elapsed_seconds
   end
 
   private

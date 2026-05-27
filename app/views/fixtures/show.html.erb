@@ -1,8 +1,8 @@
 <% lineup_options = @managed_lineup ? (@managed_lineup.starters + @managed_lineup.bench).map { |lineup_athlete| [ "#{lineup_athlete.lineup_slot_label} - #{lineup_athlete.athlete.first_name} #{lineup_athlete.athlete.last_name}", lineup_athlete.id ] } : [] %>
 <% middle_panel_title = @fixture.completed? ? "Timeline" : "Manager Decisions" %>
 
-<% if @matchday_session&.running? || @matchday_session&.paused? || @matchday_session&.completed? %>
-  <section class="panel matchday-live-panel" <%= "data-controller=matchday-poll data-matchday-poll-url-value=#{matchday_status_career_fixture_path(@career, @fixture)} data-matchday-poll-interval-value=250" if @matchday_session.running? %>>
+<% if !@show_fixture_detail && (@matchday_session&.running? || @matchday_session&.paused? || @matchday_session&.completed?) %>
+  <section class="panel matchday-live-panel" <%= "data-controller=matchday-poll data-matchday-poll-url-value=#{matchday_status_career_fixture_path(@career, @fixture)} data-matchday-poll-interval-value=500" if @matchday_session.running? %>>
     <div class="panel-header">
       <h2>Live Matchday</h2>
       <span class="badge <%= @matchday_session.running? ? "badge-good" : "badge-warn" %>">
@@ -12,25 +12,38 @@
     </div>
     <div class="panel-body">
       <div class="matchday-fixture-grid">
-        <% @matchday_fixtures.each do |fixture| %>
-          <% card_classes = [ "matchday-fixture-card" ] %>
-          <% card_classes << "is-managed" if fixture.involves?(@club) %>
-          <% card_classes << "is-focused" if fixture == @matchday_session.focused_fixture %>
-          <%= button_to focus_matchday_career_fixture_path(@career, fixture), method: :patch, class: card_classes.join(" ") do %>
-            <span class="matchday-fixture-team">
-              <% if fixture.home_club.crest.attached? %>
-                <%= image_tag fixture.home_club.crest, class: "club-crest-sm" %>
-              <% end %>
-              <%= fixture.home_club.short_name.presence || fixture.home_club.name %>
-            </span>
-            <span class="matchday-fixture-score" data-fixture-score-id="<%= fixture.id %>"><%= @matchday_scorelines.fetch(fixture, fixture.scoreline) %></span>
-            <span class="matchday-fixture-team matchday-fixture-team-away">
-              <%= fixture.away_club.short_name.presence || fixture.away_club.name %>
-              <% if fixture.away_club.crest.attached? %>
-                <%= image_tag fixture.away_club.crest, class: "club-crest-sm" %>
-              <% end %>
-            </span>
-          <% end %>
+        <% [ [ "Your matches", @matchday_fixtures.select { |fixture| fixture.involves?(@club) } ], [ "Other matches", @matchday_fixtures.reject { |fixture| fixture.involves?(@club) } ] ].each do |section_title, fixtures| %>
+          <% next if fixtures.empty? %>
+          <div class="matchday-fixture-section">
+            <h3><%= section_title %></h3>
+            <% fixtures.each do |fixture| %>
+              <% card_classes = [ "matchday-fixture-card" ] %>
+              <% card_classes << "is-managed" if fixture.involves?(@club) %>
+              <% card_classes << "is-focused" if fixture == @matchday_session.focused_fixture %>
+              <div class="matchday-fixture-shell">
+                <%= button_to focus_matchday_career_fixture_path(@career, fixture), method: :patch, form: { class: "matchday-fixture-form" }, class: card_classes.join(" ") do %>
+                  <span class="matchday-fixture-team">
+                    <% if fixture.home_club.crest.attached? %>
+                      <%= image_tag fixture.home_club.crest, class: "club-crest-sm" %>
+                    <% end %>
+                    <%= fixture.home_club.name %>
+                  </span>
+                  <span class="matchday-fixture-score" data-fixture-score-id="<%= fixture.id %>"><%= @matchday_scorelines.fetch(fixture, fixture.scoreline) %></span>
+                  <span class="matchday-fixture-team matchday-fixture-team-away">
+                    <%= fixture.away_club.name %>
+                    <% if fixture.away_club.crest.attached? %>
+                      <%= image_tag fixture.away_club.crest, class: "club-crest-sm" %>
+                    <% end %>
+                  </span>
+                <% end %>
+                <ol class="matchday-fixture-events" data-fixture-events-id="<%= fixture.id %>">
+                  <% (@matchday_events[fixture] || []).each do |event| %>
+                    <li><%= event.minute %>' <%= event.event_type.humanize %> - <%= event.description %></li>
+                  <% end %>
+                </ol>
+              </div>
+            <% end %>
+          </div>
         <% end %>
       </div>
     </div>

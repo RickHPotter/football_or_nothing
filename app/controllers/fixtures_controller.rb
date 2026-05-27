@@ -4,9 +4,8 @@ class FixturesController < ApplicationController
   before_action :set_career
   before_action :set_club
   before_action :set_fixture
-  before_action :ensure_match_setup,
-                only: %i[show simulate start pause resume start_matchday pause_matchday resume_matchday focus_matchday advance_clock tactics regenerate_lineup
-                         swap_lineup_athletes update_lineup_role substitute]
+  before_action :ensure_match_setup, only: %i[show simulate start pause resume start_matchday pause_matchday resume_matchday focus_matchday advance_clock tactics
+                                              regenerate_lineup swap_lineup_athletes update_lineup_role substitute]
 
   def show
     load_matchday_context
@@ -178,6 +177,7 @@ class FixturesController < ApplicationController
     refresh_matchday_session
     @matchday_fixtures = @matchday_session&.fixtures || []
     @matchday_scorelines = @matchday_session ? MatchdayScoreboard.call(@matchday_session) : {}
+    @matchday_events = MatchdayTimeline.call(@matchday_session, limit: 1)
     @standing_movements = MatchdayStandingMovement.call(@matchday_session)
     @show_fixture_detail = @matchday_session.nil? || params[:details].present?
   end

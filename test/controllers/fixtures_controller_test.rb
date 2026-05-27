@@ -35,6 +35,16 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     assert_select "button", "Simulate Match"
   end
 
+  test "layout navigation keeps current career from nested route" do
+    Current.user.careers.create!(name: "Newer Career", current_date: Date.new(2026, 1, 1), status: :active)
+
+    get career_fixture_path(@career, @fixture, details: true)
+
+    assert_response :success
+    assert_select ".game-nav a[href='#{career_path(@career)}']", text: "Career"
+    assert_select ".game-nav a[href='#{career_club_path(@career)}']", text: "Club"
+  end
+
   test "show fixture history uses two past current and two next matches" do
     create_history_fixture(home_club: @fixture.home_club, away_club: create_club("Home Past One"), scheduled_on: "2026-01-18", round: 1)
     create_history_fixture(home_club: create_club("Home Past Two"), away_club: @fixture.home_club, scheduled_on: "2026-01-25", round: 2)
@@ -125,9 +135,10 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     get career_fixture_path(@career, @fixture, details: true)
 
     assert_response :success
-    assert_select "h2", "Live Matchday"
-    assert_select ".matchday-fixture-card", 2
+    assert_select "h2", { text: "Live Matchday", count: 0 }
+    assert_select ".matchday-fixture-card", 0
     assert_select "th", "Move"
+    assert_select "a", "Back to matchday"
   end
 
   test "show completed fixture links next match" do

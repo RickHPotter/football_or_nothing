@@ -4,7 +4,7 @@ import { Turbo } from "@hotwired/turbo-rails"
 export default class extends Controller {
   static targets = ["minute", "status"]
   static values = {
-    interval: { type: Number, default: 250 },
+    interval: { type: Number, default: 500 },
     url: String
   }
 
@@ -30,8 +30,11 @@ export default class extends Controller {
       const payload = await response.json()
       this.updateClock(payload)
       this.updateScores(payload)
+      this.updateEvents(payload)
       if (payload.status_key !== "running") {
-        Turbo.visit(window.location.href, { action: "replace" })
+        const url = new URL(window.location.href)
+        url.searchParams.set("details", "true")
+        Turbo.visit(url.toString(), { action: "replace" })
       }
     } finally {
       this.requesting = false
@@ -48,5 +51,20 @@ export default class extends Controller {
       const target = this.element.querySelector(`[data-fixture-score-id="${fixtureId}"]`)
       if (target) target.textContent = fixture.scoreline
     })
+  }
+
+  updateEvents(payload) {
+    Object.entries(payload.fixtures).forEach(([fixtureId, fixture]) => {
+      const target = this.element.querySelector(`[data-fixture-events-id="${fixtureId}"]`)
+      if (!target) return
+
+      target.replaceChildren(...fixture.events.map((event) => this.eventElement(event)))
+    })
+  }
+
+  eventElement(event) {
+    const item = document.createElement("li")
+    item.textContent = `${event.minute}' ${event.event_type} - ${event.description}`
+    return item
   }
 }

@@ -37,7 +37,9 @@
           </div>
 
           <% if Current.user %>
-            <% nav_career = Current.user.careers.includes(manager: { current_manager_contract: :club }).order(created_at: :desc).first %>
+            <% nav_career_id = params[:career_id].presence || (params[:id] if controller_name == "careers") %>
+            <% nav_career = Current.user.careers.includes(manager: { current_manager_contract: :club }).find_by(id: nav_career_id) if nav_career_id %>
+            <% nav_career ||= Current.user.careers.includes(manager: { current_manager_contract: :club }).order(created_at: :desc).first %>
             <nav class="game-nav">
               <%= game_nav_link "Home", root_path %>
               <% if nav_career %>

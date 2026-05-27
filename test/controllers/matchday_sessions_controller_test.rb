@@ -67,6 +67,8 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".substitution-bench", minimum: 1
     assert_select "input[type='submit'][value='Confirm substitution']", 0
     assert_select ".formation-player-token[draggable='true']", minimum: 11
+    assert_select ".formation-player-token[data-action*='drop->lineup-substitution#dropOnToken']", minimum: 11
+    assert_select ".bench-player-token[data-action*='dragstart->lineup-substitution#dragToken']", minimum: 1
     assert_select ".lineup-action-form", 2
     assert_select "a", { text: "Back to matchday", count: 0 }
     assert_select "a", { text: "Back to club", count: 0 }

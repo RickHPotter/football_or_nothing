@@ -51,7 +51,10 @@ class Fixture < ApplicationRecord
       record.formation = "4-4-2"
       record.mentality = :balanced
     end
-    return if lineup.lineup_athletes.exists?
+    if lineup.lineup_athletes.exists?
+      LineupSquadCompleter.call(lineup:, date: scheduled_on) if match_state&.not_started?
+      return
+    end
 
     LineupBuilder.call(lineup:, date: scheduled_on)
   end

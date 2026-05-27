@@ -94,6 +94,26 @@ class FixtureMatchSetupTest < ActiveSupport::TestCase
     assert(lineup.reserves.all? { |lineup_athlete| lineup_athlete.lineup_slot_key.start_with?("res_") })
   end
 
+  test "completes older scheduled lineups with missing bench and reserve players" do
+    fixture = fixtures(:one)
+    club = fixture.home_club
+    club.athlete_contracts.update_all(current: false)
+    add_balanced_squad_depth(club)
+    6.times { |index| add_depth_player(club, :central_midfielder, 100 + index) }
+    fixture.ensure_match_setup!
+    lineup = fixture.lineup_for(club)
+    lineup.reserves.destroy_all
+    lineup.bench.offset(7).destroy_all
+
+    assert_equal 7, lineup.reload.bench.count
+    assert_empty lineup.reserves
+
+    fixture.ensure_match_setup!
+
+    assert_equal 9, lineup.reload.bench.count
+    assert_equal 5, lineup.reserves.count
+  end
+
   test "formation templates define eleven starter slots" do
     LineupTemplate::TEMPLATES.each_key do |formation|
       slots = LineupTemplate.for(formation)

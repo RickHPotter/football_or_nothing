@@ -191,6 +191,9 @@ Implemented:
   `Substitutes`.
 - Pre-match swaps can move players between the XI, Bench, and non-participating
   Substitutes without counting as live substitutions.
+- Existing scheduled lineups created before the nine-player bench change are
+  completed idempotently on access, filling missing Bench and Substitute records
+  without rebuilding the selected XI.
 
 Slice 7: live timeline and board refresh integration
 - After a successful substitution, the focused Live Match Screen should show the

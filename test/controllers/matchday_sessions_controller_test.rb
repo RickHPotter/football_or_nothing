@@ -62,8 +62,21 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".fixture-three-column"
     assert_select "input[type='submit'][value='Update tactics']"
-    assert_select "a", "Back to matchday"
+    assert_select "a", { text: "Back to matchday", count: 0 }
     assert_select "a", { text: "Back to club", count: 0 }
+  end
+
+  test "shows resume action on paused live matchday board" do
+    session = MatchdaySessionStarter.call(career: @career, fixture: @fixture)
+    MatchdayClock.start(session, now: Time.current)
+    MatchdayClock.pause(session, now: Time.current + 2.seconds)
+
+    get career_fixture_path(@career, @fixture)
+
+    assert_response :success
+    assert_select "h2", "Live Matchday"
+    assert_select "button", "Resume Matchday"
+    assert_select ".fixture-three-column", 0
   end
 
   test "focuses a simultaneous fixture outside manager club" do
@@ -89,7 +102,8 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "input[type='submit'][value='Update tactics']", 0
-    assert_select ".empty-state", /Manager decisions are only available for your club/
+    assert_select "input[disabled][value='4-4-2']", minimum: 1
+    assert_select "input[disabled][value='Balanced']", minimum: 1
   end
 
   test "finalizes running matchday when server clock reaches full time" do

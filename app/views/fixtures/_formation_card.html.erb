@@ -1,0 +1,27 @@
+<section class="panel">
+  <div class="panel-header">
+    <h2><%= title %></h2>
+    <% if lineup %>
+      <span class="badge"><%= lineup.formation %></span>
+    <% end %>
+  </div>
+  <div class="panel-body">
+    <% if lineup&.starters&.any? %>
+      <div class="formation-pitch">
+        <% LineupBoard.rows_for(lineup).each do |row| %>
+          <div class="formation-row" style="grid-template-columns: repeat(<%= [ row.length, 1 ].max %>, minmax(0, 1fr));">
+            <% row.each do |lineup_athlete| %>
+              <div class="formation-player">
+                <span class="formation-slot"><%= lineup_athlete.lineup_slot_label %></span>
+                <strong><%= lineup_athlete.athlete.last_name %></strong>
+                <small><%= lineup_athlete.position.humanize %> · <%= lineup_athlete.tactical_role.humanize %></small>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="empty-state">No lineup selected.</p>
+    <% end %>
+  </div>
+</section>

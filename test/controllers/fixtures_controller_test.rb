@@ -24,15 +24,19 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     assert_select ".match-status-badge", @fixture.status.humanize
     assert_select "h2", "Home Formation"
     assert_select "h2", "Away Formation"
-    assert_select "h2", "Manager Decisions"
+    assert_select "h2", { text: "Manager Decisions", count: 2 }
+    assert_select "h2", "Joint History"
     assert_select "h2", { text: "Timeline", count: 0 }
     assert_select "h2", "Standings"
-    assert_select "h2", { text: "History", count: 2 }
-    assert_select "th", "#"
-    assert_select "li.font-bold", { text: /#{@fixture.home_club.name} vs #{@fixture.away_club.name}/, count: 2 }
+    %w[# Club Pts MP W D L GD].each { |heading| assert_select "th", heading }
+    assert_select ".standing-club", minimum: 1
+    assert_select ".joint-history-item.is-current", { text: /#{@fixture.home_club.name} vs #{@fixture.away_club.name}/, count: 1 }
     assert_select "tr.font-bold", 2
     assert_select "button", "Start Matchday Clock"
     assert_select "button", "Simulate Match"
+    assert_select "input[type='submit'][value='Update tactics']", 1
+    assert_select "input[disabled][value='4-4-2']"
+    assert_select "input[disabled][value='Balanced']"
   end
 
   test "layout navigation keeps current career from nested route" do
@@ -46,7 +50,8 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show fixture history uses two past current and two next matches" do
-    create_history_fixture(home_club: @fixture.home_club, away_club: create_club("Home Past One"), scheduled_on: "2026-01-18", round: 1)
+    completed_fixture = create_history_fixture(home_club: @fixture.home_club, away_club: create_club("Home Past One"), scheduled_on: "2026-01-18", round: 1)
+    completed_fixture.update!(status: :completed, home_goals: 2, away_goals: 1)
     create_history_fixture(home_club: create_club("Home Past Two"), away_club: @fixture.home_club, scheduled_on: "2026-01-25", round: 2)
     create_history_fixture(home_club: @fixture.home_club, away_club: create_club("Home Next One"), scheduled_on: "2026-02-08", round: 4)
     create_history_fixture(home_club: create_club("Home Next Two"), away_club: @fixture.home_club, scheduled_on: "2026-02-15", round: 5)
@@ -58,13 +63,35 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     get career_fixture_path(@career, @fixture)
 
     assert_response :success
-    assert_select ".panel", text: /History/, count: 2
-    assert_select ".panel ol", count: 2 do |lists|
-      lists.each do |list|
-        assert_select list, "li", 5
-        assert_select list, "li.font-bold", 1
-      end
-    end
+    assert_select "h2", "Joint History"
+    assert_select ".joint-history-item", minimum: 5
+    assert_select ".joint-history-item.is-current", 1
+    assert_select ".joint-history-item.is-away", minimum: 1
+    assert_select ".badge", "Completed"
+    assert_select ".history-score", "2-1"
+    assert_select ".history-score.is-live", 0
+  end
+
+  test "show fixture marks active matchday as under way with live score" do
+    @fixture.match_events.destroy_all
+    session = MatchdaySessionStarter.call(career: @career, fixture: @fixture)
+    MatchdayClock.start(session, now: Time.current)
+    @fixture.match_events.create!(
+      club: @fixture.home_club,
+      athlete: athletes(:one),
+      minute: 1,
+      event_type: :goal,
+      description: "Joao Pereira scored for Aurora FC."
+    )
+
+    get career_fixture_path(@career, @fixture, details: true)
+
+    assert_response :success
+    assert_select ".match-status-badge", "Under Way"
+    assert_select ".match-scoreline", "1-0"
+    assert_select "h2", "Timeline"
+    assert_select "h2", { text: "Joint History", count: 0 }
+    assert_select ".timeline-message.is-home", /Joao Pereira scored/
   end
 
   test "start pause and resume match clock" do
@@ -138,7 +165,7 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", { text: "Live Matchday", count: 0 }
     assert_select ".matchday-fixture-card", 0
     assert_select "th", "Move"
-    assert_select "a", "Back to matchday"
+    assert_select "a", "Show Matchday"
   end
 
   test "show completed fixture links next match" do
@@ -157,7 +184,7 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h2", "Timeline"
     assert_select "h2", { text: "Manager Decisions", count: 0 }
-    assert_select "li", /Joao Pereira scored/
+    assert_select ".timeline-message.is-home", /Joao Pereira scored/
     assert_select "button", "Advance to next match"
   end
 

@@ -191,8 +191,7 @@ class FixturesController < ApplicationController
     @manager_decisions = FixtureManagerDecisions.new(fixture: @fixture, club: @club, lineup: @managed_lineup, matchday_session: @matchday_session)
     @home_lineup = @fixture.lineup_for(@fixture.home_club)
     @away_lineup = @fixture.lineup_for(@fixture.away_club)
-    @home_history_fixtures = FixtureHistory.call(fixture: @fixture, club: @fixture.home_club)
-    @away_history_fixtures = FixtureHistory.call(fixture: @fixture, club: @fixture.away_club)
+    @joint_history_fixtures = FixtureJointHistory.call(fixture: @fixture)
   end
 
   def set_career
@@ -214,9 +213,10 @@ class FixturesController < ApplicationController
   end
 
   def ensure_match_setup
-    return unless @fixture.involves?(@club)
+    return if @fixture.completed?
+    return unless @fixture.involves?(@club) || matchday_session_for(@fixture)&.includes_fixture?(@fixture)
 
-    @fixture.ensure_match_setup! unless @fixture.completed?
+    @fixture.ensure_match_setup!
   end
 
   def tactics_params

@@ -1,0 +1,23 @@
+<div class="fixture-three-column">
+  <div class="fixture-stack">
+    <%= render "fixtures/team_card", club: @fixture.home_club, side: "Home" %>
+    <%= render "fixtures/formation_card", title: "Home Formation", lineup: @home_lineup %>
+    <%= render "fixtures/manager_decisions_card", club: @fixture.home_club unless @fixture.completed? %>
+  </div>
+
+  <div class="fixture-stack">
+    <%= render "fixtures/score_card" %>
+    <% if @fixture.completed? || fixture_under_way?(@fixture, matchday_session: @matchday_session) %>
+      <%= render "fixtures/timeline_card" %>
+    <% else %>
+      <%= render "fixtures/joint_history_card" %>
+    <% end %>
+    <%= render "fixtures/standings_card" %>
+  </div>
+
+  <div class="fixture-stack">
+    <%= render "fixtures/team_card", club: @fixture.away_club, side: "Away" %>
+    <%= render "fixtures/formation_card", title: "Away Formation", lineup: @away_lineup %>
+    <%= render "fixtures/manager_decisions_card", club: @fixture.away_club unless @fixture.completed? %>
+  </div>
+</div>

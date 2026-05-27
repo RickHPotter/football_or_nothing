@@ -167,14 +167,31 @@ Verified
   live clock instead of only at full time.
 - Full-time finalization preserves the live-created timeline and scores fixtures
   from the visible goal events already applied by the live clock.
+- Fixture detail badges distinguish Scheduled, Under Way, and Completed states.
+- History rows show the state badge first, then a compact score chip for
+  completed or live fixtures; live score chips use the yellow result tone.
+- Fixture detail standings show #, Club with crest, Pts, MP, W, D, L, and GD.
+- Completed-match timeline events render as message rows aligned to the home or
+  away side based on the event club.
+- Fixture pages now map to named screen partials: Match Screen, Live Matchday
+  Screen, and the focused Live Match Screen that reuses the Match Screen layout.
+- Match Screen side columns render club identity, formation, and Manager
+  Decisions before and during matches. Only the manager's club exposes enabled
+  controls; the opposition side shows read-only formation and mentality.
+- Completed Match Screens hide Manager Decisions cards.
+- Scheduled Match Screens render Joint History in the center column, with home
+  history left, away history right, and the current fixture centered and
+  emphasized.
+- Under Way and Completed Match Screens render Timeline in the center column.
 
 
 Frontend Target
 ---------------
 Before kickoff:
 - Three columns: home club identity, center score/actions, away club identity.
-- Home and away columns include formation and History below the identity block.
-- Center column includes manager decisions and numbered standings below the
+- Home and away columns include formation and side-specific Manager Decisions
+  below the identity block.
+- Center column includes Joint History and numbered standings below the
   score/action block.
 
 Live mode:
@@ -186,7 +203,8 @@ Live mode:
 Completed mode:
 - Matchday fixture badges appear at the top.
 - Clicking a badge changes the focused fixture.
-- First three-column block: home detail, timeline, away detail.
+- Match Screen keeps side Manager Decisions disabled/enabled by club ownership
+  and swaps Joint History for Timeline in the center column.
 - Final standings render as a full-width block with position movement hints.
 
 

@@ -300,6 +300,54 @@
     @apply truncate;
   }
 
+  .history-score {
+    @apply inline-flex min-w-12 items-center justify-center border border-console-700 bg-pitch-800 px-2 py-0.5 text-xs font-black uppercase text-white;
+  }
+
+  .history-score.is-live {
+    @apply border-result-300 bg-result-300 text-board-900;
+  }
+
+  .standing-club {
+    @apply flex min-w-0 items-center gap-2;
+  }
+
+  .timeline-list {
+    @apply grid gap-2;
+  }
+
+  .timeline-message {
+    @apply max-w-[85%] text-left;
+  }
+
+  .timeline-message.is-away {
+    @apply ml-auto text-right;
+  }
+
+  .timeline-message p {
+    @apply mt-1 text-sm font-bold normal-case text-board-900;
+  }
+
+  .joint-history-list {
+    @apply grid gap-2;
+  }
+
+  .joint-history-item {
+    @apply grid max-w-[85%] gap-1 text-left;
+  }
+
+  .joint-history-item.is-away {
+    @apply ml-auto text-right;
+  }
+
+  .joint-history-item.is-current {
+    @apply mx-auto max-w-full text-center font-black;
+  }
+
+  .joint-history-item small {
+    @apply text-xs font-bold text-board-700;
+  }
+
   .match-team-card {
     @apply flex min-h-24 min-w-0 items-center gap-3 border border-board-200 bg-board-900 p-3 text-board-50 shadow-line;
   }

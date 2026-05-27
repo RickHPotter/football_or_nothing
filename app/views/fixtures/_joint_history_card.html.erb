@@ -1,0 +1,33 @@
+<section class="panel">
+  <div class="panel-header">
+    <h2>Joint History</h2>
+  </div>
+  <div class="panel-body">
+    <% if @joint_history_fixtures.any? %>
+      <ol class="joint-history-list">
+        <% @joint_history_fixtures.each do |fixture| %>
+          <% history_score = fixture_display_score(fixture, matchday_session: @matchday_session, scorelines: @matchday_scorelines) %>
+          <% item_classes = [ "joint-history-item" ] %>
+          <% item_classes << "is-current" if fixture == @fixture %>
+          <% item_classes << "is-away" if fixture != @fixture && fixture.involves?(@fixture.away_club) && !fixture.involves?(@fixture.home_club) %>
+          <% away_item = item_classes.include?("is-away") %>
+          <li class="<%= item_classes.join(" ") %>">
+            <div>
+              <% if away_item && history_score %>
+                <span class="history-score <%= "is-live" if fixture_under_way?(fixture, matchday_session: @matchday_session) %>"><%= history_score %></span>
+              <% end %>
+              <span class="badge <%= fixture_status_badge_class(fixture, matchday_session: @matchday_session) %>"><%= fixture_status_label(fixture, matchday_session: @matchday_session) %></span>
+              <% if !away_item && history_score %>
+                <span class="history-score <%= "is-live" if fixture_under_way?(fixture, matchday_session: @matchday_session) %>"><%= history_score %></span>
+              <% end %>
+            </div>
+            <strong><%= fixture.home_club.name %> vs <%= fixture.away_club.name %></strong>
+            <small><%= fixture.scheduled_on %> · Round <%= fixture.round %></small>
+          </li>
+        <% end %>
+      </ol>
+    <% else %>
+      <p class="empty-state">No joint history yet.</p>
+    <% end %>
+  </div>
+</section>

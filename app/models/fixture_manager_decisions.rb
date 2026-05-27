@@ -16,6 +16,7 @@ class FixtureManagerDecisions
   end
 
   def message
+    return "Match completed." if fixture.completed?
     return "Pause matchday to make decisions." if matchday_session&.running?
     return "Manager decisions are only available for your club." unless fixture.involves?(club)
 

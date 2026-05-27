@@ -1,0 +1,9 @@
+<section class="match-team-card <%= "match-team-card-away" if side == "Away" %>">
+  <% if club.crest.attached? %>
+    <%= image_tag club.crest, class: "club-crest-lg" %>
+  <% end %>
+  <div>
+    <div class="match-team-name"><%= club.name %></div>
+    <div class="match-team-meta"><%= side %></div>
+  </div>
+</section>

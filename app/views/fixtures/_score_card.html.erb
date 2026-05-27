@@ -1,0 +1,24 @@
+<section class="match-score-card">
+  <span class="match-status-badge badge <%= fixture_status_badge_class(@fixture, matchday_session: @matchday_session) %>"><%= fixture_status_label(@fixture, matchday_session: @matchday_session) %></span>
+  <div class="match-scoreline"><%= fixture_display_score(@fixture, matchday_session: @matchday_session, scorelines: @matchday_scorelines) || "vs" %></div>
+  <p><%= @fixture.tournament_edition.name %> · Round <%= @fixture.round %></p>
+  <p><%= @fixture.scheduled_on %> · <%= @fixture.stadium.name %></p>
+
+  <div class="mt-3 btn-row justify-center">
+    <% if @fixture.completed? %>
+      <% if @matchday_session %>
+        <%= link_to "Show Matchday", career_fixture_path(@career, @fixture), class: "btn btn-secondary" %>
+      <% end %>
+      <% if @next_fixture %>
+        <%= button_to "Advance to next match", advance_career_path(@career) %>
+      <% end %>
+    <% elsif @matchday_session&.running? %>
+      <%= button_to "Pause Matchday", pause_matchday_career_fixture_path(@career, @fixture), method: :patch %>
+    <% elsif @matchday_session&.paused? %>
+      <%= button_to "Resume Matchday", resume_matchday_career_fixture_path(@career, @fixture), method: :patch %>
+    <% else %>
+      <%= button_to "Start Matchday Clock", start_matchday_career_fixture_path(@career, @fixture) %>
+      <%= button_to "Simulate Match", simulate_career_fixture_path(@career, @fixture), class: "btn btn-secondary" %>
+    <% end %>
+  </div>
+</section>

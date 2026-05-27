@@ -1,0 +1,51 @@
+<section class="panel">
+  <div class="panel-header">
+    <h2>Standings</h2>
+  </div>
+  <div class="panel-body">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Club</th>
+            <th>Pts</th>
+            <th>MP</th>
+            <th>W</th>
+            <th>D</th>
+            <th>L</th>
+            <th>GD</th>
+            <% if @standing_movements.any? %>
+              <th>Move</th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% @standings.each_with_index do |participation, index| %>
+            <tr class="<%= "font-bold" if @fixture.involves?(participation.club) %>">
+              <td><%= index + 1 %></td>
+              <td>
+                <span class="standing-club">
+                  <% if participation.club.crest.attached? %>
+                    <%= image_tag participation.club.crest, class: "club-crest-sm" %>
+                  <% end %>
+                  <%= participation.club.name %>
+                </span>
+              </td>
+              <td><strong><%= participation.points %></strong></td>
+              <td><%= participation.played %></td>
+              <td><%= participation.wins %></td>
+              <td><%= participation.draws %></td>
+              <td><%= participation.losses %></td>
+              <td><%= participation.goal_difference %></td>
+              <% if @standing_movements.any? %>
+                <% movement = @standing_movements.fetch(participation.club_id, 0) %>
+                <td><%= movement.positive? ? "+#{movement}" : movement %></td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

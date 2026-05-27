@@ -32,9 +32,9 @@ class FixturesControllerTest < ActionDispatch::IntegrationTest
     assert_select ".standing-club", minimum: 1
     assert_select ".joint-history-item.is-current", { text: /#{@fixture.home_club.name} vs #{@fixture.away_club.name}/, count: 1 }
     assert_select "tr.font-bold", 2
-    assert_select "button", "Start Matchday Clock"
-    assert_select "button", "Simulate Match"
     assert_select "input[type='submit'][value='Update tactics']", 1
+    assert_select "input[type='submit'][value='Swap players']", 0
+    assert_select "input[type='submit'][value='Make substitution']", 0
     assert_select "input[disabled][value='4-4-2']"
     assert_select "input[disabled][value='Balanced']"
   end

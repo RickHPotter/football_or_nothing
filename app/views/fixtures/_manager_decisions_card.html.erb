@@ -27,18 +27,6 @@
         </div>
 
         <% if lineup_options.many? %>
-          <%= form_with url: swap_lineup_athletes_career_fixture_path(@career, @fixture), method: :patch, class: "form-stack mt-4" do |form| %>
-            <div>
-              <%= form.label :from_lineup_athlete_id, "Slot" %>
-              <%= form.select(:from_lineup_athlete_id, lineup_options) %>
-            </div>
-            <div>
-              <%= form.label :to_lineup_athlete_id, "Swap with" %>
-              <%= form.select(:to_lineup_athlete_id, lineup_options) %>
-            </div>
-            <%= form.submit "Swap players" %>
-          <% end %>
-
           <%= form_with url: update_lineup_role_career_fixture_path(@career, @fixture), method: :patch, class: "form-stack mt-4" do |form| %>
             <div>
               <%= form.label :lineup_athlete_id, "Player role" %>
@@ -50,20 +38,6 @@
             </div>
             <%= form.submit "Set role" %>
           <% end %>
-        <% end %>
-      <% end %>
-
-      <% if @managed_lineup.starters.any? && @managed_lineup.bench.any? %>
-        <%= form_with url: substitute_career_fixture_path(@career, @fixture), method: :post, class: "form-stack mt-4" do |form| %>
-          <div>
-            <%= form.label :off_lineup_athlete_id, "Player off" %>
-            <%= form.select(:off_lineup_athlete_id, @managed_lineup.starters.map { |lineup_athlete| [ "#{lineup_athlete.athlete.first_name} #{lineup_athlete.athlete.last_name}", lineup_athlete.id ] }) %>
-          </div>
-          <div>
-            <%= form.label :on_lineup_athlete_id, "Player on" %>
-            <%= form.select(:on_lineup_athlete_id, @managed_lineup.bench.where(substituted_on_minute: nil, substituted_off_minute: nil).map { |lineup_athlete| [ "#{lineup_athlete.athlete.first_name} #{lineup_athlete.athlete.last_name}", lineup_athlete.id ] }) %>
-          </div>
-          <%= form.submit "Make substitution" %>
         <% end %>
       <% end %>
     <% elsif managed_side %>

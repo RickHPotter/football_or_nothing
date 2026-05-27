@@ -3,7 +3,7 @@ Phase 30 - Live Substitution Controls
 
 Status
 ------
-Slice 1 complete. Slices 2 and 3 are in progress.
+Slices 1 and 2 complete. Slice 3 is in progress.
 
 
 Goal
@@ -75,6 +75,14 @@ Slice 2: split pre-match swaps from live substitutions
 - Preserve formation and mentality controls where they still make sense.
 - Add tests that live paused screens do not render the old swap/substitution
   form controls.
+
+Implemented:
+- Manager Decisions no longer renders the old `Swap players` or `Make
+  substitution` form sections.
+- Existing server endpoints still exist for now, but successful lineup actions
+  no longer emit flash notices.
+- Regression coverage verifies the old form submit buttons are absent from the
+  Match Screen.
 
 Slice 3: pitch formation component
 - Replace the current compact formation list board with a richer pitch visual.

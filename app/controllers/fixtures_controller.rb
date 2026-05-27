@@ -98,7 +98,7 @@ class FixturesController < ApplicationController
     lineup.update!(tactics_params)
     LineupBuilder.call(lineup:) if @fixture.match_state.not_started?
 
-    redirect_to career_fixture_path(@career, @fixture), notice: "Tactics updated."
+    redirect_to career_fixture_path(@career, @fixture)
   end
 
   def regenerate_lineup
@@ -109,7 +109,7 @@ class FixturesController < ApplicationController
 
     LineupBuilder.call(lineup: @fixture.lineup_for(@club))
 
-    redirect_to career_fixture_path(@career, @fixture), notice: "Lineup regenerated."
+    redirect_to career_fixture_path(@career, @fixture)
   end
 
   def swap_lineup_athletes
@@ -124,7 +124,7 @@ class FixturesController < ApplicationController
       to_lineup_athlete_id: params.expect(:to_lineup_athlete_id)
     )
 
-    redirect_to career_fixture_path(@career, @fixture), notice: "Lineup updated."
+    redirect_to career_fixture_path(@career, @fixture)
   rescue ActiveRecord::RecordNotFound
     redirect_to career_fixture_path(@career, @fixture), alert: "Choose two players from your lineup."
   end
@@ -143,7 +143,7 @@ class FixturesController < ApplicationController
 
     @fixture.lineup_for(@club).lineup_athletes.find(params.expect(:lineup_athlete_id)).update!(tactical_role:)
 
-    redirect_to career_fixture_path(@career, @fixture), notice: "Tactical role updated."
+    redirect_to career_fixture_path(@career, @fixture)
   rescue ActiveRecord::RecordNotFound
     redirect_to career_fixture_path(@career, @fixture), alert: "Choose one player from your lineup."
   end
@@ -165,7 +165,7 @@ class FixturesController < ApplicationController
       increment_substitution_count!
     end
 
-    redirect_to career_fixture_path(@career, @fixture), notice: "Substitution made."
+    redirect_to career_fixture_path(@career, @fixture)
   rescue ActiveRecord::RecordNotFound
     redirect_to career_fixture_path(@career, @fixture), alert: "Choose one active starter and one unused substitute."
   end

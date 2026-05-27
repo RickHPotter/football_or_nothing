@@ -22,6 +22,7 @@ class FixtureLineupControlsTest < ActionDispatch::IntegrationTest
     }
 
     assert_redirected_to career_fixture_path(@career, @fixture)
+    assert_nil flash[:notice]
     lineup = @fixture.reload.lineup_for(@career.manager.current_club)
     assert_equal "4-3-3", lineup.formation
     assert lineup.attacking?
@@ -37,7 +38,7 @@ class FixtureLineupControlsTest < ActionDispatch::IntegrationTest
     post regenerate_lineup_career_fixture_path(@career, @fixture)
 
     assert_redirected_to career_fixture_path(@career, @fixture)
-    assert_equal "Lineup regenerated.", flash[:notice]
+    assert_nil flash[:notice]
     assert_equal 11, lineup.reload.starters.count
     assert_not_equal original_lineup_athlete_ids.sort, lineup.lineup_athletes.pluck(:id).sort
   end
@@ -64,7 +65,7 @@ class FixtureLineupControlsTest < ActionDispatch::IntegrationTest
     }
 
     assert_redirected_to career_fixture_path(@career, @fixture)
-    assert_equal "Lineup updated.", flash[:notice]
+    assert_nil flash[:notice]
     assert_not starter.reload.starter?
     assert_equal "rb", substitute.reload.lineup_slot_key
     assert substitute.starter?
@@ -101,7 +102,7 @@ class FixtureLineupControlsTest < ActionDispatch::IntegrationTest
     }
 
     assert_redirected_to career_fixture_path(@career, @fixture)
-    assert_equal "Tactical role updated.", flash[:notice]
+    assert_nil flash[:notice]
     assert starter.reload.attack?
   end
 

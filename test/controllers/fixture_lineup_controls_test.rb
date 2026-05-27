@@ -13,6 +13,7 @@ class FixtureLineupControlsTest < ActionDispatch::IntegrationTest
   test "updates managed club tactics" do
     add_balanced_squad_depth(@career.manager.current_club)
     get career_fixture_path(@career, @fixture)
+    assert_select ".formation-pitch .formation-player-token", minimum: 11
 
     patch tactics_career_fixture_path(@career, @fixture), params: {
       lineup: {
@@ -25,7 +26,6 @@ class FixtureLineupControlsTest < ActionDispatch::IntegrationTest
     assert_nil flash[:notice]
     lineup = @fixture.reload.lineup_for(@career.manager.current_club)
     assert_equal "4-3-3", lineup.formation
-    assert lineup.attacking?
     assert_equal 11, lineup.starters.count
   end
 

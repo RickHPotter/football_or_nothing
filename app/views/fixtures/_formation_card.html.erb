@@ -8,13 +8,35 @@
   <div class="panel-body">
     <% if lineup&.starters&.any? %>
       <div class="formation-pitch">
+        <div class="formation-pitch-field">
+          <div class="formation-center-circle"></div>
+        </div>
         <% LineupBoard.rows_for(lineup).each do |row| %>
           <div class="formation-row" style="grid-template-columns: repeat(<%= [ row.length, 1 ].max %>, minmax(0, 1fr));">
             <% row.each do |lineup_athlete| %>
-              <div class="formation-player">
-                <span class="formation-slot"><%= lineup_athlete.lineup_slot_label %></span>
-                <strong><%= lineup_athlete.athlete.last_name %></strong>
-                <small><%= lineup_athlete.position.humanize %> · <%= lineup_athlete.tactical_role.humanize %></small>
+              <% athlete = lineup_athlete.athlete %>
+              <% player_events = (@events || []).select { |event| event.athlete_id == athlete.id && event.club_id == lineup.club_id } %>
+              <div class="formation-player-token">
+                <div class="formation-shirt"><%= lineup_athlete.lineup_slot_label %></div>
+                <div class="formation-player-body">
+                  <strong><%= athlete.last_name %></strong>
+                  <small><%= lineup_athlete.position.humanize %> · <%= lineup_athlete.tactical_role.humanize %></small>
+                  <div class="formation-player-meta">
+                    <span><%= athlete.condition %>%</span>
+                    <% if lineup_athlete.substituted_on_minute %>
+                      <span>ON <%= lineup_athlete.substituted_on_minute %>'</span>
+                    <% end %>
+                    <% if player_events.any?(&:yellow_card?) %>
+                      <span>YC</span>
+                    <% end %>
+                    <% if player_events.any?(&:red_card?) %>
+                      <span>RC</span>
+                    <% end %>
+                    <% if player_events.any?(&:injury?) || athlete.injured? %>
+                      <span>INJ</span>
+                    <% end %>
+                  </div>
+                </div>
               </div>
             <% end %>
           </div>

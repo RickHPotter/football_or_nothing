@@ -3,7 +3,7 @@ Phase 30 - Live Substitution Controls
 
 Status
 ------
-Slices 1 and 2 complete. Slice 3 is in progress.
+Slices 1 through 3 complete.
 
 
 Goal
@@ -96,6 +96,15 @@ Slice 3: pitch formation component
     available
 - Make home and away pitch components visually consistent.
 - Keep the layout stable on desktop and mobile.
+
+Implemented:
+- Formation cards now render a field-like pitch with boundary lines, center
+  circle, penalty boxes, and striped grass treatment.
+- Starter rows still come from `LineupBoard` and `LineupTemplate`.
+- Each starter renders as a player token with shirt/slot label, player name,
+  position, tactical role, condition, and existing event/substitution markers.
+- Controller coverage verifies the pitch field and player token structure
+  renders on fixture detail.
 
 Slice 4: bench/substitute rail
 - Render available substitutes below each pitch.

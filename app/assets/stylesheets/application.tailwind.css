@@ -212,27 +212,68 @@
   }
 
   .formation-pitch {
-    @apply grid gap-2 border-2 border-board-50 bg-pitch-800 p-2 shadow-line;
+    @apply relative isolate grid min-h-96 overflow-hidden border-2 border-board-50 bg-pitch-800 p-3 shadow-line;
+    background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 50%, rgba(0, 0, 0, 0.04) 50%);
+    background-size: 4rem 100%;
+  }
+
+  .formation-pitch::before {
+    content: "";
+    @apply pointer-events-none absolute inset-x-3 top-1/2 border-t-2 border-board-50/70;
+  }
+
+  .formation-pitch-field {
+    @apply pointer-events-none absolute inset-3 border-2 border-board-50/70;
+  }
+
+  .formation-pitch-field::before,
+  .formation-pitch-field::after {
+    content: "";
+    @apply absolute left-1/2 h-16 w-32 -translate-x-1/2 border-2 border-board-50/70;
+  }
+
+  .formation-pitch-field::before {
+    @apply top-0 border-t-0;
+  }
+
+  .formation-pitch-field::after {
+    @apply bottom-0 border-b-0;
+  }
+
+  .formation-center-circle {
+    @apply absolute left-1/2 top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-board-50/70;
   }
 
   .formation-row {
-    @apply grid items-stretch gap-2;
+    @apply relative z-10 grid items-center gap-2;
   }
 
-  .formation-player {
-    @apply min-w-0 border border-console-700 bg-white px-2 py-1.5 text-center text-xs shadow-line;
+  .formation-player-token {
+    @apply mx-auto flex min-h-16 w-full min-w-0 max-w-32 items-center gap-2 border border-console-700 bg-white/95 px-2 py-1.5 text-left text-xs shadow-line;
   }
 
-  .formation-player strong {
+  .formation-player-body {
+    @apply min-w-0 flex-1;
+  }
+
+  .formation-player-token strong {
     @apply block truncate text-sm text-board-900;
   }
 
-  .formation-player small {
+  .formation-player-token small {
     @apply block truncate font-semibold text-board-700;
   }
 
-  .formation-slot {
-    @apply mx-auto mb-1 flex h-6 w-8 items-center justify-center border border-result-300 bg-board-900 text-xs font-black text-result-300;
+  .formation-shirt {
+    @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-result-300 bg-board-900 text-[0.65rem] font-black uppercase text-result-300;
+  }
+
+  .formation-player-meta {
+    @apply mt-1 flex flex-wrap gap-1;
+  }
+
+  .formation-player-meta span {
+    @apply border border-board-200 bg-board-50 px-1 text-[0.625rem] font-black uppercase leading-4 text-board-700;
   }
 
   .match-hero {

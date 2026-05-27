@@ -276,12 +276,8 @@
     @apply border border-board-200 bg-board-50 px-1 text-[0.625rem] font-black uppercase leading-4 text-board-700;
   }
 
-  .substitution-form {
-    @apply mb-3;
-  }
-
-  .substitution-toolbar {
-    @apply grid gap-2 border border-result-300 bg-result-100 p-2 text-xs font-black uppercase text-board-900 sm:grid-cols-[1fr_auto] sm:items-center;
+  .lineup-action-form {
+    @apply hidden;
   }
 
   .substitution-bench {
@@ -301,7 +297,7 @@
   }
 
   .bench-player-token[draggable="true"],
-  .formation-player-token[data-lineup-substitution-target~="starter"] {
+  .formation-player-token[draggable="true"] {
     @apply cursor-pointer hover:border-result-300 hover:bg-result-100;
   }
 

@@ -113,20 +113,19 @@ class FixturesController < ApplicationController
   end
 
   def swap_lineup_athletes
-    unless @fixture.match_state.not_started?
-      redirect_to career_fixture_path(@career, @fixture), alert: "Lineups can only be changed before kickoff."
-      return
-    end
-
-    LineupSwapper.call(
-      lineup: @fixture.lineup_for(@club),
+    context = FixtureLineupSwapProcessor.call(
+      fixture: @fixture,
+      club: @club,
+      matchday_session: matchday_session_for(@fixture),
       from_lineup_athlete_id: params.expect(:from_lineup_athlete_id),
       to_lineup_athlete_id: params.expect(:to_lineup_athlete_id)
     )
 
-    redirect_to career_fixture_path(@career, @fixture)
+    redirect_to lineup_swap_redirect_path(context)
   rescue ActiveRecord::RecordNotFound
-    redirect_to career_fixture_path(@career, @fixture), alert: "Choose two players from your lineup."
+    redirect_to lineup_swap_redirect_path, alert: lineup_swap_record_not_found_message
+  rescue LiveLineupSwapProcessor::Error => e
+    redirect_to lineup_swap_redirect_path, alert: e.message
   end
 
   def update_lineup_role
@@ -244,5 +243,17 @@ class FixturesController < ApplicationController
     return "Choose one active starter and one unused substitute." if error.is_a?(ActiveRecord::RecordNotFound)
 
     error.message
+  end
+
+  def lineup_swap_redirect_path(context = nil)
+    return career_fixture_path(@career, @fixture) unless context == FixtureLineupSwapProcessor::LIVE_CONTEXT || matchday_session_for(@fixture)&.paused?
+
+    career_fixture_path(@career, @fixture, details: true)
+  end
+
+  def lineup_swap_record_not_found_message
+    return "Choose two active starters from your lineup." if matchday_session_for(@fixture)&.paused?
+
+    "Choose two players from your lineup."
   end
 end

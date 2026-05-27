@@ -138,12 +138,15 @@ Slice 5: drag-and-drop interaction
 
 Implemented:
 - `lineup-substitution` Stimulus controller supports dragging a substitute onto
-  a starter.
-- Click-first fallback supports selecting substitute then starter without drag.
-- The pending substitution preview enables submission only after both players
-  are selected.
-- The form submits the selected lineup athlete IDs to the existing Rails
-  substitution endpoint; server hardening remains Slice 6.
+  a starter, with immediate submission to Rails on drop.
+- Active starters are draggable too, so the manager can swap two XI players'
+  slots without spending a substitution.
+- Click-first fallback supports selecting substitute/starter or starter/starter
+  pairs without drag.
+- The old confirmation toolbar was removed. Legal drag/click actions submit
+  immediately; illegal actions are rejected by Rails.
+- The form submits the selected lineup athlete IDs to Rails endpoints; server
+  hardening remains Slice 6.
 
 Slice 6: server substitution endpoint hardening
 - Keep or reshape the existing substitution endpoint around the new UI payload:
@@ -172,6 +175,11 @@ Implemented:
 - Successful substitutions update lineup state and substitution counters
   transactionally.
 - Invalid substitutions redirect back to the Live Match Screen with an alert.
+- `LiveLineupSwapProcessor` validates paused live XI position swaps separately
+  from substitutions.
+- Live starter-to-starter swaps require two active starters from the managed
+  lineup, do not increment substitution counters, and reuse the lineup slot
+  swapper transactionally.
 
 Slice 7: live timeline and board refresh integration
 - After a successful substitution, the focused Live Match Screen should show the
@@ -236,7 +244,9 @@ Acceptance Criteria
   substitution` forms.
 - A paused managed Live Match Screen shows an interactive pitch and bench.
 - The manager can substitute by dragging or selecting a bench player and a
-  starter.
+  starter; the action submits immediately without a confirmation button.
+- The manager can swap two current XI players by dragging or selecting one
+  starter and then another.
 - Illegal substitutions are rejected server-side with clear feedback.
 - Successful substitutions, tactical changes, pauses, resumes, and other valid
   match actions do not show flash notices.

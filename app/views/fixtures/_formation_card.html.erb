@@ -1,9 +1,9 @@
 <% managed_lineup = lineup&.club == @club %>
 <% substitutions_used = lineup ? @fixture.club_substitution_count(lineup.club) : 0 %>
 <% substitution_slots_left = [ 5 - substitutions_used, 0 ].max %>
-<% substitution_interactive = managed_lineup && @matchday_session&.paused? && !@fixture.completed? && substitution_slots_left.positive? %>
+<% lineup_interactive = managed_lineup && @matchday_session&.paused? && !@fixture.completed? %>
 
-<section class="panel" <%= "data-controller=lineup-substitution" if substitution_interactive %>>
+<section class="panel" <%= "data-controller=lineup-substitution" if lineup_interactive %>>
   <div class="panel-header">
     <h2><%= title %></h2>
     <% if lineup %>
@@ -12,14 +12,14 @@
   </div>
   <div class="panel-body">
     <% if lineup&.starters&.any? %>
-      <% if substitution_interactive %>
-        <%= form_with url: substitute_career_fixture_path(@career, @fixture), method: :post, class: "substitution-form", data: { lineup_substitution_target: "form" } do |form| %>
+      <% if lineup_interactive %>
+        <%= form_with url: substitute_career_fixture_path(@career, @fixture), method: :post, class: "lineup-action-form", data: { lineup_substitution_target: "substitutionForm" } do |form| %>
           <%= form.hidden_field :off_lineup_athlete_id, data: { lineup_substitution_target: "offInput" } %>
           <%= form.hidden_field :on_lineup_athlete_id, data: { lineup_substitution_target: "onInput" } %>
-          <div class="substitution-toolbar">
-            <span data-lineup-substitution-target="preview">Select a substitute and a player to replace.</span>
-            <%= form.submit "Confirm substitution", disabled: true, data: { lineup_substitution_target: "submit" } %>
-          </div>
+        <% end %>
+        <%= form_with url: swap_lineup_athletes_career_fixture_path(@career, @fixture), method: :patch, class: "lineup-action-form", data: { lineup_substitution_target: "swapForm" } do |form| %>
+          <%= form.hidden_field :from_lineup_athlete_id, data: { lineup_substitution_target: "fromInput" } %>
+          <%= form.hidden_field :to_lineup_athlete_id, data: { lineup_substitution_target: "toInput" } %>
         <% end %>
       <% end %>
       <div class="formation-pitch">
@@ -31,7 +31,7 @@
             <% row.each do |lineup_athlete| %>
               <% athlete = lineup_athlete.athlete %>
               <% player_events = (@events || []).select { |event| event.athlete_id == athlete.id && event.club_id == lineup.club_id } %>
-              <div class="formation-player-token" data-lineup-athlete-id="<%= lineup_athlete.id %>" data-player-name="<%= athlete.last_name %>" <%= "data-lineup-substitution-target=starter data-action=dragover->lineup-substitution#allowDrop drop->lineup-substitution#dropOnStarter click->lineup-substitution#selectStarter" if substitution_interactive %>>
+              <div class="formation-player-token" data-lineup-athlete-id="<%= lineup_athlete.id %>" data-lineup-token-kind="starter" data-player-name="<%= athlete.last_name %>" draggable="<%= lineup_interactive %>" <%= "data-lineup-substitution-target=starter data-action=dragstart->lineup-substitution#dragToken dragover->lineup-substitution#allowDrop drop->lineup-substitution#dropOnToken click->lineup-substitution#selectToken" if lineup_interactive %>>
                 <div class="formation-shirt"><%= lineup_athlete.lineup_slot_label %></div>
                 <div class="formation-player-body">
                   <strong><%= athlete.last_name %></strong>
@@ -67,8 +67,8 @@
             <% lineup.bench.each do |lineup_athlete| %>
               <% athlete = lineup_athlete.athlete %>
               <% available = lineup_athlete.substituted_on_minute.nil? && lineup_athlete.substituted_off_minute.nil? && athlete.available_on?(@fixture.scheduled_on) %>
-              <% interactive_substitute = substitution_interactive && available %>
-              <div class="bench-player-token <%= "is-disabled" unless available %>" data-lineup-athlete-id="<%= lineup_athlete.id %>" data-player-name="<%= athlete.last_name %>" draggable="<%= interactive_substitute %>" <%= "data-lineup-substitution-target=substitute data-action=dragstart->lineup-substitution#dragSubstitute click->lineup-substitution#selectSubstitute" if interactive_substitute %>>
+              <% interactive_substitute = lineup_interactive && available %>
+              <div class="bench-player-token <%= "is-disabled" unless available %>" data-lineup-athlete-id="<%= lineup_athlete.id %>" data-lineup-token-kind="substitute" data-player-name="<%= athlete.last_name %>" draggable="<%= interactive_substitute %>" <%= "data-lineup-substitution-target=substitute data-action=dragstart->lineup-substitution#dragToken click->lineup-substitution#selectToken" if interactive_substitute %>>
                 <div class="formation-shirt"><%= lineup_athlete.lineup_slot_label %></div>
                 <div class="formation-player-body">
                   <strong><%= athlete.last_name %></strong>

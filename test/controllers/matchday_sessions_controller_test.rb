@@ -53,6 +53,7 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "shows manager controls when matchday is paused on managed fixture" do
+    add_balanced_squad_depth(@career.manager.current_club)
     session = MatchdaySessionStarter.call(career: @career, fixture: @fixture)
     MatchdayClock.start(session, now: Time.current)
     MatchdayClock.pause(session, now: Time.current + 2.seconds)
@@ -62,6 +63,9 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".fixture-three-column"
     assert_select "input[type='submit'][value='Update tactics']"
+    assert_select "[data-controller='lineup-substitution']", 1
+    assert_select ".substitution-bench", minimum: 1
+    assert_select "input[type='submit'][value='Confirm substitution']", 1
     assert_select "a", { text: "Back to matchday", count: 0 }
     assert_select "a", { text: "Back to club", count: 0 }
   end
@@ -93,6 +97,8 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "keeps manager controls hidden on neutral focused fixture" do
     other_fixture = create_simultaneous_fixture
+    add_balanced_squad_depth(other_fixture.home_club)
+    add_balanced_squad_depth(other_fixture.away_club)
     session = MatchdaySessionStarter.call(career: @career, fixture: @fixture)
     MatchdayClock.start(session, now: Time.current)
     MatchdayClock.pause(session, now: Time.current + 2.seconds)
@@ -102,6 +108,8 @@ class MatchdaySessionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "input[type='submit'][value='Update tactics']", 0
+    assert_select "input[type='submit'][value='Confirm substitution']", 0
+    assert_select ".substitution-bench", minimum: 1
     assert_select "input[disabled][value='4-4-2']", minimum: 1
     assert_select "input[disabled][value='Balanced']", minimum: 1
   end

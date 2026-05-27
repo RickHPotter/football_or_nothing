@@ -14,6 +14,7 @@ class FixtureLineupControlsTest < ActionDispatch::IntegrationTest
     add_balanced_squad_depth(@career.manager.current_club)
     get career_fixture_path(@career, @fixture)
     assert_select ".formation-pitch .formation-player-token", minimum: 11
+    assert_select ".substitution-bench .bench-player-token", minimum: 1
 
     patch tactics_career_fixture_path(@career, @fixture), params: {
       lineup: {
@@ -204,45 +205,5 @@ class FixtureLineupControlsTest < ActionDispatch::IntegrationTest
     assert_redirected_to career_fixture_path(@career, @fixture)
     assert_not substitute.reload.starter?
     assert next_substitute.reload.starter?
-  end
-
-  private
-
-  def add_balanced_squad_depth(club)
-    positions = %i[
-      goalkeeper goalkeeper
-      center_back center_back center_back center_back
-      full_back full_back full_back full_back
-      defensive_midfielder central_midfielder central_midfielder attacking_midfielder
-      winger winger striker striker striker
-    ]
-
-    positions.each_with_index do |position, index|
-      add_depth_player(club, position, index)
-    end
-  end
-
-  def add_depth_player(club, position, index)
-    athlete = Athlete.create!(
-      country: club.country,
-      first_name: "Depth",
-      last_name: "Player #{index}",
-      position:,
-      preferred_foot: :right,
-      current_ability: 5,
-      potential_ability: 5,
-      reputation: 1,
-      morale: 50,
-      condition: 100,
-      status: :active,
-      **Athlete::ATTRIBUTES.index_with { 5 }
-    )
-    club.athlete_contracts.create!(
-      athlete:,
-      start_date: Date.new(2026, 1, 1),
-      wage: 100,
-      status: :active,
-      current: true
-    )
   end
 end

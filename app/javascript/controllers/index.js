@@ -9,3 +9,6 @@ application.register("hello", HelloController)
 
 import MatchdayPollController from "./matchday_poll_controller"
 application.register("matchday-poll", MatchdayPollController)
+
+import LineupSubstitutionController from "./lineup_substitution_controller"
+application.register("lineup-substitution", LineupSubstitutionController)

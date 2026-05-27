@@ -3,7 +3,7 @@ Phase 30 - Live Substitution Controls
 
 Status
 ------
-Slices 1 through 3 complete.
+Slices 1 through 5 complete.
 
 
 Goal
@@ -117,6 +117,14 @@ Slice 4: bench/substitute rail
 - For the manager's club, mark legal substitution candidates as interactive.
 - For the opposition, keep the bench read-only.
 
+Implemented:
+- Formation cards now render a substitute rail below the pitch when a bench is
+  available.
+- Bench tokens show slot, name, role, condition, and unavailable state markers.
+- Remaining substitutions are displayed per club.
+- The manager's paused Live Match Screen marks legal bench options and starters
+  as interactive; opposition benches stay read-only.
+
 Slice 5: drag-and-drop interaction
 - Add a Stimulus controller for drag selection.
 - Allow dragging a bench player onto a starter slot for the managed club while
@@ -127,6 +135,15 @@ Slice 5: drag-and-drop interaction
   substitution to Rails.
 - Keep JavaScript as UI only. It may choose IDs and render previews, but it must
   not decide legality.
+
+Implemented:
+- `lineup-substitution` Stimulus controller supports dragging a substitute onto
+  a starter.
+- Click-first fallback supports selecting substitute then starter without drag.
+- The pending substitution preview enables submission only after both players
+  are selected.
+- The form submits the selected lineup athlete IDs to the existing Rails
+  substitution endpoint; server hardening remains Slice 6.
 
 Slice 6: server substitution endpoint hardening
 - Keep or reshape the existing substitution endpoint around the new UI payload:

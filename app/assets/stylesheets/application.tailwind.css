@@ -276,6 +276,44 @@
     @apply border border-board-200 bg-board-50 px-1 text-[0.625rem] font-black uppercase leading-4 text-board-700;
   }
 
+  .substitution-form {
+    @apply mb-3;
+  }
+
+  .substitution-toolbar {
+    @apply grid gap-2 border border-result-300 bg-result-100 p-2 text-xs font-black uppercase text-board-900 sm:grid-cols-[1fr_auto] sm:items-center;
+  }
+
+  .substitution-bench {
+    @apply mt-3 grid gap-2 border border-board-200 bg-board-50 p-2;
+  }
+
+  .substitution-bench-header {
+    @apply flex items-center justify-between gap-2;
+  }
+
+  .substitution-bench-list {
+    @apply grid gap-2 sm:grid-cols-2;
+  }
+
+  .bench-player-token {
+    @apply flex min-w-0 items-center gap-2 border border-board-200 bg-white px-2 py-1.5 text-left text-xs shadow-line;
+  }
+
+  .bench-player-token[draggable="true"],
+  .formation-player-token[data-lineup-substitution-target~="starter"] {
+    @apply cursor-pointer hover:border-result-300 hover:bg-result-100;
+  }
+
+  .bench-player-token.is-disabled {
+    @apply opacity-55;
+  }
+
+  .bench-player-token.is-selected,
+  .formation-player-token.is-selected {
+    @apply border-result-300 bg-result-100;
+  }
+
   .match-hero {
     @apply grid gap-3 border border-console-700 border-l-4 border-l-result-300 bg-board-700 p-3 shadow-line lg:grid-cols-[1fr_0.9fr_1fr];
   }

@@ -180,6 +180,11 @@ Implemented:
 - Live starter-to-starter swaps require two active starters from the managed
   lineup, do not increment substitution counters, and reuse the lineup slot
   swapper transactionally.
+- Live substitutions move the incoming player into the outgoing player's active
+  formation slot so the pitch keeps 11 visible starters after substitutions.
+- Future planned live events for a substituted-off player are retargeted to the
+  incoming player, preventing removed athletes from scoring or creating later
+  highlights.
 
 Slice 7: live timeline and board refresh integration
 - After a successful substitution, the focused Live Match Screen should show the

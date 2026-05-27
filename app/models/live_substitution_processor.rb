@@ -19,8 +19,8 @@ class LiveSubstitutionProcessor
     validate_context!
 
     LineupAthlete.transaction do
-      off.update!(starter: false, substituted_off_minute: minute)
-      on.update!(starter: true, substituted_on_minute: minute)
+      apply_lineup_change!
+      retarget_future_events!
       increment_substitution_count!
       create_timeline_event!
     end
@@ -53,6 +53,36 @@ class LiveSubstitutionProcessor
 
   def minute
     @minute ||= matchday_session.minute.clamp(0, 90)
+  end
+
+  def apply_lineup_change!
+    starter_attributes = slot_attributes(off)
+    bench_attributes = slot_attributes(on)
+
+    off.update_columns(lineup_slot: temporary_slot, lineup_slot_key: "live_substitution", updated_at: Time.current)
+    on.update!(starter_attributes.merge(starter: true, substituted_on_minute: minute))
+    off.update!(bench_attributes.merge(starter: false, substituted_off_minute: minute))
+  end
+
+  def slot_attributes(lineup_athlete)
+    lineup_athlete.attributes.slice("lineup_slot", "lineup_slot_key", "position", "tactical_role")
+  end
+
+  def temporary_slot
+    @temporary_slot ||= lineup.lineup_athletes.maximum(:lineup_slot).to_i + 1
+  end
+
+  def retarget_future_events!
+    matchday_session.matchday_events.pending.where(fixture:, club:, athlete: off.athlete, minute: (minute + 1)..).find_each do |event|
+      event.update!(
+        athlete: on.athlete,
+        description: retargeted_description(event.description)
+      )
+    end
+  end
+
+  def retargeted_description(description)
+    description.gsub("#{off.athlete.first_name} #{off.athlete.last_name}", "#{on.athlete.first_name} #{on.athlete.last_name}")
   end
 
   def increment_substitution_count!

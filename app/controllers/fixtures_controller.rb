@@ -149,25 +149,17 @@ class FixturesController < ApplicationController
   end
 
   def substitute
-    if @fixture.club_substitution_count(@club) >= 5
-      redirect_to career_fixture_path(@career, @fixture), alert: "All substitutions have been used."
-      return
-    end
+    LiveSubstitutionProcessor.call(
+      fixture: @fixture,
+      club: @club,
+      matchday_session: matchday_session_for(@fixture),
+      off_lineup_athlete_id: params.expect(:off_lineup_athlete_id),
+      on_lineup_athlete_id: params.expect(:on_lineup_athlete_id)
+    )
 
-    lineup = @fixture.lineup_for(@club)
-    off = lineup.lineup_athletes.starters.find(params.expect(:off_lineup_athlete_id))
-    on = lineup.lineup_athletes.bench.where(substituted_on_minute: nil, substituted_off_minute: nil).find(params.expect(:on_lineup_athlete_id))
-    minute = @fixture.match_state.minute
-
-    LineupAthlete.transaction do
-      off.update!(starter: false, substituted_off_minute: minute)
-      on.update!(starter: true, substituted_on_minute: minute)
-      increment_substitution_count!
-    end
-
-    redirect_to career_fixture_path(@career, @fixture)
-  rescue ActiveRecord::RecordNotFound
-    redirect_to career_fixture_path(@career, @fixture), alert: "Choose one active starter and one unused substitute."
+    redirect_to career_fixture_path(@career, @fixture, details: true)
+  rescue ActiveRecord::RecordNotFound, LiveSubstitutionProcessor::Error => e
+    redirect_to career_fixture_path(@career, @fixture, details: true), alert: substitution_error_message(e)
   end
 
   private
@@ -248,13 +240,9 @@ class FixturesController < ApplicationController
     MatchdaySessionFinalizer.call(session: @matchday_session, focused_fixture: @fixture).tap { @fixture.reload if @matchday_session.completed? }
   end
 
-  def increment_substitution_count!
-    match_state = @fixture.match_state
+  def substitution_error_message(error)
+    return "Choose one active starter and one unused substitute." if error.is_a?(ActiveRecord::RecordNotFound)
 
-    if @fixture.home_club_id == @club.id
-      match_state.increment!(:home_substitutions)
-    else
-      match_state.increment!(:away_substitutions)
-    end
+    error.message
   end
 end

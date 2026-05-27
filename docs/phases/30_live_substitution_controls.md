@@ -3,7 +3,7 @@ Phase 30 - Live Substitution Controls
 
 Status
 ------
-Slices 1 through 5 complete.
+Slices 1 through 7 complete.
 
 
 Goal
@@ -164,12 +164,27 @@ Slice 6: server substitution endpoint hardening
 - Create a timeline substitution event.
 - Return the user to the Live Match Screen with updated pitch and bench state.
 
+Implemented:
+- `LiveSubstitutionProcessor` validates live substitutions server-side.
+- The existing substitution endpoint now requires a paused matchday, a
+  non-completed fixture, the manager's club, valid active starter, valid unused
+  bench player, and remaining substitution allowance.
+- Successful substitutions update lineup state and substitution counters
+  transactionally.
+- Invalid substitutions redirect back to the Live Match Screen with an alert.
+
 Slice 7: live timeline and board refresh integration
 - After a successful substitution, the focused Live Match Screen should show the
   updated Timeline entry.
 - The Live Matchday Screen should show the latest substitution highlight for
   the fixture if it is the most recent event.
 - Resuming the matchday should continue from the server-owned paused minute.
+
+Implemented:
+- Successful substitutions create visible timeline events immediately.
+- The focused Live Match Screen shows the substitution event in Timeline.
+- The Live Matchday Screen latest-highlight rail can show the substitution as
+  the fixture's latest event.
 
 Slice 8: AI and opponent behavior alignment
 - Confirm AI substitutions still use the same lineup state rules.

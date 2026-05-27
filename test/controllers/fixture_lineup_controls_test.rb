@@ -143,6 +143,7 @@ class FixtureLineupControlsTest < ActionDispatch::IntegrationTest
   test "records substitution for managed club" do
     add_balanced_squad_depth(@career.manager.current_club)
     get career_fixture_path(@career, @fixture)
+    pause_matchday
 
     lineup = @fixture.reload.lineup_for(@career.manager.current_club)
     starter = lineup.starters.first
@@ -153,15 +154,28 @@ class FixtureLineupControlsTest < ActionDispatch::IntegrationTest
       on_lineup_athlete_id: substitute.id
     }
 
-    assert_redirected_to career_fixture_path(@career, @fixture)
+    assert_redirected_to career_fixture_path(@career, @fixture, details: true)
+    assert_nil flash[:notice]
     assert_not starter.reload.starter?
     assert substitute.reload.starter?
     assert_equal 1, @fixture.match_state.reload.home_substitutions
+    assert @fixture.match_events.substitution.where(athlete: substitute.athlete).exists?
+
+    get career_fixture_path(@career, @fixture, details: true)
+
+    assert_response :success
+    assert_select ".timeline-message", /replaced/
+
+    get career_fixture_path(@career, @fixture)
+
+    assert_response :success
+    assert_select ".matchday-fixture-events", /Substitution/
   end
 
   test "does not allow substituted off player to re-enter" do
     add_balanced_squad_depth(@career.manager.current_club)
     get career_fixture_path(@career, @fixture)
+    pause_matchday
 
     lineup = @fixture.reload.lineup_for(@career.manager.current_club)
     starter = lineup.starters.first
@@ -178,7 +192,7 @@ class FixtureLineupControlsTest < ActionDispatch::IntegrationTest
       on_lineup_athlete_id: starter.id
     }
 
-    assert_redirected_to career_fixture_path(@career, @fixture)
+    assert_redirected_to career_fixture_path(@career, @fixture, details: true)
     assert_equal "Choose one active starter and one unused substitute.", flash[:alert]
     assert_not starter.reload.starter?
   end
@@ -186,6 +200,7 @@ class FixtureLineupControlsTest < ActionDispatch::IntegrationTest
   test "allows substituted on player to be substituted off" do
     add_balanced_squad_depth(@career.manager.current_club)
     get career_fixture_path(@career, @fixture)
+    pause_matchday
 
     lineup = @fixture.reload.lineup_for(@career.manager.current_club)
     starter = lineup.starters.first
@@ -202,8 +217,30 @@ class FixtureLineupControlsTest < ActionDispatch::IntegrationTest
       on_lineup_athlete_id: next_substitute.id
     }
 
-    assert_redirected_to career_fixture_path(@career, @fixture)
+    assert_redirected_to career_fixture_path(@career, @fixture, details: true)
     assert_not substitute.reload.starter?
     assert next_substitute.reload.starter?
+  end
+
+  test "requires paused matchday before live substitution" do
+    add_balanced_squad_depth(@career.manager.current_club)
+    get career_fixture_path(@career, @fixture)
+    lineup = @fixture.reload.lineup_for(@career.manager.current_club)
+
+    post substitute_career_fixture_path(@career, @fixture), params: {
+      off_lineup_athlete_id: lineup.starters.first.id,
+      on_lineup_athlete_id: lineup.bench.first.id
+    }
+
+    assert_redirected_to career_fixture_path(@career, @fixture, details: true)
+    assert_equal "Start the matchday clock first.", flash[:alert]
+  end
+
+  private
+
+  def pause_matchday
+    session = MatchdaySessionStarter.call(career: @career, fixture: @fixture)
+    MatchdayClock.start(session, now: Time.current)
+    MatchdayClock.pause(session, now: Time.current + 2.seconds)
   end
 end
